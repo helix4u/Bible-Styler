@@ -487,19 +487,18 @@
       try {
         const txt = (outEl.textContent || '').trim();
         if (!txt) { setOutStatus('Nothing to share'); return; }
-        const file = new File([txt + '\n'], 'styled_bible.txt', { type: 'text/plain' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'Styled Bible' });
-          setOutStatus('Shared');
-          return;
-        }
+        // Text-only share (no file). Prefer native Web Share text path.
         if (navigator.share) {
           const snippet = txt.length > 100000 ? txt.slice(0, 100000) : txt;
-          await navigator.share({ title: 'Styled Bible', text: snippet });
-          setOutStatus('Shared');
-          return;
+          try {
+            await navigator.share({ title: 'Styled Bible', text: snippet });
+            setOutStatus('Shared');
+            return;
+          } catch (err) {
+            if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) { setOutStatus(''); return; }
+          }
         }
-        // fallback: copy to clipboard
+        // Fallback: copy to clipboard
         const ok = await copyToClipboard(txt);
         setOutStatus(ok ? 'Copied (share unavailable)' : 'Share/copy failed');
       } catch (e) {
@@ -1076,10 +1075,10 @@
       });
     }
     if (shareOutBtn) {
-      // disable if share is clearly unsupported
-      if (!('share' in navigator) && !('canShare' in navigator)) {
+      // Disable if text share is unsupported
+      if (!('share' in navigator)) {
         shareOutBtn.disabled = true;
-        shareOutBtn.title = 'Web Share API not supported';
+        shareOutBtn.title = 'Web Share API (text) not supported';
       }
       shareOutBtn.addEventListener('pointerup', shareOutput);
     }
