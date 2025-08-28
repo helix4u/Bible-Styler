@@ -17,7 +17,7 @@
       --accent-2: #22d3ee;
       --danger: #f43f5e;
       --ok: #34d399;
-      --term: #a7f3d0; /* output text */
+      --term: #a7f3d0;
       --term-bg: #071019;
       --focus: 0 0 0 3px rgba(56, 189, 248, 0.35);
       --radius: 12px;
@@ -25,21 +25,9 @@
       --font-sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    html, body {
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-sans);
-    }
-
+    html, body { background: var(--bg); color: var(--text); margin: 0; padding: 0; font-family: var(--font-sans); }
     body { padding: 24px; }
-
-    h1 {
-      margin: 0 0 12px 0;
-      font-size: 20px;
-      letter-spacing: 0.2px;
-    }
+    h1 { margin: 0 0 12px 0; font-size: 20px; letter-spacing: 0.2px; }
 
     .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
     .row { grid-column: 1 / -1; }
@@ -54,127 +42,100 @@
 
     label { font-size: 12px; display: block; margin-bottom: 6px; color: var(--text-muted); }
 
+    input, textarea, select, button { font: inherit; color: inherit; }
     input, textarea, select {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 10px 12px;
-      border: 1px solid var(--border-strong);
-      border-radius: 10px;
-      background: var(--bg-input);
-      color: var(--text);
-      outline: none;
-      transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+      width: 100%; box-sizing: border-box; padding: 10px 12px;
+      border: 1px solid var(--border-strong); border-radius: 10px; background: var(--bg-input);
+      color: var(--text); outline: none; transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
     }
     input::placeholder, textarea::placeholder { color: #6b7280; }
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--accent);
-      box-shadow: var(--focus);
-    }
-    textarea { min-height: 140px; resize: vertical; }
-
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: var(--focus); }
+    textarea { min-height: 120px; resize: vertical; }
     .mono { font-family: var(--font-mono); }
 
     .btn {
-      padding: 10px 14px;
-      border: 1px solid var(--accent-2);
-      border-radius: 10px;
+      padding: 10px 14px; border: 1px solid var(--accent-2); border-radius: 10px;
       background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
-      color: #001018;
-      cursor: pointer;
-      font-weight: 600;
-      transition: filter 120ms ease, transform 60ms ease;
-      user-select: none;
+      color: #001018; cursor: pointer; font-weight: 600; transition: filter 120ms ease, transform 60ms ease; user-select: none;
     }
     .btn:hover { filter: brightness(1.05); }
     .btn:active { transform: translateY(1px); }
-    .btn.secondary {
-      background: transparent;
-      color: var(--text);
-      border-color: var(--border-strong);
-    }
-    .btn.danger {
-      border-color: var(--danger);
-      background: linear-gradient(180deg, #fb7185 0%, var(--danger) 100%);
-      color: #1b0310;
-    }
+    .btn.secondary { background: transparent; color: var(--text); border-color: var(--border-strong); }
+    .btn.danger { border-color: var(--danger); background: linear-gradient(180deg, #fb7185 0%, var(--danger) 100%); color: #1b0310; }
+    .btn.ok { border-color: var(--ok); background: linear-gradient(180deg, #6ee7b7 0%, var(--ok) 100%); color: #032018; }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .inline { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
     .muted { color: var(--text-muted); font-size: 12px; }
+    .out { white-space: pre-wrap; font-family: var(--font-mono); background: var(--term-bg); color: var(--term); padding: 14px; border-radius: 10px; min-height: 180px; border: 1px solid var(--border-strong); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #0b2a33; color: #7dd3fc; border: 1px solid #0a3b48; font-size: 11px; font-weight: 600; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+    .tab { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none; background: #0b1220; }
+    .tab.active { border-color: var(--accent); box-shadow: var(--focus); }
 
-    .out {
-      white-space: pre-wrap;
-      font-family: var(--font-mono);
-      background: var(--term-bg);
-      color: var(--term);
-      padding: 14px;
-      border-radius: 10px;
-      min-height: 180px;
-      border: 1px solid var(--border-strong);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: #0b2a33;
-      color: #7dd3fc;
-      border: 1px solid #0a3b48;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .row h2 {
-      font-size: 14px;
-      margin: 0 0 8px 0;
-      color: var(--text);
-      letter-spacing: 0.2px;
-    }
-
-    .warn {
-      border: 1px dashed #334155;
-      padding: 10px;
-      border-radius: 10px;
-      background: #0b1220;
-      color: var(--text-muted);
-    }
-
-    /* small screens */
-    @media (max-width: 880px) {
-      body { padding: 16px; }
-    }
+    @media (max-width: 880px) { body { padding: 16px; } }
   </style>
 </head>
 <body>
   <h1>Bible Styler ... browser edition <span class="badge">dark</span></h1>
 
   <div class="grid">
+    <!-- provider presets and api config -->
     <div class="row card">
       <div class="grid">
-        <div style="grid-column: span 6;">
+        <div style="grid-column: span 4;">
+          <label>Vendor preset</label>
+          <select id="vendor">
+            <option>Custom</option>
+            <option>LM Studio ... local</option>
+            <option>Ollama ... OpenAI compat</option>
+            <option>OpenAI</option>
+            <option>OpenRouter</option>
+            <option>Together</option>
+            <option>Groq</option>
+            <option>Fireworks</option>
+            <option>DeepInfra</option>
+            <option>Cerebras</option>
+          </select>
+        </div>
+        <div style="grid-column: span 5;">
           <label>API base ... OpenAI compatible chat completions</label>
           <input id="apiBase" placeholder="Example: http://127.0.0.1:1234/v1/chat/completions" spellcheck="false" autocomplete="off">
         </div>
+        <div style="grid-column: span 3;">
+          <label>Fetch models</label>
+          <div class="inline">
+            <button id="fetchModels" class="btn secondary">Fetch</button>
+            <span id="modelsStatus" class="muted"></span>
+          </div>
+        </div>
+
         <div style="grid-column: span 6;">
           <label>API key ... stored only in this browser</label>
           <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off">
         </div>
-        <div style="grid-column: span 4;">
+        <div style="grid-column: span 3;">
           <label>Model</label>
-          <input id="model" value="qwen3-4b-instruct-2507" spellcheck="false" autocomplete="off">
+          <input id="model" list="modelsList" value="qwen3-4b-instruct-2507" spellcheck="false" autocomplete="off">
+          <datalist id="modelsList"></datalist>
         </div>
-        <div style="grid-column: span 4;">
+        <div style="grid-column: span 3;">
           <label>Temperature</label>
           <input id="temperature" type="number" step="0.1" min="0" max="2" value="0.9">
         </div>
-        <div style="grid-column: span 4;">
+
+        <div style="grid-column: span 3;">
           <label>Stream tokens</label>
           <select id="stream">
             <option value="true" selected>true</option>
             <option value="false">false</option>
           </select>
         </div>
+        <div style="grid-column: span 9;">
+          <label>Extra headers ... JSON object ... optional</label>
+          <textarea id="extraHeaders" class="mono" placeholder='{"HTTP-Referer":"https://your.site","X-Title":"Bible Styler"}'></textarea>
+        </div>
+
         <div style="grid-column: span 12;">
           <label>Style system prompt</label>
           <textarea id="systemPrompt" class="mono">You are rewriting each Bible verse in a sharp, irreverent, Trump-Campaign-like Cartman narrator voice. Keep all proper nouns unchanged. One output line per verse ... format must be:
@@ -186,9 +147,10 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           <input id="stops" value="Reference:,AI:,---">
         </div>
       </div>
-      <div class="muted">Do not commit real keys. This field saves to localStorage on this device only.</div>
+      <div class="muted">Do not commit keys. This page saves to localStorage on this device only.</div>
     </div>
 
+    <!-- data source -->
     <div class="row card">
       <div class="grid">
         <div style="grid-column: span 8;">
@@ -202,6 +164,7 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
             <input id="jsonFile" type="file" accept=".json">
           </div>
         </div>
+
         <div style="grid-column: span 6;">
           <label>Include volumes ... e.g. Old Testament,New Testament</label>
           <input id="volumes" value="Old Testament,New Testament">
@@ -210,6 +173,7 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           <label>Limit to books ... optional ... e.g. Genesis,Exodus</label>
           <input id="books" placeholder="Genesis,Exodus">
         </div>
+
         <div style="grid-column: span 4;">
           <label>Start index ... 0 based</label>
           <input id="startIndex" type="number" min="0" value="0">
@@ -226,31 +190,68 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       <div class="muted">JSON must be an array with keys ... book_title, chapter_number, verse_number, scripture_text.</div>
     </div>
 
+    <!-- mode tabs -->
     <div class="row card">
-      <div class="inline">
-        <button id="startBtn" class="btn">Start</button>
-        <button id="stopBtn" class="btn danger" disabled>Stop</button>
-        <button id="downloadBtn" class="btn secondary" disabled>Download .txt</button>
+      <div class="tabs">
+        <div class="tab active" data-panel="batchPanel">Batch mode</div>
+        <div class="tab" data-panel="singlePanel">Single verse</div>
       </div>
-      <div id="status" class="muted" style="margin-top:8px;"></div>
+
+      <!-- batch panel -->
+      <div id="batchPanel">
+        <div class="inline" style="margin-bottom: 8px;">
+          <button id="startBtn" class="btn">Start</button>
+          <button id="stopBtn" class="btn danger" disabled>Stop</button>
+          <button id="downloadBtn" class="btn secondary" disabled>Download .txt</button>
+        </div>
+        <div id="status" class="muted" style="margin-top:8px;"></div>
+      </div>
+
+      <!-- single verse panel -->
+      <div id="singlePanel" style="display:none;">
+        <div class="grid" style="margin-bottom: 8px;">
+          <div style="grid-column: span 4;">
+            <label>Book</label>
+            <select id="bookSel"></select>
+          </div>
+          <div style="grid-column: span 4;">
+            <label>Chapter</label>
+            <select id="chapterSel"></select>
+          </div>
+          <div style="grid-column: span 4;">
+            <label>Verse</label>
+            <select id="verseSel"></select>
+          </div>
+          <div style="grid-column: span 12;">
+            <label>Text override ... optional</label>
+            <textarea id="singleText" class="mono" placeholder="Leave empty to use text from JSON"></textarea>
+          </div>
+        </div>
+        <div class="inline" style="margin-bottom: 8px;">
+          <button id="runSingle" class="btn ok">Run single verse</button>
+        </div>
+        <div id="singleStatus" class="muted"></div>
+      </div>
     </div>
 
+    <!-- output -->
     <div class="row card">
-      <label>Output preview</label>
+      <label>Output</label>
       <div id="out" class="out"></div>
     </div>
 
-    <div class="row warn" id="httpsWarn" style="display:none;">
+    <div class="row card" id="httpsWarn" style="display:none;">
       Heads up ... this page is HTTPS. Calls to http://localhost are often blocked by browsers. Prefer an HTTPS API endpoint or test the page locally over http.
     </div>
   </div>
 
   <script>
+    // ascii normalize and cleanup
     function normalizeAscii(s) {
       return String(s)
-        .replace(/\u2018|\u2019/g, "'")
-        .replace(/\u201C|\u201D/g, '"')
-        .replace(/\u2013|\u2014/g, "...")
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2013\u2014]/g, "...")
         .replace(/\u00A0/g, " ");
     }
     function sanitizeOneLine(s) {
@@ -263,19 +264,49 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       s = Array.from(s).filter(ch => ch.codePointAt(0) < 0x2500).join("");
       return s.trim();
     }
-    function refString(book, chapter, verse) { return `${book} ${chapter}:${verse}`; }
-    function openingNgram(s, n = 4) {
+    function refString(book, chapter, verse) { return book + " " + chapter + ":" + verse; }
+    function openingNgram(s, n=4) {
       const toks = s.trim().split(/\s+/).filter(Boolean);
       return toks.slice(0, n).join(" ").toLowerCase();
     }
+    function parseJSONOrEmpty(str) {
+      const t = String(str || "").trim();
+      if (!t) return {};
+      try { return JSON.parse(t); } catch { return {}; }
+    }
 
+    // vendor presets
+    const vendorPresets = {
+      "Custom": {},
+      "LM Studio ... local": { apiBase: "http://127.0.0.1:1234/v1/chat/completions" },
+      "Ollama ... OpenAI compat": { apiBase: "http://127.0.0.1:11434/v1/chat/completions" },
+      "OpenAI": { apiBase: "https://api.openai.com/v1/chat/completions" },
+      "OpenRouter": {
+        apiBase: "https://openrouter.ai/api/v1/chat/completions",
+        extraHeaders: { "HTTP-Referer": location.origin || "https://example.com", "X-Title": "Bible Styler" }
+      },
+      "Together": { apiBase: "https://api.together.xyz/v1/chat/completions" },
+      "Groq": { apiBase: "https://api.groq.com/openai/v1/chat/completions" },
+      "Fireworks": { apiBase: "https://api.fireworks.ai/inference/v1/chat/completions" },
+      "DeepInfra": { apiBase: "https://api.deepinfra.com/v1/openai/chat/completions" },
+      "Cerebras": { apiBase: "https://api.cerebras.ai/v1/chat/completions" }
+    };
+
+    // ui refs
+    const vendorEl = document.getElementById("vendor");
     const apiBaseEl = document.getElementById("apiBase");
     const apiKeyEl = document.getElementById("apiKey");
     const modelEl = document.getElementById("model");
+    const modelsList = document.getElementById("modelsList");
+    const fetchModelsBtn = document.getElementById("fetchModels");
+    const modelsStatus = document.getElementById("modelsStatus");
+
     const temperatureEl = document.getElementById("temperature");
     const streamEl = document.getElementById("stream");
     const systemPromptEl = document.getElementById("systemPrompt");
     const stopsEl = document.getElementById("stops");
+    const extraHeadersEl = document.getElementById("extraHeaders");
+
     const jsonUrlEl = document.getElementById("jsonUrl");
     const loadJsonBtn = document.getElementById("loadJson");
     const jsonFileEl = document.getElementById("jsonFile");
@@ -284,18 +315,39 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
     const startIndexEl = document.getElementById("startIndex");
     const endIndexEl = document.getElementById("endIndex");
     const ctxPairsEl = document.getElementById("ctxPairs");
+
+    const outEl = document.getElementById("out");
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
     const downloadBtn = document.getElementById("downloadBtn");
-    const outEl = document.getElementById("out");
     const statusEl = document.getElementById("status");
-    const httpsWarn = document.getElementById("httpsWarn");
 
+    const tabs = document.querySelectorAll(".tab");
+    const batchPanel = document.getElementById("batchPanel");
+    const singlePanel = document.getElementById("singlePanel");
+    const bookSel = document.getElementById("bookSel");
+    const chapterSel = document.getElementById("chapterSel");
+    const verseSel = document.getElementById("verseSel");
+    const singleTextEl = document.getElementById("singleText");
+    const runSingleBtn = document.getElementById("runSingle");
+    const singleStatus = document.getElementById("singleStatus");
+
+    const httpsWarn = document.getElementById("httpsWarn");
     if (location.protocol === "https:") httpsWarn.style.display = "block";
 
+    tabs.forEach(t => t.onclick = () => {
+      tabs.forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      const panel = t.dataset.panel;
+      batchPanel.style.display = panel === "batchPanel" ? "block" : "none";
+      singlePanel.style.display = panel === "singlePanel" ? "block" : "none";
+    });
+
+    // persistence (keep your original key so you do not lose settings)
     const LS_KEY = "bibleStylerSettings";
     function saveSettings() {
       const obj = {
+        vendor: vendorEl.value,
         apiBase: apiBaseEl.value,
         apiKey: apiKeyEl.value,
         model: modelEl.value,
@@ -306,7 +358,8 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
         jsonUrl: jsonUrlEl.value,
         volumes: volumesEl.value,
         books: booksEl.value,
-        ctxPairs: ctxPairsEl.value
+        ctxPairs: ctxPairsEl.value,
+        extraHeaders: extraHeadersEl.value
       };
       localStorage.setItem(LS_KEY, JSON.stringify(obj));
     }
@@ -315,9 +368,10 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
         const raw = localStorage.getItem(LS_KEY);
         if (!raw) return;
         const s = JSON.parse(raw);
+        vendorEl.value = s.vendor || "Custom";
         apiBaseEl.value = s.apiBase || "";
         apiKeyEl.value = s.apiKey || "";
-        modelEl.value = s.model || "gemma-3-4b-it";
+        modelEl.value = s.model || "qwen3-4b-instruct-2507";
         temperatureEl.value = s.temperature || "0.9";
         streamEl.value = s.stream || "true";
         systemPromptEl.value = s.systemPrompt || systemPromptEl.value;
@@ -326,11 +380,21 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
         volumesEl.value = s.volumes || "Old Testament,New Testament";
         booksEl.value = s.books || "";
         ctxPairsEl.value = s.ctxPairs || "10";
+        extraHeadersEl.value = s.extraHeaders || "";
       } catch {}
     }
     document.querySelectorAll("input,textarea,select").forEach(el => el.addEventListener("change", saveSettings));
     loadSettings();
 
+    // apply vendor preset
+    vendorEl.onchange = () => {
+      const p = vendorPresets[vendorEl.value] || {};
+      if (p.apiBase) apiBaseEl.value = p.apiBase;
+      if (p.extraHeaders) extraHeadersEl.value = JSON.stringify(p.extraHeaders);
+      saveSettings();
+    };
+
+    // scripture data and selectors
     let verses = [];
     function norm(s) { return String(s || "").trim().toLowerCase(); }
     function parseList(s) {
@@ -353,38 +417,70 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
     }
     async function fetchJson(url) {
       const r = await fetch(url, { cache: "no-store" });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      if (!r.ok) throw new Error("HTTP " + r.status);
       return await r.json();
     }
-    loadJsonBtn.onclick = async () => {
+    function populateSelectorsFromData(rows) {
+      const books = Array.from(new Set(rows.map(r => r.book_title)));
+      bookSel.innerHTML = books.map(b => '<option value="'+b+'">'+b+'</option>').join("");
+      if (books.length) {
+        bookSel.value = books[0];
+        populateChapters();
+      }
+    }
+    function populateChapters() {
+      const b = bookSel.value;
+      const chapters = Array.from(new Set(verses.filter(v => v.book_title === b).map(v => Number(v.chapter_number)))).sort((a,b)=>a-b);
+      chapterSel.innerHTML = chapters.map(c => '<option value="'+c+'">'+c+'</option>').join("");
+      if (chapters.length) {
+        chapterSel.value = chapters[0];
+        populateVerses();
+      }
+    }
+    function populateVerses() {
+      const b = bookSel.value;
+      const c = Number(chapterSel.value);
+      const vs = verses.filter(v => v.book_title === b && Number(v.chapter_number) === c).map(v => Number(v.verse_number)).sort((a,b)=>a-b);
+      verseSel.innerHTML = vs.map(v => '<option value="'+v+'">'+v+'</option>').join("");
+      if (vs.length) verseSel.value = vs[0];
+      const txt = verses.find(v => v.book_title === b && Number(v.chapter_number) === c && Number(v.verse_number) === Number(verseSel.value))?.scripture_text || "";
+      singleTextEl.placeholder = txt ? ("JSON text: " + (txt.length>120 ? txt.slice(0,120)+"..." : txt)) : "No JSON text found";
+    }
+    document.getElementById("loadJson").onclick = async () => {
       try {
         statusEl.textContent = "Fetching JSON...";
         const data = await fetchJson(jsonUrlEl.value);
         if (!Array.isArray(data) || !data.length) throw new Error("Expected JSON array");
         verses = data;
-        statusEl.textContent = `Loaded ${data.length} rows`;
+        statusEl.textContent = "Loaded " + data.length + " rows";
+        populateSelectorsFromData(verses);
       } catch (e) {
-        statusEl.textContent = `Failed to load JSON ... ${e.message}`;
+        statusEl.textContent = "Failed to load JSON ... " + e.message;
       }
     };
-    jsonFileEl.onchange = async () => {
-      const file = jsonFileEl.files?.[0];
+    document.getElementById("jsonFile").onchange = async (ev) => {
+      const file = ev.target.files?.[0];
       if (!file) return;
       const text = await file.text();
       try {
         const data = JSON.parse(text);
         if (!Array.isArray(data) || !data.length) throw new Error("Expected JSON array");
         verses = data;
-        statusEl.textContent = `Loaded ${data.length} rows from file`;
+        statusEl.textContent = "Loaded " + data.length + " rows from file";
+        populateSelectorsFromData(verses);
       } catch (e) {
-        statusEl.textContent = `Bad JSON file ... ${e.message}`;
+        statusEl.textContent = "Bad JSON file ... " + e.message;
       }
     };
+    bookSel.onchange = populateChapters;
+    chapterSel.onchange = populateVerses;
+    verseSel.onchange = populateVerses;
 
+    // chat call (SSE or JSON)
     async function chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders }) {
       const headers = { "Content-Type": "application/json" };
       if (apiKey) {
-        headers["Authorization"] = `Bearer ${apiKey}`;
+        headers["Authorization"] = "Bearer " + apiKey;
         headers["X-API-Key"] = apiKey;
       }
       if (extraHeaders) Object.assign(headers, extraHeaders);
@@ -403,7 +499,7 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       const resp = await fetch(apiBase, { method: "POST", headers, body: JSON.stringify(payload) });
       if (!resp.ok) {
         const txt = await resp.text();
-        throw new Error(`HTTP ${resp.status} ... ${txt.slice(0, 400)}`);
+        throw new Error("HTTP " + resp.status + " ... " + txt.slice(0, 400));
       }
 
       const ct = resp.headers.get("content-type") || "";
@@ -439,7 +535,7 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
     }
 
     function makeUserPrompt(book, chapter, verse, text) {
-      return `Reference: ${book} ${chapter}:${verse}\nText: "${normalizeAscii(text)}"`;
+      return "Reference: " + book + " " + chapter + ":" + verse + "\nText: \"" + normalizeAscii(text) + "\"";
     }
     function postprocessLine(result, expectedPrefix) {
       if (!result) return expectedPrefix;
@@ -449,7 +545,7 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       s = sanitizeOneLine(s);
       if (!s.startsWith(expectedPrefix)) {
         const body = s.replace(/^[\[\("]+/, "").trim();
-        s = `${expectedPrefix} ${body}`;
+        s = expectedPrefix + " " + body;
       }
       return s;
     }
@@ -458,6 +554,55 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       return body.length >= minChars;
     }
 
+    // fetch models helper (tries common paths)
+    async function fetchModelsList() {
+      const apiBase = apiBaseEl.value.trim();
+      const key = apiKeyEl.value.trim();
+      if (!apiBase) throw new Error("API base required");
+      const headers = { "Accept": "application/json" };
+      if (key) headers["Authorization"] = "Bearer " + key;
+
+      const baseRoot = apiBase.replace(/\/chat\/completions$/,'').replace(/\/+$/,'');
+      const candidates = [
+        baseRoot + "/models",
+        (baseRoot.endsWith("/v1") ? baseRoot : baseRoot + "/v1") + "/models"
+      ];
+
+      let data = null, lastErr = null;
+      for (const url of candidates) {
+        try {
+          const r = await fetch(url, { headers });
+          if (!r.ok) { lastErr = "HTTP " + r.status; continue; }
+          data = await r.json();
+          break;
+        } catch (e) { lastErr = e.message; }
+      }
+      if (!data) throw new Error(lastErr || "No models endpoint");
+      // handle shapes: {data:[{id:...}]} or {object:"list", data:[...]} or {models:[...]}
+      const arr = Array.isArray(data.data) ? data.data
+                : Array.isArray(data.models) ? data.models
+                : [];
+      const ids = arr.map(m => m.id || m.name).filter(Boolean);
+      return ids;
+    }
+
+    fetchModelsBtn.onclick = async () => {
+      modelsStatus.textContent = "Loading models...";
+      modelsList.innerHTML = "";
+      try {
+        const ids = await fetchModelsList();
+        ids.forEach(id => {
+          const opt = document.createElement("option");
+          opt.value = id;
+          modelsList.appendChild(opt);
+        });
+        modelsStatus.textContent = "Loaded " + ids.length;
+      } catch (e) {
+        modelsStatus.textContent = "Failed ... " + e.message;
+      }
+    };
+
+    // batch run
     let abort = false;
     startBtn.onclick = async () => {
       try {
@@ -513,15 +658,15 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           const text = String(it.scripture_text);
           const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, verse);
 
-          const expectedPrefix = `[${ref}]`;
+          const expectedPrefix = "[" + ref + "]";
           const userPrompt = makeUserPrompt(book, chapter, verse, text);
 
-          statusEl.textContent = `Processing ${i + 1} / ${total} ... ${ref}`;
-          let raw = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops });
+          statusEl.textContent = "Processing " + (i + 1) + " / " + total + " ... " + ref;
+          let raw = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
 
           let line = postprocessLine(raw, expectedPrefix);
           if (!bodyOk(line, expectedPrefix)) {
-            const raw2 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(0.9, temperature), stream: false, stops });
+            const raw2 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(0.9, temperature), stream: false, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
             const line2 = postprocessLine(raw2, expectedPrefix);
             if (bodyOk(line2, expectedPrefix)) line = line2;
           }
@@ -530,7 +675,7 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           const recentStarts = new Set(recentAssistant.map(ln => openingNgram((ln.split("]", 1)[1] || ""))));
           const thisStart = openingNgram((line.split("]", 1)[1] || ""));
           if (recentStarts.has(thisStart)) {
-            const raw3 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(1.0, temperature), stream: false, stops });
+            const raw3 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(1.0, temperature), stream: false, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
             const line3 = postprocessLine(raw3, expectedPrefix);
             if (bodyOk(line3, expectedPrefix)) line = line3;
           }
@@ -538,7 +683,7 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           outputLines.push(line);
           outEl.textContent += line + "\n";
 
-          history.push({ role: "user", content: `Reference: ${ref}\nText: "${normalizeAscii(text)}"` });
+          history.push({ role: "user", content: "Reference: " + ref + "\nText: \"" + normalizeAscii(text) + "\"" });
           history.push({ role: "assistant", content: line });
 
           await new Promise(r => setTimeout(r, 40));
@@ -557,14 +702,61 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           };
         }
       } catch (e) {
-        statusEl.textContent = `Error ... ${e.message}`;
+        statusEl.textContent = "Error ... " + e.message;
       } finally {
         startBtn.disabled = false;
         stopBtn.disabled = true;
       }
     };
-
     stopBtn.onclick = () => { abort = true; };
+
+    // single verse run
+    runSingleBtn.onclick = async () => {
+      try {
+        singleStatus.textContent = "Running...";
+        const apiBase = apiBaseEl.value.trim();
+        const apiKey = apiKeyEl.value.trim();
+        const model = modelEl.value.trim();
+        const temperature = parseFloat(temperatureEl.value || "0.9") || 0.9;
+        const stream = streamEl.value === "true";
+        const stops = stopsEl.value.split(",").map(s => s.trim()).filter(Boolean);
+        const systemPrompt = systemPromptEl.value;
+
+        if (!verses.length) throw new Error("Load JSON first");
+        if (!apiBase) throw new Error("API base required");
+        if (!model) throw new Error("Model required");
+
+        const book = bookSel.value;
+        const chapter = Number(chapterSel.value);
+        const verseNo = Number(verseSel.value);
+        const fallback = verses.find(v => v.book_title === book && Number(v.chapter_number) === chapter && Number(v.verse_number) === verseNo)?.scripture_text || "";
+        const srcText = singleTextEl.value.trim() || fallback;
+
+        const userPrompt = makeUserPrompt(book, chapter, verseNo, srcText);
+        const expectedPrefix = "[" + refString(book, chapter, verseNo) + "]";
+
+        const raw = await chatOnce({
+          apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value)
+        });
+
+        let line = postprocessLine(raw, expectedPrefix);
+        if (!bodyOk(line, expectedPrefix)) {
+          const raw2 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(0.9, temperature), stream: false, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
+          const line2 = postprocessLine(raw2, expectedPrefix);
+          if (bodyOk(line2, expectedPrefix)) line = line2;
+        }
+
+        outEl.textContent += line + "\n";
+        singleStatus.textContent = "Done.";
+      } catch (e) {
+        singleStatus.textContent = "Error ... " + e.message;
+      }
+    };
+
+    // init tabs state and selectors if JSON already loaded
+    (function initSelectorsAfterLoad() {
+      // no-op; populated after JSON fetch
+    })();
   </script>
 </body>
 </html>
