@@ -942,6 +942,8 @@
     runSingleBtn.addEventListener('pointerup', async () => {
       try {
         singleStatus.textContent = 'Running...';
+        // Clear output so single-verse result starts fresh
+        outEl.textContent = '';
         const apiBase = apiBaseEl.value.trim();
         const apiKey = apiKeyEl.value.trim();
         const model = getActiveModelId() || 'qwen3-4b-instruct-2507';
@@ -974,7 +976,8 @@
           if (bodyOk(line2, expectedPrefix)) line = line2;
         }
 
-        outEl.textContent += line + '\n';
+        // Replace output with just this single result
+        outEl.textContent = line + '\n';
         singleStatus.textContent = 'Done.';
       } catch (e) {
         singleStatus.textContent = `Error ... ${e.message}`;
