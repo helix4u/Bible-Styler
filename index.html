@@ -235,7 +235,7 @@
         </div>
         <div style="grid-column: span 4;">
           <label for="ctxPairs">Context pairs memory</label>
-          <input id="ctxPairs" type="number" min="0" value="10">
+          <input id="ctxPairs" type="number" min="0" value="3">
         </div>
       </div>
       <div class="muted">JSON must be an array with keys ... book_title, chapter_number, verse_number, scripture_text.</div>
@@ -466,7 +466,7 @@
           jsonUrlEl.value = s.jsonUrl || jsonUrlEl.value;
           volumesEl.value = s.volumes || 'Old Testament,New Testament';
           booksEl.value = s.books || '';
-          ctxPairsEl.value = s.ctxPairs || '10';
+          ctxPairsEl.value = s.ctxPairs || '3';
           extraHeadersEl.value = s.extraHeaders || '';
           // model mode
           const mode = s.modelMode || 'select';
@@ -493,7 +493,10 @@
     }
 
     // persist most fields
-    document.querySelectorAll('input,textarea,select').forEach(el => el.addEventListener('change', saveSettings, { passive: true }));
+    document.querySelectorAll('input,textarea,select').forEach(el => {
+      el.addEventListener('change', saveSettings, { passive: true });
+      el.addEventListener('input', saveSettings, { passive: true }); // save while typing to retain on refresh
+    });
     loadSettings();
 
     // ---------- persona slots
@@ -803,6 +806,9 @@
 
     fetchModelsBtn.addEventListener('pointerup', async () => {
       modelsStatus.textContent = 'Loading models...';
+      // Remember selections before refresh
+      const savedSelect = (() => { try { return (JSON.parse(localStorage.getItem(SETTINGS_KEY))||{}).modelSelect || ''; } catch { return ''; } })();
+      const prevSelect = modelSelectEl.value;
       modelSelectEl.innerHTML = '';
       try {
         const ids = await fetchModelsList();
@@ -813,9 +819,12 @@
           opt.textContent = id;
           modelSelectEl.appendChild(opt);
         });
-        // Keep previous selection if still present
-        const prev = modelSelectEl.value;
-        if (!prev && ids.length) modelSelectEl.value = ids[0];
+        // Keep saved or previous selection if still present, otherwise pick first
+        let chosen = '';
+        if (savedSelect && ids.includes(savedSelect)) chosen = savedSelect;
+        else if (prevSelect && ids.includes(prevSelect)) chosen = prevSelect;
+        else if (ids.length) chosen = ids[0];
+        if (chosen) modelSelectEl.value = chosen;
         modelsStatus.textContent = `Loaded ${ids.length}`;
         saveSettings();
       } catch (e) {
@@ -860,7 +869,7 @@
         const endIdxRaw = endIndexEl.value?.trim();
         const endIdx = endIdxRaw ? parseInt(endIdxRaw, 10) : filtered.length;
 
-        const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || '0', 3) || 0);
+        const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || '0', 10) || 0);
         const apiBase = apiBaseEl.value.trim();
         const apiKey = apiKeyEl.value.trim();
         const model = getActiveModelId() || 'qwen3-4b-instruct-2507';
@@ -1065,7 +1074,7 @@
     function initModelSelectUI() {
       if (!modelSelectEl.options.length) {
         // minimal starter list so selector is usable on first load, esp. mobile
-        ['qwen3-4b-instruct-2507','gpt-4o-mini','gpt-4o','llama-3.1-8b-instruct','mistral-small-latest']
+        ['gpt-4.1-mini','gpt-4.1-nano','qwen3-4b-instruct-2507','gpt-4o-mini','gpt-4o','llama-3.1-8b-instruct','mistral-small-latest']
           .forEach(id => {
             const opt = document.createElement('option');
             opt.value = id; opt.textContent = id;
