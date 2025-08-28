@@ -33,11 +33,17 @@
       -webkit-text-size-adjust: 100%;
       touch-action: manipulation;
     }
-    body { padding: 24px; }
-    h1 { margin: 0 0 12px 0; font-size: 20px; letter-spacing: 0.2px; }
+    body {
+      padding: 24px;
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+    h1 { margin: 0 0 12px 0; font-size: 20px; letter-spacing: 0.2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
     .row { grid-column: 1 / -1; }
     .card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; background: var(--bg-elev); box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 0 0 1px rgba(255,255,255,0.02); }
+    .grid > * { min-width: 0; }
     label { font-size: 12px; display: block; margin-bottom: 6px; color: var(--text-muted); }
     input, textarea, select, button { font: inherit; color: inherit; }
     input, textarea, select {
@@ -68,7 +74,7 @@
     .muted { color: var(--text-muted); font-size: 12px; }
     .out { white-space: pre-wrap; font-family: var(--font-mono); background: var(--term-bg); color: var(--term); padding: 14px; border-radius: 10px; min-height: 180px; border: 1px solid var(--border-strong); }
     .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #0b2a33; color: #7dd3fc; border: 1px solid #0a3b48; font-size: 11px; font-weight: 600; }
-    .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
     .tab { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none; background: #0b1220; min-height: 40px; display: inline-flex; align-items: center; }
     .tab.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35); }
     @media (max-width: 920px) {
@@ -77,6 +83,11 @@
     }
     @media (max-width: 640px) {
       .grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      /* Force grid items to stack to avoid overlaps from inline grid-column spans */
+      .grid > * { grid-column: 1 / -1 !important; }
+      .inline { gap: 6px; }
+      label { margin-bottom: 4px; }
+      input, textarea, select { font-size: 16px; }
       .btn { width: 100%; justify-content: center; }
     }
   </style>
