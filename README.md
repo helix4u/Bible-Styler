@@ -56,6 +56,7 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
   - Single verse: Pick Book/Chapter/Verse (or type a custom line) and click “Run single verse”
   - Chapter: Select the Book/Chapter and click “Run chapter”
   - The original verse text shows as the textarea placeholder (not truncated)
+ - Output controls: Use “Copy output” to copy all text, or “Share” to open the native share sheet (text‑only on mobile)
 
 ## Data Format (Scripture JSON)
 
@@ -105,6 +106,8 @@ Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/t
 - Each line starts with `[Book Chapter:Verse]` (e.g., `[Genesis 1:1] …`)
 - The app normalizes punctuation, removes noisy markers (e.g., `Reference:`), and ensures a minimum body length
 - “Download .txt” saves all batch results locally
+- “Copy output” copies the current Output pane
+- “Share” uses the Web Share API (text‑only) when available; otherwise falls back to copying
 
 ## Options Explained
 
@@ -127,6 +130,12 @@ Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/t
 - CORS: Your API and JSON host must allow cross‑origin requests from where you serve/open the page
 - If model fetching fails due to CORS or auth, you can still type a model ID manually
 
+## Mobile & Sharing
+
+- Share button uses text‑only Web Share API on supported browsers (e.g., Chrome on Android)
+- If sharing isn’t supported, the app falls back to copying the output to clipboard
+- Very large outputs are trimmed to a safe length when sharing as text; for full content, use “Download .txt” or copy
+
 ## Troubleshooting
 
 - “Failed …” when fetching models: Enter the model ID manually; confirm API base and key; check provider docs and CORS
@@ -139,5 +148,6 @@ Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/t
 - Minimal seeded models are provided on first load to make the selector usable even before fetching (top: `gpt-4.1-mini`, then `gpt-4.1-nano`)
 - The default Scripture URL may include multiple volumes; use the filters to narrow scope
 - Mobile: UI is responsive; tabs are keyboard‑accessible (Enter/Space)
+ - Output panel includes Copy and Share for quick mobile workflows
 
 Enjoy! If this helps you, consider supporting: https://ko-fi.com/gille
