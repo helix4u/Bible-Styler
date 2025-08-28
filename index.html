@@ -611,10 +611,25 @@
     function populateVerses() {
       const b = bookSel.value;
       const c = Number(chapterSel.value);
-      const vs = verses.filter(v => v.book_title === b && Number(v.chapter_number) === c).map(v => Number(v.verse_number)).sort((a,b)=>a-b);
+      const vs = verses
+        .filter(v => v.book_title === b && Number(v.chapter_number) === c)
+        .map(v => Number(v.verse_number))
+        .sort((a,b)=>a-b);
+      const prev = Number(verseSel.value);
       verseSel.innerHTML = vs.map(v => `<option value="${v}">${v}</option>`).join('');
-      if (vs.length) verseSel.value = vs[0];
-      const txt = verses.find(v => v.book_title === b && Number(v.chapter_number) === c && Number(v.verse_number) === Number(verseSel.value))?.scripture_text || '';
+      if (vs.includes(prev)) {
+        verseSel.value = String(prev);
+      } else if (vs.length) {
+        verseSel.value = String(vs[0]);
+      }
+      updateSinglePlaceholder();
+    }
+
+    function updateSinglePlaceholder() {
+      const b = bookSel.value;
+      const c = Number(chapterSel.value);
+      const vno = Number(verseSel.value);
+      const txt = verses.find(v => v.book_title === b && Number(v.chapter_number) === c && Number(v.verse_number) === vno)?.scripture_text || '';
       singleTextEl.placeholder = txt ? `JSON text: ${txt.slice(0,120)}${txt.length>120?'...':''}` : 'No JSON text found';
     }
 
@@ -652,7 +667,7 @@
 
     bindMobileSelect(bookSel, populateChapters);
     bindMobileSelect(chapterSel, populateVerses);
-    bindMobileSelect(verseSel, populateVerses);
+    bindMobileSelect(verseSel, updateSinglePlaceholder);
 
     // ---------- chat call (SSE or JSON)
     async function chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders }) {
