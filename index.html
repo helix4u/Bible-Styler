@@ -199,9 +199,6 @@
           <label for="stops">Stops ... comma separated</label>
           <input id="stops" value="Reference:,AI:,---">
         </div>
-		<div class="row card" id="httpsWarn" style="display:none;">
-		Heads up ... this page is HTTPS. Calls to http://localhost are often blocked by browsers. Prefer an HTTPS API endpoint or test the page locally over http.
-		</div>
       </div>
       <div class="muted">Do not commit keys. This page saves to localStorage on this device only.</div>
     </div>
@@ -291,6 +288,10 @@
     <div class="row card">
       <label>Output</label>
       <div id="out" class="out"></div>
+    </div>
+
+    <div class="row card" id="httpsWarn" style="display:none;">
+      Heads up ... this page is HTTPS. Calls to http://localhost are often blocked by browsers. Prefer an HTTPS API endpoint or test the page locally over http.
     </div>
   </div>
 
@@ -406,14 +407,26 @@
     const httpsWarn = document.getElementById('httpsWarn');
     if (location.protocol === 'https:') httpsWarn.style.display = 'block';
 
+    // helper: set and persist active panel (batchPanel | singlePanel)
+    function setActivePanel(panel) {
+      const list = Array.from(tabs);
+      list.forEach(x => x.classList.remove('active'));
+      const tab = list.find(x => x.dataset.panel === panel) || list[0];
+      if (tab) tab.classList.add('active');
+      batchPanel.style.display = panel === 'batchPanel' ? 'block' : 'none';
+      singlePanel.style.display = panel === 'singlePanel' ? 'block' : 'none';
+      try {
+        const prev = (() => { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'); } catch { return {}; } })();
+        prev.activePanel = panel;
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(prev));
+      } catch {}
+    }
+
     // tabs toggle...use pointerup for better mobile behavior
     tabs.forEach(t => {
       const handler = () => {
-        tabs.forEach(x => x.classList.remove('active'));
-        t.classList.add('active');
         const panel = t.dataset.panel;
-        batchPanel.style.display = panel === 'batchPanel' ? 'block' : 'none';
-        singlePanel.style.display = panel === 'singlePanel' ? 'block' : 'none';
+        setActivePanel(panel);
       };
       ['pointerup','click','keyup'].forEach(ev => t.addEventListener(ev, (e) => {
         if (ev === 'keyup' && e.key !== 'Enter' && e.key !== ' ') return;
@@ -445,7 +458,9 @@
         volumes: volumesEl.value,
         books: booksEl.value,
         ctxPairs: ctxPairsEl.value,
-        extraHeaders: extraHeadersEl.value
+        extraHeaders: extraHeadersEl.value,
+        // persist current panel selection as part of settings
+        activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'batchPanel'
       };
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(obj));
     }
@@ -473,6 +488,8 @@
           modelTextEl.value = s.modelText || '';
           modelSelectEl.value = s.modelSelect || '';
           updateModelInputsVisibility();
+          // restore last active panel (batch vs single)
+          setActivePanel(s.activePanel || 'batchPanel');
         } else {
           systemPromptEl.value = PRESET_TEXTS.stoner; // first load default
         }
