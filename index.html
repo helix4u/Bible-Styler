@@ -245,7 +245,7 @@
     <div class="row card">
       <div class="tabs">
         <div class="tab active" data-panel="batchPanel" tabindex="0">Batch mode</div>
-        <div class="tab" data-panel="singlePanel" tabindex="0">Single verse</div>
+        <div class="tab" data-panel="singlePanel" tabindex="0">Single verse/chapter</div>
       </div>
 
       <div id="batchPanel">
@@ -278,6 +278,7 @@
         </div>
         <div class="inline" style="margin-bottom: 8px;">
           <button id="runSingle" class="btn ok">Run single verse</button>
+          <button id="runChapter" class="btn">Run chapter</button>
         </div>
         <div id="singleStatus" class="muted" aria-live="polite"></div>
       </div>
@@ -400,6 +401,7 @@
     const verseSel = document.getElementById('verseSel');
     const singleTextEl = document.getElementById('singleText');
     const runSingleBtn = document.getElementById('runSingle');
+    const runChapterBtn = document.getElementById('runChapter');
     const singleStatus = document.getElementById('singleStatus');
 
     const httpsWarn = document.getElementById('httpsWarn');
@@ -641,7 +643,8 @@
       const c = Number(chapterSel.value);
       const vno = Number(verseSel.value);
       const txt = verses.find(v => v.book_title === b && Number(v.chapter_number) === c && Number(v.verse_number) === vno)?.scripture_text || '';
-      singleTextEl.placeholder = txt ? `JSON text: ${txt.slice(0,120)}${txt.length>120?'...':''}` : 'No JSON text found';
+      // Show full original scripture text for mobile usability; do not truncate
+      singleTextEl.placeholder = txt ? `JSON text: ${txt}` : 'No JSON text found';
     }
 
     function bindMobileSelect(sel, handler) {
@@ -857,7 +860,7 @@
         const endIdxRaw = endIndexEl.value?.trim();
         const endIdx = endIdxRaw ? parseInt(endIdxRaw, 10) : filtered.length;
 
-        const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || '0', 10) || 0);
+        const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || '0', 3) || 0);
         const apiBase = apiBaseEl.value.trim();
         const apiKey = apiKeyEl.value.trim();
         const model = getActiveModelId() || 'qwen3-4b-instruct-2507';
@@ -978,6 +981,80 @@
 
         // Replace output with just this single result
         outEl.textContent = line + '\n';
+        singleStatus.textContent = 'Done.';
+      } catch (e) {
+        singleStatus.textContent = `Error ... ${e.message}`;
+      }
+    });
+
+    // ---------- single chapter run
+    runChapterBtn.addEventListener('pointerup', async () => {
+      try {
+        singleStatus.textContent = 'Running chapter...';
+        outEl.textContent = '';
+
+        const apiBase = apiBaseEl.value.trim();
+        const apiKey = apiKeyEl.value.trim();
+        const model = getActiveModelId() || 'qwen3-4b-instruct-2507';
+        const temperature = parseFloat(temperatureEl.value || '0.9') || 0.9;
+        const stream = streamEl.value === 'true';
+        const stops = stopsEl.value.split(',').map(s => s.trim()).filter(Boolean);
+        const systemPrompt = systemPromptEl.value;
+
+        if (!verses.length) throw new Error('Load JSON first');
+        if (!apiBase) throw new Error('API base required');
+        if (!model) throw new Error('Model required');
+
+        const book = bookSel.value;
+        const chapter = Number(chapterSel.value);
+
+        const rows = verses
+          .filter(v => v.book_title === book && Number(v.chapter_number) === chapter)
+          .sort((a,b) => Number(a.verse_number) - Number(b.verse_number));
+        if (!rows.length) throw new Error('No verses for this chapter');
+
+        const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || '0', 10) || 0);
+        let history = [];
+
+        for (let i = 0; i < rows.length; i++) {
+          const it = rows[i];
+          const verseNo = Number(it.verse_number);
+          const text = String(it.scripture_text || '');
+          const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, verseNo);
+
+          singleStatus.textContent = `Processing ${i + 1} / ${rows.length} ... ${ref}`;
+
+          const userPrompt = makeUserPrompt(book, chapter, verseNo, text);
+          const expectedPrefix = `[${ref}]`;
+
+          let raw = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
+          let line = postprocessLine(raw, expectedPrefix);
+
+          if (!bodyOk(line, expectedPrefix)) {
+            const raw2 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(0.9, temperature), stream: false, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
+            const line2 = postprocessLine(raw2, expectedPrefix);
+            if (bodyOk(line2, expectedPrefix)) line = line2;
+          }
+
+          // repetition guard using recent assistant n-grams
+          const recentAssistant = history.filter(m => m.role === 'assistant').map(m => m.content);
+          const recentStarts = new Set(recentAssistant.map(ln => openingNgram((ln.split(']', 1)[1] || ''))));
+          const thisStart = openingNgram((line.split(']', 1)[1] || ''));
+          if (ctxPairs > 0 && recentStarts.has(thisStart)) {
+            const raw3 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(1.0, temperature), stream: false, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
+            const line3 = postprocessLine(raw3, expectedPrefix);
+            if (bodyOk(line3, expectedPrefix)) line = line3;
+          }
+
+          outEl.textContent += line + '\n';
+
+          history.push({ role: 'user', content: `Reference: ${ref}\nText: "${normalizeAscii(text)}"` });
+          history.push({ role: 'assistant', content: line });
+          if (history.length > ctxPairs * 2) history.splice(0, history.length - ctxPairs * 2);
+
+          await new Promise(r => setTimeout(r, 40));
+        }
+
         singleStatus.textContent = 'Done.';
       } catch (e) {
         singleStatus.textContent = `Error ... ${e.message}`;
