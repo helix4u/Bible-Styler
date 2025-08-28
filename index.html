@@ -305,6 +305,11 @@
     <!-- output -->
     <div class="row card">
       <label>Output</label>
+      <div class="inline" style="margin: 8px 0;">
+        <button id="copyOut" class="btn secondary">Copy output</button>
+        <button id="shareOut" class="btn">Share</button>
+        <span id="outStatus" class="muted" aria-live="polite"></span>
+      </div>
       <div id="out" class="out"></div>
     </div>
   </div>
@@ -434,6 +439,9 @@
     const ctxPairsEl = document.getElementById('ctxPairs');
 
     const outEl = document.getElementById('out');
+    const copyOutBtn = document.getElementById('copyOut');
+    const shareOutBtn = document.getElementById('shareOut');
+    const outStatus = document.getElementById('outStatus');
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -452,6 +460,52 @@
 
     const httpsWarn = document.getElementById('httpsWarn');
     if (location.protocol === 'https:') httpsWarn.style.display = 'block';
+
+    // clipboard + share helpers
+    async function copyToClipboard(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text; ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed'; ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        return true;
+      } catch { return false; }
+    }
+    function setOutStatus(msg) {
+      outStatus.textContent = msg;
+      if (!msg) return;
+      setTimeout(() => { if (outStatus.textContent === msg) outStatus.textContent = ''; }, 2000);
+    }
+    async function shareOutput() {
+      try {
+        const txt = (outEl.textContent || '').trim();
+        if (!txt) { setOutStatus('Nothing to share'); return; }
+        const file = new File([txt + '\n'], 'styled_bible.txt', { type: 'text/plain' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'Styled Bible' });
+          setOutStatus('Shared');
+          return;
+        }
+        if (navigator.share) {
+          const snippet = txt.length > 100000 ? txt.slice(0, 100000) : txt;
+          await navigator.share({ title: 'Styled Bible', text: snippet });
+          setOutStatus('Shared');
+          return;
+        }
+        // fallback: copy to clipboard
+        const ok = await copyToClipboard(txt);
+        setOutStatus(ok ? 'Copied (share unavailable)' : 'Share/copy failed');
+      } catch (e) {
+        setOutStatus('Share failed');
+      }
+    }
 
     // helper: set and persist active panel (batchPanel | singlePanel)
     function setActivePanel(panel) {
@@ -1011,6 +1065,24 @@
     });
 
     stopBtn.addEventListener('pointerup', () => { abort = true; });
+
+    // ---------- output copy/share actions
+    if (copyOutBtn) {
+      copyOutBtn.addEventListener('pointerup', async () => {
+        const txt = (outEl.textContent || '').trim();
+        if (!txt) { setOutStatus('Nothing to copy'); return; }
+        const ok = await copyToClipboard(txt);
+        setOutStatus(ok ? 'Copied to clipboard' : 'Copy failed');
+      });
+    }
+    if (shareOutBtn) {
+      // disable if share is clearly unsupported
+      if (!('share' in navigator) && !('canShare' in navigator)) {
+        shareOutBtn.disabled = true;
+        shareOutBtn.title = 'Web Share API not supported';
+      }
+      shareOutBtn.addEventListener('pointerup', shareOutput);
+    }
 
     // ---------- single verse run
     runSingleBtn.addEventListener('pointerup', async () => {
