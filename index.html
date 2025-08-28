@@ -225,6 +225,10 @@
     <div class="row card">
       <div class="grid">
         <div style="grid-column: span 8;">
+          <label for="jsonPreset">Default sources</label>
+          <select id="jsonPreset"></select>
+        </div>
+        <div style="grid-column: span 8;">
           <label for="jsonUrl">Scripture JSON URL</label>
           <input id="jsonUrl" class="mono" value="https://raw.githubusercontent.com/johngthecreator/Book_of_Mormon_Scriptures/main/standard-works.json" spellcheck="false">
         </div>
@@ -430,6 +434,7 @@
     const clearSlotBtn = document.getElementById('clearSlot');
 
     const jsonUrlEl = document.getElementById('jsonUrl');
+    const jsonPresetEl = document.getElementById('jsonPreset');
     const loadJsonBtn = document.getElementById('loadJson');
     const jsonFileEl = document.getElementById('jsonFile');
     const volumesEl = document.getElementById('volumes');
@@ -728,6 +733,52 @@
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       return await r.json();
     }
+    function updateVolumeBookFields(rows) {
+      try {
+        const vols = Array.from(new Set(rows.map(r => String(r.volume_title || '').trim()).filter(Boolean)));
+        const books = Array.from(new Set(rows.map(r => String(r.book_title || '').trim()).filter(Boolean)));
+        if (vols.length) volumesEl.value = vols.join(',');
+        // Do not force all books (can be long). Leave empty but hint via placeholder.
+        booksEl.value = '';
+        if (books.length) {
+          const hint = books.slice(0, 8).join(',') + (books.length > 8 ? ' ...' : '');
+          booksEl.placeholder = hint || 'Genesis,Exodus';
+        }
+      } catch {}
+    }
+    // Default JSON sources list
+    const DEFAULT_JSON_SOURCES = [
+      {
+        label: 'Standard Works (Book_of_Mormon_Scriptures)',
+        url: 'https://raw.githubusercontent.com/johngthecreator/Book_of_Mormon_Scriptures/main/standard-works.json'
+      },
+      {
+        label: 'Bhagavad Gita (helix4u/Bible-Styler)',
+        url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/refs/heads/main/gita_standard_works.json'
+      },
+      { label: 'Custom URL...', url: '' }
+    ];
+    function initJsonPresetUI() {
+      // populate options
+      jsonPresetEl.innerHTML = '';
+      DEFAULT_JSON_SOURCES.forEach((src, i) => {
+        const opt = document.createElement('option');
+        opt.value = src.url;
+        opt.textContent = src.label;
+        jsonPresetEl.appendChild(opt);
+      });
+      // select matching preset if any
+      const current = (jsonUrlEl.value || '').trim();
+      const match = DEFAULT_JSON_SOURCES.find(s => s.url && s.url === current);
+      jsonPresetEl.value = match ? match.url : '';
+      // on change, apply into the URL field
+      jsonPresetEl.addEventListener('change', () => {
+        const url = jsonPresetEl.value || '';
+        if (url) jsonUrlEl.value = url;
+        saveSettings();
+      }, { passive: true });
+    }
+    initJsonPresetUI();
     function populateSelectorsFromData(rows) {
       const books = Array.from(new Set(rows.map(r => r.book_title)));
       bookSel.innerHTML = books.map(b => `<option value="${b}">${b}</option>`).join('');
@@ -777,6 +828,8 @@
         verses = data;
         statusEl.textContent = `Loaded ${data.length} rows`;
         populateSelectorsFromData(verses);
+        updateVolumeBookFields(verses);
+        saveSettings();
       } catch (e) {
         statusEl.textContent = `Failed to load JSON ... ${e.message}`;
       }
@@ -792,6 +845,8 @@
         verses = data;
         statusEl.textContent = `Loaded ${data.length} rows from file`;
         populateSelectorsFromData(verses);
+        updateVolumeBookFields(verses);
+        saveSettings();
       } catch (e) {
         statusEl.textContent = `Bad JSON file ... ${e.message}`;
       }
