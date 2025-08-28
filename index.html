@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Bible Styler ... Cartmanish Builder</title>
+  <title>Bible Styler ... browser edition</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root {
@@ -179,7 +179,7 @@
           <label>Style system prompt</label>
           <textarea id="systemPrompt" class="mono">You are rewriting each Bible verse in a sharp, irreverent, Trump-Campaign-like Cartman narrator voice. Keep all proper nouns unchanged. One output line per verse ... format must be:
 [Book Chapter:Verse] rewritten line
-No extra commentary. No "Reference:" echoes. Avoid repeating openings. Keep info density similar to the source. Do not add or remove facts. No emojis. No slurs. Make every line unique. No Repetition.</textarea>
+No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes. Avoid repeating openings. Keep info density similar to the source. Do not add or remove facts. No emojis. No slurs. Make every line unique. No Repetition. Do not narrate what you are doing. Just do it.</textarea>
         </div>
         <div style="grid-column: span 12;">
           <label>Stops ... comma separated</label>
@@ -551,7 +551,7 @@ No extra commentary. No "Reference:" echoes. Avoid repeating openings. Keep info
             const blob = new Blob([outputLines.join("\n") + "\n"], { type: "text/plain;charset=utf-8" });
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
-            a.download = "cartman_bible.txt";
+            a.download = "styled_bible.txt";
             a.click();
             URL.revokeObjectURL(a.href);
           };
