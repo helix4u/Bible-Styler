@@ -24,24 +24,13 @@
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
       --font-sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
-
     html, body { background: var(--bg); color: var(--text); margin: 0; padding: 0; font-family: var(--font-sans); }
     body { padding: 24px; }
     h1 { margin: 0 0 12px 0; font-size: 20px; letter-spacing: 0.2px; }
-
     .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
     .row { grid-column: 1 / -1; }
-
-    .card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-      background: var(--bg-elev);
-      box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 0 0 1px rgba(255,255,255,0.02);
-    }
-
+    .card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; background: var(--bg-elev); box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 0 0 1px rgba(255,255,255,0.02); }
     label { font-size: 12px; display: block; margin-bottom: 6px; color: var(--text-muted); }
-
     input, textarea, select, button { font: inherit; color: inherit; }
     input, textarea, select {
       width: 100%; box-sizing: border-box; padding: 10px 12px;
@@ -52,7 +41,6 @@
     input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: var(--focus); }
     textarea { min-height: 120px; resize: vertical; }
     .mono { font-family: var(--font-mono); }
-
     .btn {
       padding: 10px 14px; border: 1px solid var(--accent-2); border-radius: 10px;
       background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
@@ -64,7 +52,6 @@
     .btn.danger { border-color: var(--danger); background: linear-gradient(180deg, #fb7185 0%, var(--danger) 100%); color: #1b0310; }
     .btn.ok { border-color: var(--ok); background: linear-gradient(180deg, #6ee7b7 0%, var(--ok) 100%); color: #032018; }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
-
     .inline { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .muted { color: var(--text-muted); font-size: 12px; }
     .out { white-space: pre-wrap; font-family: var(--font-mono); background: var(--term-bg); color: var(--term); padding: 14px; border-radius: 10px; min-height: 180px; border: 1px solid var(--border-strong); }
@@ -72,7 +59,6 @@
     .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
     .tab { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none; background: #0b1220; }
     .tab.active { border-color: var(--accent); box-shadow: var(--focus); }
-
     @media (max-width: 880px) { body { padding: 16px; } }
   </style>
 </head>
@@ -138,10 +124,36 @@
 
         <div style="grid-column: span 12;">
           <label>Style system prompt</label>
-          <textarea id="systemPrompt" class="mono">You are rewriting each Bible verse in a sharp, irreverent, Trump-Campaign-like Cartman narrator voice. Keep all proper nouns unchanged. One output line per verse ... format must be:
-[Book Chapter:Verse] rewritten line
-No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes. Avoid repeating openings. Keep info density similar to the source. Do not add or remove facts. No emojis. No slurs. Make every line unique. No Repetition. Do not narrate what you are doing. Just do it.</textarea>
+          <textarea id="systemPrompt" class="mono"></textarea>
         </div>
+
+        <!-- personas: presets + save slots -->
+        <div style="grid-column: span 12;">
+          <div class="grid">
+            <div style="grid-column: span 6;">
+              <label>Built-in presets</label>
+              <div class="inline">
+                <select id="presetSelect">
+                  <option value="stoner">Stoner (default)</option>
+                  <option value="zoomer">Zoomer</option>
+                  <option value="houseish">Cynical TV Doctor (House-ish)</option>
+                </select>
+                <button id="applyPreset" class="btn secondary">Apply preset</button>
+              </div>
+            </div>
+            <div style="grid-column: span 6;">
+              <label>Saved persona slots (local to this browser)</label>
+              <div class="inline">
+                <select id="slotSelect"></select>
+                <button id="saveSlot" class="btn">Save to slot</button>
+                <button id="loadSlot" class="btn secondary">Load slot</button>
+                <button id="renameSlot" class="btn secondary">Rename</button>
+                <button id="clearSlot" class="btn danger">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div style="grid-column: span 12;">
           <label>Stops ... comma separated</label>
           <input id="stops" value="Reference:,AI:,---">
@@ -164,7 +176,6 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
             <input id="jsonFile" type="file" accept=".json">
           </div>
         </div>
-
         <div style="grid-column: span 6;">
           <label>Include volumes ... e.g. Old Testament,New Testament</label>
           <input id="volumes" value="Old Testament,New Testament">
@@ -173,7 +184,6 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           <label>Limit to books ... optional ... e.g. Genesis,Exodus</label>
           <input id="books" placeholder="Genesis,Exodus">
         </div>
-
         <div style="grid-column: span 4;">
           <label>Start index ... 0 based</label>
           <input id="startIndex" type="number" min="0" value="0">
@@ -197,7 +207,6 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
         <div class="tab" data-panel="singlePanel">Single verse</div>
       </div>
 
-      <!-- batch panel -->
       <div id="batchPanel">
         <div class="inline" style="margin-bottom: 8px;">
           <button id="startBtn" class="btn">Start</button>
@@ -207,7 +216,6 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
         <div id="status" class="muted" style="margin-top:8px;"></div>
       </div>
 
-      <!-- single verse panel -->
       <div id="singlePanel" style="display:none;">
         <div class="grid" style="margin-bottom: 8px;">
           <div style="grid-column: span 4;">
@@ -246,12 +254,12 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
   </div>
 
   <script>
-    // ascii normalize and cleanup
+    // ---------- helpers
     function normalizeAscii(s) {
       return String(s)
-        .replace(/[\u2018\u2019]/g, "'")
-        .replace(/[\u201C\u201D]/g, '"')
-        .replace(/[\u2013\u2014]/g, "...")
+        .replace(/\u2018|\u2019/g, "'")
+        .replace(/\u201C|\u201D/g, '"')
+        .replace(/\u2013|\u2014/g, "...")
         .replace(/\u00A0/g, " ");
     }
     function sanitizeOneLine(s) {
@@ -264,18 +272,34 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       s = Array.from(s).filter(ch => ch.codePointAt(0) < 0x2500).join("");
       return s.trim();
     }
-    function refString(book, chapter, verse) { return book + " " + chapter + ":" + verse; }
-    function openingNgram(s, n=4) {
+    function refString(book, chapter, verse) { return `${book} ${chapter}:${verse}`; }
+    function openingNgram(s, n = 4) {
       const toks = s.trim().split(/\s+/).filter(Boolean);
       return toks.slice(0, n).join(" ").toLowerCase();
     }
     function parseJSONOrEmpty(str) {
-      const t = String(str || "").trim();
+      const t = String(str || '').trim();
       if (!t) return {};
       try { return JSON.parse(t); } catch { return {}; }
     }
 
-    // vendor presets
+    // ---------- persona presets
+    const PRESET_TEXTS = {
+      stoner:
+`You are rewriting each Bible verse in a stoner voice. Keep all proper nouns unchanged. One output line per verse ... format must be:
+[Book Chapter:Verse] rewritten line
+No repeating the Book Chapter:Verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Do not narrate what you are doing. Just do it.. and do it with exaggerated tone.`,
+      zoomer:
+`You are rewriting each Bible verse in a zoomer voice. Keep all proper nouns unchanged. One output line per verse ... format must be:
+[Book Chapter:Verse] rewritten line
+No repeating the Book Chapter:Verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Use tight, internet-native phrasing with occasional slang and lowercasing where natural, but keep names correctly cased. No emojis. No slurs.`,
+      houseish:
+`You are rewriting each Bible verse in the voice of a cynical, brilliant diagnostician from a medical drama. Dry, acerbic, brutally honest, skeptical of neat moral explanations, but precise. Keep all proper nouns unchanged. One output line per verse ... format must be:
+[Book Chapter:Verse] rewritten line
+No repeating the Book Chapter:Verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Inject cutting diagnostic metaphors and bleak wit, but stay faithful to facts. No emojis. No slurs.`
+    };
+
+    // ---------- vendor presets
     const vendorPresets = {
       "Custom": {},
       "LM Studio ... local": { apiBase: "http://127.0.0.1:1234/v1/chat/completions" },
@@ -292,59 +316,70 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       "Cerebras": { apiBase: "https://api.cerebras.ai/v1/chat/completions" }
     };
 
-    // ui refs
-    const vendorEl = document.getElementById("vendor");
-    const apiBaseEl = document.getElementById("apiBase");
-    const apiKeyEl = document.getElementById("apiKey");
-    const modelEl = document.getElementById("model");
-    const modelsList = document.getElementById("modelsList");
-    const fetchModelsBtn = document.getElementById("fetchModels");
-    const modelsStatus = document.getElementById("modelsStatus");
+    // ---------- UI refs
+    const vendorEl = document.getElementById('vendor');
+    const apiBaseEl = document.getElementById('apiBase');
+    const apiKeyEl = document.getElementById('apiKey');
+    const modelEl = document.getElementById('model');
+    const modelsList = document.getElementById('modelsList');
+    const fetchModelsBtn = document.getElementById('fetchModels');
+    const modelsStatus = document.getElementById('modelsStatus');
 
-    const temperatureEl = document.getElementById("temperature");
-    const streamEl = document.getElementById("stream");
-    const systemPromptEl = document.getElementById("systemPrompt");
-    const stopsEl = document.getElementById("stops");
-    const extraHeadersEl = document.getElementById("extraHeaders");
+    const temperatureEl = document.getElementById('temperature');
+    const streamEl = document.getElementById('stream');
+    const systemPromptEl = document.getElementById('systemPrompt');
+    const stopsEl = document.getElementById('stops');
+    const extraHeadersEl = document.getElementById('extraHeaders');
 
-    const jsonUrlEl = document.getElementById("jsonUrl");
-    const loadJsonBtn = document.getElementById("loadJson");
-    const jsonFileEl = document.getElementById("jsonFile");
-    const volumesEl = document.getElementById("volumes");
-    const booksEl = document.getElementById("books");
-    const startIndexEl = document.getElementById("startIndex");
-    const endIndexEl = document.getElementById("endIndex");
-    const ctxPairsEl = document.getElementById("ctxPairs");
+    const presetSelect = document.getElementById('presetSelect');
+    const applyPresetBtn = document.getElementById('applyPreset');
+    const slotSelect = document.getElementById('slotSelect');
+    const saveSlotBtn = document.getElementById('saveSlot');
+    const loadSlotBtn = document.getElementById('loadSlot');
+    const renameSlotBtn = document.getElementById('renameSlot');
+    const clearSlotBtn = document.getElementById('clearSlot');
 
-    const outEl = document.getElementById("out");
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const downloadBtn = document.getElementById("downloadBtn");
-    const statusEl = document.getElementById("status");
+    const jsonUrlEl = document.getElementById('jsonUrl');
+    const loadJsonBtn = document.getElementById('loadJson');
+    const jsonFileEl = document.getElementById('jsonFile');
+    const volumesEl = document.getElementById('volumes');
+    const booksEl = document.getElementById('books');
+    const startIndexEl = document.getElementById('startIndex');
+    const endIndexEl = document.getElementById('endIndex');
+    const ctxPairsEl = document.getElementById('ctxPairs');
 
-    const tabs = document.querySelectorAll(".tab");
-    const batchPanel = document.getElementById("batchPanel");
-    const singlePanel = document.getElementById("singlePanel");
-    const bookSel = document.getElementById("bookSel");
-    const chapterSel = document.getElementById("chapterSel");
-    const verseSel = document.getElementById("verseSel");
-    const singleTextEl = document.getElementById("singleText");
-    const runSingleBtn = document.getElementById("runSingle");
-    const singleStatus = document.getElementById("singleStatus");
+    const outEl = document.getElementById('out');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const statusEl = document.getElementById('status');
 
-    const httpsWarn = document.getElementById("httpsWarn");
-    if (location.protocol === "https:") httpsWarn.style.display = "block";
+    const tabs = document.querySelectorAll('.tab');
+    const batchPanel = document.getElementById('batchPanel');
+    const singlePanel = document.getElementById('singlePanel');
+    const bookSel = document.getElementById('bookSel');
+    const chapterSel = document.getElementById('chapterSel');
+    const verseSel = document.getElementById('verseSel');
+    const singleTextEl = document.getElementById('singleText');
+    const runSingleBtn = document.getElementById('runSingle');
+    const singleStatus = document.getElementById('singleStatus');
 
+    const httpsWarn = document.getElementById('httpsWarn');
+    if (location.protocol === 'https:') httpsWarn.style.display = 'block';
+
+    // tabs toggle
     tabs.forEach(t => t.onclick = () => {
-      tabs.forEach(x => x.classList.remove("active"));
-      t.classList.add("active");
+      tabs.forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
       const panel = t.dataset.panel;
-      batchPanel.style.display = panel === "batchPanel" ? "block" : "none";
-      singlePanel.style.display = panel === "singlePanel" ? "block" : "none";
+      batchPanel.style.display = panel === 'batchPanel' ? 'block' : 'none';
+      singlePanel.style.display = panel === 'singlePanel' ? 'block' : 'none';
     });
 
-    // persistence (keep your original key so you do not lose settings)
-    const LS_KEY = "bibleStylerSettings";
+    // ---------- persistence
+    const SETTINGS_KEY = 'bibleStylerSettings';
+    const SLOTS_KEY = 'personaSlots.v1'; // 5 slots
+
     function saveSettings() {
       const obj = {
         vendor: vendorEl.value,
@@ -361,45 +396,130 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
         ctxPairs: ctxPairsEl.value,
         extraHeaders: extraHeadersEl.value
       };
-      localStorage.setItem(LS_KEY, JSON.stringify(obj));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(obj));
     }
+
     function loadSettings() {
       try {
-        const raw = localStorage.getItem(LS_KEY);
-        if (!raw) return;
-        const s = JSON.parse(raw);
-        vendorEl.value = s.vendor || "Custom";
-        apiBaseEl.value = s.apiBase || "";
-        apiKeyEl.value = s.apiKey || "";
-        modelEl.value = s.model || "qwen3-4b-instruct-2507";
-        temperatureEl.value = s.temperature || "0.9";
-        streamEl.value = s.stream || "true";
-        systemPromptEl.value = s.systemPrompt || systemPromptEl.value;
-        stopsEl.value = s.stops || "Reference:,AI:,---";
-        jsonUrlEl.value = s.jsonUrl || jsonUrlEl.value;
-        volumesEl.value = s.volumes || "Old Testament,New Testament";
-        booksEl.value = s.books || "";
-        ctxPairsEl.value = s.ctxPairs || "10";
-        extraHeadersEl.value = s.extraHeaders || "";
-      } catch {}
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        if (raw) {
+          const s = JSON.parse(raw);
+          vendorEl.value = s.vendor || 'Custom';
+          apiBaseEl.value = s.apiBase || '';
+          apiKeyEl.value = s.apiKey || '';
+          modelEl.value = s.model || 'qwen3-4b-instruct-2507';
+          temperatureEl.value = s.temperature || '0.9';
+          streamEl.value = s.stream || 'true';
+          systemPromptEl.value = s.systemPrompt || PRESET_TEXTS.stoner; // default
+          stopsEl.value = s.stops || 'Reference:,AI:,---';
+          jsonUrlEl.value = s.jsonUrl || jsonUrlEl.value;
+          volumesEl.value = s.volumes || 'Old Testament,New Testament';
+          booksEl.value = s.books || '';
+          ctxPairsEl.value = s.ctxPairs || '10';
+          extraHeadersEl.value = s.extraHeaders || '';
+        } else {
+          systemPromptEl.value = PRESET_TEXTS.stoner; // first load default
+        }
+      } catch {
+        systemPromptEl.value = PRESET_TEXTS.stoner;
+      }
     }
-    document.querySelectorAll("input,textarea,select").forEach(el => el.addEventListener("change", saveSettings));
+
+    document.querySelectorAll('input,textarea,select').forEach(el => el.addEventListener('change', saveSettings));
     loadSettings();
 
-    // apply vendor preset
-    vendorEl.onchange = () => {
-      const p = vendorPresets[vendorEl.value] || {};
-      if (p.apiBase) apiBaseEl.value = p.apiBase;
-      if (p.extraHeaders) extraHeadersEl.value = JSON.stringify(p.extraHeaders);
+    // ---------- persona slots
+    function loadSlots() {
+      try {
+        const raw = localStorage.getItem(SLOTS_KEY);
+        if (!raw) return Array.from({length:5}, () => ({name:'', prompt:''}));
+        const arr = JSON.parse(raw);
+        if (!Array.isArray(arr) || arr.length !== 5) return Array.from({length:5}, () => ({name:'', prompt:''}));
+        return arr.map(x => ({ name: String(x.name||''), prompt: String(x.prompt||'') }));
+      } catch {
+        return Array.from({length:5}, () => ({name:'', prompt:''}));
+      }
+    }
+    function saveSlots(slots) { localStorage.setItem(SLOTS_KEY, JSON.stringify(slots)); }
+    function updateSlotUI(slots) {
+      slotSelect.innerHTML = '';
+      slots.forEach((s, i) => {
+        const label = s.name ? `Slot ${i+1}: ${s.name}` : `Slot ${i+1}: (empty)`;
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = label;
+        slotSelect.appendChild(opt);
+      });
+      if (slotSelect.options.length) slotSelect.value = slotSelect.options[0].value;
+    }
+
+    let personaSlots = loadSlots();
+    updateSlotUI(personaSlots);
+
+    document.getElementById('applyPreset').onclick = () => {
+      const key = presetSelect.value;
+      systemPromptEl.value = PRESET_TEXTS[key] || PRESET_TEXTS.stoner;
       saveSettings();
     };
+    document.getElementById('saveSlot').onclick = () => {
+      const idx = parseInt(slotSelect.value || '0', 10) || 0;
+      const current = personaSlots[idx] || {name:'', prompt:''};
+      const suggested = current.name || (systemPromptEl.value.split('\n')[0].slice(0,48));
+      const name = window.prompt('Name for this slot:', suggested) || suggested || `Persona ${idx+1}`;
+      personaSlots[idx] = { name, prompt: systemPromptEl.value };
+      saveSlots(personaSlots);
+      updateSlotUI(personaSlots);
+    };
+    document.getElementById('loadSlot').onclick = () => {
+      const idx = parseInt(slotSelect.value || '0', 10) || 0;
+      const slot = personaSlots[idx];
+      if (!slot || !slot.prompt) { alert('Empty slot.'); return; }
+      systemPromptEl.value = slot.prompt;
+      saveSettings();
+    };
+    document.getElementById('renameSlot').onclick = () => {
+      const idx = parseInt(slotSelect.value || '0', 10) || 0;
+      const slot = personaSlots[idx];
+      if (!slot) return;
+      const name = window.prompt('New name:', slot.name || `Persona ${idx+1}`);
+      if (name != null) {
+        personaSlots[idx].name = name.trim();
+        saveSlots(personaSlots);
+        updateSlotUI(personaSlots);
+      }
+    };
+    document.getElementById('clearSlot').onclick = () => {
+      const idx = parseInt(slotSelect.value || '0', 10) || 0;
+      personaSlots[idx] = {name:'', prompt:''};
+      saveSlots(personaSlots);
+      updateSlotUI(personaSlots);
+    };
 
-    // scripture data and selectors
+    // ---------- apply vendor preset
+    vendorEl.onchange = () => {
+      const p = vendorPresets[vendorEl.value] || {};
+      if (p.apiBase) apiBaseEl.value = p.apiBase; else apiBaseEl.value = apiBaseEl.value;
+      if (p.extraHeaders) {
+        try {
+          const existing = parseJSONOrEmpty(extraHeadersEl.value);
+          const merged = Object.assign({}, existing, p.extraHeaders);
+          extraHeadersEl.value = JSON.stringify(merged);
+        } catch {
+          extraHeadersEl.value = JSON.stringify(p.extraHeaders);
+        }
+      }
+      // Persist immediately so a stray change handler doesn't overwrite
+      saveSettings();
+      // Visual feedback
+      modelsStatus.textContent = 'Preset applied';
+    };
+
+    // ---------- Scripture data and selectors
     let verses = [];
-    function norm(s) { return String(s || "").trim().toLowerCase(); }
+    function norm(s) { return String(s || '').trim().toLowerCase(); }
     function parseList(s) {
       if (!s) return null;
-      const parts = String(s).split(",").map(t => t.trim()).filter(Boolean);
+      const parts = String(s).split(',').map(t => t.trim()).filter(Boolean);
       return parts.length ? parts : null;
     }
     function filterVerses(rows, volumes, books) {
@@ -416,117 +536,111 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       return out;
     }
     async function fetchJson(url) {
-      const r = await fetch(url, { cache: "no-store" });
-      if (!r.ok) throw new Error("HTTP " + r.status);
+      const r = await fetch(url, { cache: 'no-store' });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
       return await r.json();
     }
     function populateSelectorsFromData(rows) {
       const books = Array.from(new Set(rows.map(r => r.book_title)));
-      bookSel.innerHTML = books.map(b => '<option value="'+b+'">'+b+'</option>').join("");
-      if (books.length) {
-        bookSel.value = books[0];
-        populateChapters();
-      }
+      bookSel.innerHTML = books.map(b => `<option value="${b}">${b}</option>`).join('');
+      if (books.length) { bookSel.value = books[0]; populateChapters(); }
     }
     function populateChapters() {
       const b = bookSel.value;
       const chapters = Array.from(new Set(verses.filter(v => v.book_title === b).map(v => Number(v.chapter_number)))).sort((a,b)=>a-b);
-      chapterSel.innerHTML = chapters.map(c => '<option value="'+c+'">'+c+'</option>').join("");
-      if (chapters.length) {
-        chapterSel.value = chapters[0];
-        populateVerses();
-      }
+      chapterSel.innerHTML = chapters.map(c => `<option value="${c}">${c}</option>`).join('');
+      if (chapters.length) { chapterSel.value = chapters[0]; populateVerses(); }
     }
     function populateVerses() {
       const b = bookSel.value;
       const c = Number(chapterSel.value);
       const vs = verses.filter(v => v.book_title === b && Number(v.chapter_number) === c).map(v => Number(v.verse_number)).sort((a,b)=>a-b);
-      verseSel.innerHTML = vs.map(v => '<option value="'+v+'">'+v+'</option>').join("");
+      verseSel.innerHTML = vs.map(v => `<option value="${v}">${v}</option>`).join('');
       if (vs.length) verseSel.value = vs[0];
-      const txt = verses.find(v => v.book_title === b && Number(v.chapter_number) === c && Number(v.verse_number) === Number(verseSel.value))?.scripture_text || "";
-      singleTextEl.placeholder = txt ? ("JSON text: " + (txt.length>120 ? txt.slice(0,120)+"..." : txt)) : "No JSON text found";
+      const txt = verses.find(v => v.book_title === b && Number(v.chapter_number) === c && Number(v.verse_number) === Number(verseSel.value))?.scripture_text || '';
+      singleTextEl.placeholder = txt ? `JSON text: ${txt.slice(0,120)}${txt.length>120?'...':''}` : 'No JSON text found';
     }
-    document.getElementById("loadJson").onclick = async () => {
+    loadJsonBtn.onclick = async () => {
       try {
-        statusEl.textContent = "Fetching JSON...";
+        statusEl.textContent = 'Fetching JSON...';
         const data = await fetchJson(jsonUrlEl.value);
-        if (!Array.isArray(data) || !data.length) throw new Error("Expected JSON array");
+        if (!Array.isArray(data) || !data.length) throw new Error('Expected JSON array');
         verses = data;
-        statusEl.textContent = "Loaded " + data.length + " rows";
+        statusEl.textContent = `Loaded ${data.length} rows`;
         populateSelectorsFromData(verses);
       } catch (e) {
-        statusEl.textContent = "Failed to load JSON ... " + e.message;
+        statusEl.textContent = `Failed to load JSON ... ${e.message}`;
       }
     };
-    document.getElementById("jsonFile").onchange = async (ev) => {
+    jsonFileEl.onchange = async (ev) => {
       const file = ev.target.files?.[0];
       if (!file) return;
       const text = await file.text();
       try {
         const data = JSON.parse(text);
-        if (!Array.isArray(data) || !data.length) throw new Error("Expected JSON array");
+        if (!Array.isArray(data) || !data.length) throw new Error('Expected JSON array');
         verses = data;
-        statusEl.textContent = "Loaded " + data.length + " rows from file";
+        statusEl.textContent = `Loaded ${data.length} rows from file`;
         populateSelectorsFromData(verses);
       } catch (e) {
-        statusEl.textContent = "Bad JSON file ... " + e.message;
+        statusEl.textContent = `Bad JSON file ... ${e.message}`;
       }
     };
     bookSel.onchange = populateChapters;
     chapterSel.onchange = populateVerses;
     verseSel.onchange = populateVerses;
 
-    // chat call (SSE or JSON)
+    // ---------- chat call (SSE or JSON)
     async function chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders }) {
-      const headers = { "Content-Type": "application/json" };
+      const headers = { 'Content-Type': 'application/json' };
       if (apiKey) {
-        headers["Authorization"] = "Bearer " + apiKey;
-        headers["X-API-Key"] = apiKey;
+        headers['Authorization'] = `Bearer ${apiKey}`;
+        headers['X-API-Key'] = apiKey;
       }
       if (extraHeaders) Object.assign(headers, extraHeaders);
 
       const payload = {
         model,
         messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
         ],
         temperature,
         stream
       };
       if (stops && stops.length) payload.stop = stops;
 
-      const resp = await fetch(apiBase, { method: "POST", headers, body: JSON.stringify(payload) });
+      const resp = await fetch(apiBase, { method: 'POST', headers, body: JSON.stringify(payload) });
       if (!resp.ok) {
         const txt = await resp.text();
-        throw new Error("HTTP " + resp.status + " ... " + txt.slice(0, 400));
+        throw new Error(`HTTP ${resp.status} ... ${txt.slice(0, 400)}`);
       }
 
-      const ct = resp.headers.get("content-type") || "";
-      if (!stream || ct.includes("application/json")) {
+      const ct = resp.headers.get('content-type') || '';
+      if (!stream || ct.includes('application/json')) {
         const obj = await resp.json();
-        return obj?.choices?.[0]?.message?.content?.trim() || "";
+        return obj?.choices?.[0]?.message?.content?.trim() || '';
       }
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
-      let buf = "";
-      let out = "";
+      let buf = '';
+      let out = '';
       for (;;) {
         const { value, done } = await reader.read();
         if (done) break;
         buf += decoder.decode(value, { stream: true });
-        const parts = buf.split("\n\n");
-        buf = parts.pop() || "";
+        const parts = buf.split('\n\n');
+        buf = parts.pop() || '';
         for (const chunk of parts) {
           const line = chunk.trim();
           if (!line) continue;
-          const raw = line.startsWith("data: ") ? line.slice(6).trim() : line;
-          if (raw === "[DONE]") { reader.cancel().catch(()=>{}); break; }
+          const raw = line.startsWith('data: ') ? line.slice(6).trim() : line;
+          if (raw === '[DONE]') { reader.cancel().catch(()=>{}); break; }
           try {
             const obj = JSON.parse(raw);
             const ch0 = obj.choices?.[0] || {};
-            const piece = ch0.delta?.content ?? ch0.message?.content ?? "";
+            const piece = ch0.delta?.content ?? ch0.message?.content ?? '';
             if (piece) out += piece;
           } catch {}
         }
@@ -535,17 +649,18 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
     }
 
     function makeUserPrompt(book, chapter, verse, text) {
-      return "Reference: " + book + " " + chapter + ":" + verse + "\nText: \"" + normalizeAscii(text) + "\"";
+      return `Reference: ${book} ${chapter}:${verse}\nText: "${normalizeAscii(text)}"`;
     }
     function postprocessLine(result, expectedPrefix) {
       if (!result) return expectedPrefix;
-      const rx = new RegExp("\\\\[" + expectedPrefix.slice(1, -1).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\\\][^\\n\\r]*");
+      const safe = expectedPrefix.slice(1, -1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const rx = new RegExp('\\[' + safe + '\\][^\n\r]*');
       const m = result.match(rx);
       let s = m ? m[0] : result;
       s = sanitizeOneLine(s);
       if (!s.startsWith(expectedPrefix)) {
-        const body = s.replace(/^[\[\("]+/, "").trim();
-        s = expectedPrefix + " " + body;
+        const body = s.replace(/^[\[\("]+/, '').trim();
+        s = `${expectedPrefix} ${body}`;
       }
       return s;
     }
@@ -554,68 +669,80 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
       return body.length >= minChars;
     }
 
-    // fetch models helper (tries common paths)
+    // ---------- fetch models (robust)
     async function fetchModelsList() {
       const apiBase = apiBaseEl.value.trim();
       const key = apiKeyEl.value.trim();
-      if (!apiBase) throw new Error("API base required");
-      const headers = { "Accept": "application/json" };
-      if (key) headers["Authorization"] = "Bearer " + key;
+      if (!apiBase) throw new Error('API base required');
 
-      const baseRoot = apiBase.replace(/\/chat\/completions$/,'').replace(/\/+$/,'');
+      const headers = { 'Accept': 'application/json' };
+      if (key) headers['Authorization'] = `Bearer ${key}`;
+      // merge extra headers if any
+      try { Object.assign(headers, parseJSONOrEmpty(extraHeadersEl.value)); } catch {}
+
+      // Strip trailing /chat/completions (and variants) and slashes
+      const baseRoot = apiBase
+        .replace(/\/chat\/completions$/i, '')
+        .replace(/\/+$/, '');
+      const hasV1 = /\/v1$/i.test(baseRoot);
+
       const candidates = [
-        baseRoot + "/models",
-        (baseRoot.endsWith("/v1") ? baseRoot : baseRoot + "/v1") + "/models"
-      ];
+        `${baseRoot}/models`,
+        hasV1 ? null : `${baseRoot}/v1/models`
+      ].filter(Boolean);
 
-      let data = null, lastErr = null;
+      // Special-case Ollama (non-OpenAI endpoint)
+      const isOllama = /localhost:11434|127\.0\.0\.1:11434/.test(apiBase);
+      if (isOllama) candidates.push(apiBase.replace(/\/v1\/chat\/completions$/,'') + '/api/tags');
+
+      let lastErr = 'no models endpoint responded';
       for (const url of candidates) {
         try {
           const r = await fetch(url, { headers });
-          if (!r.ok) { lastErr = "HTTP " + r.status; continue; }
-          data = await r.json();
-          break;
-        } catch (e) { lastErr = e.message; }
+          if (!r.ok) { lastErr = `HTTP ${r.status} at ${url}`; continue; }
+          const data = await r.json();
+          // OpenAI shape: {data:[{id}]}; Fireworks: same; Some: {models:[{id|name}]}; Ollama tags: {models:[{name}]}
+          if (data && Array.isArray(data.data)) {
+            return data.data.map(m => m.id || m.name).filter(Boolean);
+          } else if (data && Array.isArray(data.models)) {
+            return data.models.map(m => m.id || m.name).filter(Boolean);
+          }
+        } catch (e) { lastErr = e.message || String(e); }
       }
-      if (!data) throw new Error(lastErr || "No models endpoint");
-      // handle shapes: {data:[{id:...}]} or {object:"list", data:[...]} or {models:[...]}
-      const arr = Array.isArray(data.data) ? data.data
-                : Array.isArray(data.models) ? data.models
-                : [];
-      const ids = arr.map(m => m.id || m.name).filter(Boolean);
-      return ids;
+      throw new Error(lastErr);
     }
 
     fetchModelsBtn.onclick = async () => {
-      modelsStatus.textContent = "Loading models...";
-      modelsList.innerHTML = "";
+      modelsStatus.textContent = 'Loading models...';
+      modelsList.innerHTML = '';
       try {
         const ids = await fetchModelsList();
         ids.forEach(id => {
-          const opt = document.createElement("option");
+          const opt = document.createElement('option');
           opt.value = id;
           modelsList.appendChild(opt);
         });
-        modelsStatus.textContent = "Loaded " + ids.length;
+        modelsStatus.textContent = `Loaded ${ids.length}`;
+        if (ids.length && !modelEl.value) modelEl.value = ids[0];
       } catch (e) {
-        modelsStatus.textContent = "Failed ... " + e.message;
+        modelsStatus.textContent = `Failed ... ${e.message}`;
       }
     };
 
-    // batch run
+    // ---------- batch run
     let abort = false;
     startBtn.onclick = async () => {
       try {
         abort = false;
-        outEl.textContent = "";
+        outEl.textContent = '';
         downloadBtn.disabled = true;
         startBtn.disabled = true;
         stopBtn.disabled = false;
-        statusEl.textContent = "Starting ...";
+        statusEl.textContent = 'Starting ...';
         saveSettings();
 
         if (!verses.length) {
-          statusEl.textContent = "No scripture JSON loaded yet. Click Fetch or choose a JSON file.";
+          statusEl.textContent = 'No scripture JSON loaded yet. Click Fetch or choose a JSON file.';
           startBtn.disabled = false; stopBtn.disabled = true;
           return;
         }
@@ -624,26 +751,26 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
         const books = parseList(booksEl.value);
         const filtered = filterVerses(verses, vols, books);
         if (!filtered.length) {
-          statusEl.textContent = "Filter removed everything.";
+          statusEl.textContent = 'Filter removed everything.';
           startBtn.disabled = false; stopBtn.disabled = true;
           return;
         }
 
-        const startIdx = parseInt(startIndexEl.value || "0", 10) || 0;
+        const startIdx = parseInt(startIndexEl.value || '0', 10) || 0;
         const endIdxRaw = endIndexEl.value?.trim();
         const endIdx = endIdxRaw ? parseInt(endIdxRaw, 10) : filtered.length;
 
-        const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || "0", 10) || 0);
+        const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || '0', 10) || 0);
         const apiBase = apiBaseEl.value.trim();
         const apiKey = apiKeyEl.value.trim();
         const model = modelEl.value.trim();
-        const temperature = parseFloat(temperatureEl.value || "0.9") || 0.9;
-        const stream = streamEl.value === "true";
-        const stops = stopsEl.value.split(",").map(s => s.trim()).filter(Boolean);
+        const temperature = parseFloat(temperatureEl.value || '0.9') || 0.9;
+        const stream = streamEl.value === 'true';
+        const stops = stopsEl.value.split(',').map(s => s.trim()).filter(Boolean);
         const systemPrompt = systemPromptEl.value;
 
-        if (!apiBase) throw new Error("API base required.");
-        if (!model) throw new Error("Model required.");
+        if (!apiBase) throw new Error('API base required.');
+        if (!model) throw new Error('Model required.');
 
         let history = [];
         let outputLines = [];
@@ -658,10 +785,10 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           const text = String(it.scripture_text);
           const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, verse);
 
-          const expectedPrefix = "[" + ref + "]";
+          const expectedPrefix = `[${ref}]`;
           const userPrompt = makeUserPrompt(book, chapter, verse, text);
 
-          statusEl.textContent = "Processing " + (i + 1) + " / " + total + " ... " + ref;
+          statusEl.textContent = `Processing ${i + 1} / ${total} ... ${ref}`;
           let raw = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
 
           let line = postprocessLine(raw, expectedPrefix);
@@ -671,9 +798,9 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
             if (bodyOk(line2, expectedPrefix)) line = line2;
           }
 
-          const recentAssistant = history.filter(m => m.role === "assistant").map(m => m.content);
-          const recentStarts = new Set(recentAssistant.map(ln => openingNgram((ln.split("]", 1)[1] || ""))));
-          const thisStart = openingNgram((line.split("]", 1)[1] || ""));
+          const recentAssistant = history.filter(m => m.role === 'assistant').map(m => m.content);
+          const recentStarts = new Set(recentAssistant.map(ln => openingNgram((ln.split(']', 1)[1] || ''))));
+          const thisStart = openingNgram((line.split(']', 1)[1] || ''));
           if (recentStarts.has(thisStart)) {
             const raw3 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(1.0, temperature), stream: false, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
             const line3 = postprocessLine(raw3, expectedPrefix);
@@ -681,28 +808,28 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           }
 
           outputLines.push(line);
-          outEl.textContent += line + "\n";
+          outEl.textContent += line + '\n';
 
-          history.push({ role: "user", content: "Reference: " + ref + "\nText: \"" + normalizeAscii(text) + "\"" });
-          history.push({ role: "assistant", content: line });
+          history.push({ role: 'user', content: `Reference: ${ref}\nText: "${normalizeAscii(text)}"` });
+          history.push({ role: 'assistant', content: line });
 
           await new Promise(r => setTimeout(r, 40));
         }
 
-        statusEl.textContent = abort ? "Stopped." : "Done.";
+        statusEl.textContent = abort ? 'Stopped.' : 'Done.';
         if (outputLines.length) {
           downloadBtn.disabled = false;
           downloadBtn.onclick = () => {
-            const blob = new Blob([outputLines.join("\n") + "\n"], { type: "text/plain;charset=utf-8" });
-            const a = document.createElement("a");
+            const blob = new Blob([outputLines.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = "styled_bible.txt";
+            a.download = 'styled_bible.txt';
             a.click();
             URL.revokeObjectURL(a.href);
           };
         }
       } catch (e) {
-        statusEl.textContent = "Error ... " + e.message;
+        statusEl.textContent = `Error ... ${e.message}`;
       } finally {
         startBtn.disabled = false;
         stopBtn.disabled = true;
@@ -710,30 +837,30 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
     };
     stopBtn.onclick = () => { abort = true; };
 
-    // single verse run
+    // ---------- single verse run
     runSingleBtn.onclick = async () => {
       try {
-        singleStatus.textContent = "Running...";
+        singleStatus.textContent = 'Running...';
         const apiBase = apiBaseEl.value.trim();
         const apiKey = apiKeyEl.value.trim();
         const model = modelEl.value.trim();
-        const temperature = parseFloat(temperatureEl.value || "0.9") || 0.9;
-        const stream = streamEl.value === "true";
-        const stops = stopsEl.value.split(",").map(s => s.trim()).filter(Boolean);
+        const temperature = parseFloat(temperatureEl.value || '0.9') || 0.9;
+        const stream = streamEl.value === 'true';
+        const stops = stopsEl.value.split(',').map(s => s.trim()).filter(Boolean);
         const systemPrompt = systemPromptEl.value;
 
-        if (!verses.length) throw new Error("Load JSON first");
-        if (!apiBase) throw new Error("API base required");
-        if (!model) throw new Error("Model required");
+        if (!verses.length) throw new Error('Load JSON first');
+        if (!apiBase) throw new Error('API base required');
+        if (!model) throw new Error('Model required');
 
         const book = bookSel.value;
         const chapter = Number(chapterSel.value);
         const verseNo = Number(verseSel.value);
-        const fallback = verses.find(v => v.book_title === book && Number(v.chapter_number) === chapter && Number(v.verse_number) === verseNo)?.scripture_text || "";
+        const fallback = verses.find(v => v.book_title === book && Number(v.chapter_number) === chapter && Number(v.verse_number) === verseNo)?.scripture_text || '';
         const srcText = singleTextEl.value.trim() || fallback;
 
         const userPrompt = makeUserPrompt(book, chapter, verseNo, srcText);
-        const expectedPrefix = "[" + refString(book, chapter, verseNo) + "]";
+        const expectedPrefix = `[${refString(book, chapter, verseNo)}]`;
 
         const raw = await chatOnce({
           apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value)
@@ -746,17 +873,12 @@ No extra commentary. No repeating the Book Chapter:Verse. No "Reference:" echoes
           if (bodyOk(line2, expectedPrefix)) line = line2;
         }
 
-        outEl.textContent += line + "\n";
-        singleStatus.textContent = "Done.";
+        outEl.textContent += line + '\n';
+        singleStatus.textContent = 'Done.';
       } catch (e) {
-        singleStatus.textContent = "Error ... " + e.message;
+        singleStatus.textContent = `Error ... ${e.message}`;
       }
     };
-
-    // init tabs state and selectors if JSON already loaded
-    (function initSelectorsAfterLoad() {
-      // no-op; populated after JSON fetch
-    })();
   </script>
 </body>
 </html>
