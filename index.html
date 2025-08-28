@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bible Styler ... Cartmanish Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --bg-elev: #0f172a;
+      --bg-input: #0b1220;
+      --border: #1e293b;
+      --border-strong: #334155;
+      --text: #e5e7eb;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #22d3ee;
+      --danger: #f43f5e;
+      --ok: #34d399;
+      --term: #a7f3d0; /* output text */
+      --term-bg: #071019;
+      --focus: 0 0 0 3px rgba(56, 189, 248, 0.35);
+      --radius: 12px;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      --font-sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+    }
+
+    body { padding: 24px; }
+
+    h1 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+      letter-spacing: 0.2px;
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+    .row { grid-column: 1 / -1; }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: var(--bg-elev);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 0 0 1px rgba(255,255,255,0.02);
+    }
+
+    label { font-size: 12px; display: block; margin-bottom: 6px; color: var(--text-muted); }
+
+    input, textarea, select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      background: var(--bg-input);
+      color: var(--text);
+      outline: none;
+      transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+    input::placeholder, textarea::placeholder { color: #6b7280; }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: var(--focus);
+    }
+    textarea { min-height: 140px; resize: vertical; }
+
+    .mono { font-family: var(--font-mono); }
+
+    .btn {
+      padding: 10px 14px;
+      border: 1px solid var(--accent-2);
+      border-radius: 10px;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
+      color: #001018;
+      cursor: pointer;
+      font-weight: 600;
+      transition: filter 120ms ease, transform 60ms ease;
+      user-select: none;
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn:active { transform: translateY(1px); }
+    .btn.secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .btn.danger {
+      border-color: var(--danger);
+      background: linear-gradient(180deg, #fb7185 0%, var(--danger) 100%);
+      color: #1b0310;
+    }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .inline { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    .muted { color: var(--text-muted); font-size: 12px; }
+
+    .out {
+      white-space: pre-wrap;
+      font-family: var(--font-mono);
+      background: var(--term-bg);
+      color: var(--term);
+      padding: 14px;
+      border-radius: 10px;
+      min-height: 180px;
+      border: 1px solid var(--border-strong);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #0b2a33;
+      color: #7dd3fc;
+      border: 1px solid #0a3b48;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .row h2 {
+      font-size: 14px;
+      margin: 0 0 8px 0;
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+
+    .warn {
+      border: 1px dashed #334155;
+      padding: 10px;
+      border-radius: 10px;
+      background: #0b1220;
+      color: var(--text-muted);
+    }
+
+    /* small screens */
+    @media (max-width: 880px) {
+      body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Bible Styler ... browser edition <span class="badge">dark</span></h1>
+
+  <div class="grid">
+    <div class="row card">
+      <div class="grid">
+        <div style="grid-column: span 6;">
+          <label>API base ... OpenAI compatible chat completions</label>
+          <input id="apiBase" placeholder="Example: http://127.0.0.1:1234/v1/chat/completions" spellcheck="false" autocomplete="off">
+        </div>
+        <div style="grid-column: span 6;">
+          <label>API key ... stored only in this browser</label>
+          <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off">
+        </div>
+        <div style="grid-column: span 4;">
+          <label>Model</label>
+          <input id="model" value="google/gemma-3n-e4b" spellcheck="false" autocomplete="off">
+        </div>
+        <div style="grid-column: span 4;">
+          <label>Temperature</label>
+          <input id="temperature" type="number" step="0.1" min="0" max="2" value="0.9">
+        </div>
+        <div style="grid-column: span 4;">
+          <label>Stream tokens</label>
+          <select id="stream">
+            <option value="true" selected>true</option>
+            <option value="false">false</option>
+          </select>
+        </div>
+        <div style="grid-column: span 12;">
+          <label>Style system prompt</label>
+          <textarea id="systemPrompt" class="mono">You are rewriting each Bible verse in a sharp, irreverent, bratty narrator voice. Keep all proper nouns unchanged. One output line per verse ... format must be:
+[Book Chapter:Verse] rewritten line
+No extra commentary. No "Reference:" echoes. Avoid repeating openings. Keep info density similar to the source. Do not add or remove facts. No emojis. No slurs.</textarea>
+        </div>
+        <div style="grid-column: span 12;">
+          <label>Stops ... comma separated</label>
+          <input id="stops" value="Reference:,AI:,---">
+        </div>
+      </div>
+      <div class="muted">Do not commit real keys. This field saves to localStorage on this device only.</div>
+    </div>
+
+    <div class="row card">
+      <div class="grid">
+        <div style="grid-column: span 8;">
+          <label>Scripture JSON URL</label>
+          <input id="jsonUrl" class="mono" value="https://raw.githubusercontent.com/johngthecreator/Book_of_Mormon_Scriptures/main/standard-works.json" spellcheck="false">
+        </div>
+        <div style="grid-column: span 4;">
+          <label>Load JSON</label>
+          <div class="inline">
+            <button id="loadJson" class="btn secondary">Fetch</button>
+            <input id="jsonFile" type="file" accept=".json">
+          </div>
+        </div>
+        <div style="grid-column: span 6;">
+          <label>Include volumes ... e.g. Old Testament,New Testament</label>
+          <input id="volumes" value="Old Testament,New Testament">
+        </div>
+        <div style="grid-column: span 6;">
+          <label>Limit to books ... optional ... e.g. Genesis,Exodus</label>
+          <input id="books" placeholder="Genesis,Exodus">
+        </div>
+        <div style="grid-column: span 4;">
+          <label>Start index ... 0 based</label>
+          <input id="startIndex" type="number" min="0" value="0">
+        </div>
+        <div style="grid-column: span 4;">
+          <label>End before index ... optional</label>
+          <input id="endIndex" type="number" min="0" placeholder="">
+        </div>
+        <div style="grid-column: span 4;">
+          <label>Context pairs memory</label>
+          <input id="ctxPairs" type="number" min="0" value="10">
+        </div>
+      </div>
+      <div class="muted">JSON must be an array with keys ... book_title, chapter_number, verse_number, scripture_text.</div>
+    </div>
+
+    <div class="row card">
+      <div class="inline">
+        <button id="startBtn" class="btn">Start</button>
+        <button id="stopBtn" class="btn danger" disabled>Stop</button>
+        <button id="downloadBtn" class="btn secondary" disabled>Download .txt</button>
+      </div>
+      <div id="status" class="muted" style="margin-top:8px;"></div>
+    </div>
+
+    <div class="row card">
+      <label>Output preview</label>
+      <div id="out" class="out"></div>
+    </div>
+
+    <div class="row warn" id="httpsWarn" style="display:none;">
+      Heads up ... this page is HTTPS. Calls to http://localhost are often blocked by browsers. Prefer an HTTPS API endpoint or test the page locally over http.
+    </div>
+  </div>
+
+  <script>
+    function normalizeAscii(s) {
+      return String(s)
+        .replace(/\u2018|\u2019/g, "'")
+        .replace(/\u201C|\u201D/g, '"')
+        .replace(/\u2013|\u2014/g, "...")
+        .replace(/\u00A0/g, " ");
+    }
+    function sanitizeOneLine(s) {
+      if (!s) return "";
+      s = normalizeAscii(s);
+      s = s.replace(/\r/g, " ").replace(/\n/g, " ").trim();
+      s = s.replace(/\s*---.*$/i, "");
+      s = s.replace(/^\s*(AI|Answer|Output)\s*:\s*/i, "");
+      s = s.replace(/\s*Reference\s*:.*$/i, "");
+      s = Array.from(s).filter(ch => ch.codePointAt(0) < 0x2500).join("");
+      return s.trim();
+    }
+    function refString(book, chapter, verse) { return `${book} ${chapter}:${verse}`; }
+    function openingNgram(s, n = 4) {
+      const toks = s.trim().split(/\s+/).filter(Boolean);
+      return toks.slice(0, n).join(" ").toLowerCase();
+    }
+
+    const apiBaseEl = document.getElementById("apiBase");
+    const apiKeyEl = document.getElementById("apiKey");
+    const modelEl = document.getElementById("model");
+    const temperatureEl = document.getElementById("temperature");
+    const streamEl = document.getElementById("stream");
+    const systemPromptEl = document.getElementById("systemPrompt");
+    const stopsEl = document.getElementById("stops");
+    const jsonUrlEl = document.getElementById("jsonUrl");
+    const loadJsonBtn = document.getElementById("loadJson");
+    const jsonFileEl = document.getElementById("jsonFile");
+    const volumesEl = document.getElementById("volumes");
+    const booksEl = document.getElementById("books");
+    const startIndexEl = document.getElementById("startIndex");
+    const endIndexEl = document.getElementById("endIndex");
+    const ctxPairsEl = document.getElementById("ctxPairs");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const outEl = document.getElementById("out");
+    const statusEl = document.getElementById("status");
+    const httpsWarn = document.getElementById("httpsWarn");
+
+    if (location.protocol === "https:") httpsWarn.style.display = "block";
+
+    const LS_KEY = "bibleStylerSettings";
+    function saveSettings() {
+      const obj = {
+        apiBase: apiBaseEl.value,
+        apiKey: apiKeyEl.value,
+        model: modelEl.value,
+        temperature: temperatureEl.value,
+        stream: streamEl.value,
+        systemPrompt: systemPromptEl.value,
+        stops: stopsEl.value,
+        jsonUrl: jsonUrlEl.value,
+        volumes: volumesEl.value,
+        books: booksEl.value,
+        ctxPairs: ctxPairsEl.value
+      };
+      localStorage.setItem(LS_KEY, JSON.stringify(obj));
+    }
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return;
+        const s = JSON.parse(raw);
+        apiBaseEl.value = s.apiBase || "";
+        apiKeyEl.value = s.apiKey || "";
+        modelEl.value = s.model || "gemma-3-4b-it";
+        temperatureEl.value = s.temperature || "0.9";
+        streamEl.value = s.stream || "true";
+        systemPromptEl.value = s.systemPrompt || systemPromptEl.value;
+        stopsEl.value = s.stops || "Reference:,AI:,---";
+        jsonUrlEl.value = s.jsonUrl || jsonUrlEl.value;
+        volumesEl.value = s.volumes || "Old Testament,New Testament";
+        booksEl.value = s.books || "";
+        ctxPairsEl.value = s.ctxPairs || "10";
+      } catch {}
+    }
+    document.querySelectorAll("input,textarea,select").forEach(el => el.addEventListener("change", saveSettings));
+    loadSettings();
+
+    let verses = [];
+    function norm(s) { return String(s || "").trim().toLowerCase(); }
+    function parseList(s) {
+      if (!s) return null;
+      const parts = String(s).split(",").map(t => t.trim()).filter(Boolean);
+      return parts.length ? parts : null;
+    }
+    function filterVerses(rows, volumes, books) {
+      const volSet = volumes ? new Set(volumes.map(v => norm(v))) : null;
+      const bookSet = books ? new Set(books.map(b => norm(b))) : null;
+      const out = [];
+      for (const it of rows) {
+        const vol = norm(it.volume_title);
+        const book = norm(it.book_title);
+        if (volSet && !volSet.has(vol)) continue;
+        if (bookSet && !bookSet.has(book)) continue;
+        out.push(it);
+      }
+      return out;
+    }
+    async function fetchJson(url) {
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return await r.json();
+    }
+    loadJsonBtn.onclick = async () => {
+      try {
+        statusEl.textContent = "Fetching JSON...";
+        const data = await fetchJson(jsonUrlEl.value);
+        if (!Array.isArray(data) || !data.length) throw new Error("Expected JSON array");
+        verses = data;
+        statusEl.textContent = `Loaded ${data.length} rows`;
+      } catch (e) {
+        statusEl.textContent = `Failed to load JSON ... ${e.message}`;
+      }
+    };
+    jsonFileEl.onchange = async () => {
+      const file = jsonFileEl.files?.[0];
+      if (!file) return;
+      const text = await file.text();
+      try {
+        const data = JSON.parse(text);
+        if (!Array.isArray(data) || !data.length) throw new Error("Expected JSON array");
+        verses = data;
+        statusEl.textContent = `Loaded ${data.length} rows from file`;
+      } catch (e) {
+        statusEl.textContent = `Bad JSON file ... ${e.message}`;
+      }
+    };
+
+    async function chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders }) {
+      const headers = { "Content-Type": "application/json" };
+      if (apiKey) {
+        headers["Authorization"] = `Bearer ${apiKey}`;
+        headers["X-API-Key"] = apiKey;
+      }
+      if (extraHeaders) Object.assign(headers, extraHeaders);
+
+      const payload = {
+        model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        temperature,
+        stream
+      };
+      if (stops && stops.length) payload.stop = stops;
+
+      const resp = await fetch(apiBase, { method: "POST", headers, body: JSON.stringify(payload) });
+      if (!resp.ok) {
+        const txt = await resp.text();
+        throw new Error(`HTTP ${resp.status} ... ${txt.slice(0, 400)}`);
+      }
+
+      const ct = resp.headers.get("content-type") || "";
+      if (!stream || ct.includes("application/json")) {
+        const obj = await resp.json();
+        return obj?.choices?.[0]?.message?.content?.trim() || "";
+      }
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      let out = "";
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const parts = buf.split("\n\n");
+        buf = parts.pop() || "";
+        for (const chunk of parts) {
+          const line = chunk.trim();
+          if (!line) continue;
+          const raw = line.startsWith("data: ") ? line.slice(6).trim() : line;
+          if (raw === "[DONE]") { reader.cancel().catch(()=>{}); break; }
+          try {
+            const obj = JSON.parse(raw);
+            const ch0 = obj.choices?.[0] || {};
+            const piece = ch0.delta?.content ?? ch0.message?.content ?? "";
+            if (piece) out += piece;
+          } catch {}
+        }
+      }
+      return out.trim();
+    }
+
+    function makeUserPrompt(book, chapter, verse, text) {
+      return `Reference: ${book} ${chapter}:${verse}\nText: "${normalizeAscii(text)}"`;
+    }
+    function postprocessLine(result, expectedPrefix) {
+      if (!result) return expectedPrefix;
+      const rx = new RegExp("\\\\[" + expectedPrefix.slice(1, -1).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\\\][^\\n\\r]*");
+      const m = result.match(rx);
+      let s = m ? m[0] : result;
+      s = sanitizeOneLine(s);
+      if (!s.startsWith(expectedPrefix)) {
+        const body = s.replace(/^[\[\("]+/, "").trim();
+        s = `${expectedPrefix} ${body}`;
+      }
+      return s;
+    }
+    function bodyOk(line, expectedPrefix, minChars = 6) {
+      const body = line.slice(expectedPrefix.length).trim();
+      return body.length >= minChars;
+    }
+
+    let abort = false;
+    startBtn.onclick = async () => {
+      try {
+        abort = false;
+        outEl.textContent = "";
+        downloadBtn.disabled = true;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        statusEl.textContent = "Starting ...";
+        saveSettings();
+
+        if (!verses.length) {
+          statusEl.textContent = "No scripture JSON loaded yet. Click Fetch or choose a JSON file.";
+          startBtn.disabled = false; stopBtn.disabled = true;
+          return;
+        }
+
+        const vols = parseList(volumesEl.value);
+        const books = parseList(booksEl.value);
+        const filtered = filterVerses(verses, vols, books);
+        if (!filtered.length) {
+          statusEl.textContent = "Filter removed everything.";
+          startBtn.disabled = false; stopBtn.disabled = true;
+          return;
+        }
+
+        const startIdx = parseInt(startIndexEl.value || "0", 10) || 0;
+        const endIdxRaw = endIndexEl.value?.trim();
+        const endIdx = endIdxRaw ? parseInt(endIdxRaw, 10) : filtered.length;
+
+        const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || "0", 10) || 0);
+        const apiBase = apiBaseEl.value.trim();
+        const apiKey = apiKeyEl.value.trim();
+        const model = modelEl.value.trim();
+        const temperature = parseFloat(temperatureEl.value || "0.9") || 0.9;
+        const stream = streamEl.value === "true";
+        const stops = stopsEl.value.split(",").map(s => s.trim()).filter(Boolean);
+        const systemPrompt = systemPromptEl.value;
+
+        if (!apiBase) throw new Error("API base required.");
+        if (!model) throw new Error("Model required.");
+
+        let history = [];
+        let outputLines = [];
+
+        const total = Math.min(endIdx, filtered.length);
+        for (let i = startIdx; i < total; i++) {
+          if (abort) break;
+          const it = filtered[i];
+          const book = String(it.book_title);
+          const chapter = Number(it.chapter_number);
+          const verse = Number(it.verse_number);
+          const text = String(it.scripture_text);
+          const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, verse);
+
+          const expectedPrefix = `[${ref}]`;
+          const userPrompt = makeUserPrompt(book, chapter, verse, text);
+
+          statusEl.textContent = `Processing ${i + 1} / ${total} ... ${ref}`;
+          let raw = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops });
+
+          let line = postprocessLine(raw, expectedPrefix);
+          if (!bodyOk(line, expectedPrefix)) {
+            const raw2 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(0.9, temperature), stream: false, stops });
+            const line2 = postprocessLine(raw2, expectedPrefix);
+            if (bodyOk(line2, expectedPrefix)) line = line2;
+          }
+
+          const recentAssistant = history.filter(m => m.role === "assistant").map(m => m.content);
+          const recentStarts = new Set(recentAssistant.map(ln => openingNgram((ln.split("]", 1)[1] || ""))));
+          const thisStart = openingNgram((line.split("]", 1)[1] || ""));
+          if (recentStarts.has(thisStart)) {
+            const raw3 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(1.0, temperature), stream: false, stops });
+            const line3 = postprocessLine(raw3, expectedPrefix);
+            if (bodyOk(line3, expectedPrefix)) line = line3;
+          }
+
+          outputLines.push(line);
+          outEl.textContent += line + "\n";
+
+          history.push({ role: "user", content: `Reference: ${ref}\nText: "${normalizeAscii(text)}"` });
+          history.push({ role: "assistant", content: line });
+
+          await new Promise(r => setTimeout(r, 40));
+        }
+
+        statusEl.textContent = abort ? "Stopped." : "Done.";
+        if (outputLines.length) {
+          downloadBtn.disabled = false;
+          downloadBtn.onclick = () => {
+            const blob = new Blob([outputLines.join("\n") + "\n"], { type: "text/plain;charset=utf-8" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "cartman_bible.txt";
+            a.click();
+            URL.revokeObjectURL(a.href);
+          };
+        }
+      } catch (e) {
+        statusEl.textContent = `Error ... ${e.message}`;
+      } finally {
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      }
+    };
+
+    stopBtn.onclick = () => { abort = true; };
+  </script>
+</body>
+</html>
