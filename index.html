@@ -216,6 +216,10 @@
       </div>
       <div class="muted">Do not commit keys. This page saves to localStorage on this device only.</div>
     </div>
+    
+    <div class="row card" id="httpsWarn" style="display:none;">
+      Heads up ... this page is HTTPS. Calls to http://localhost are often blocked by browsers. Prefer an HTTPS API endpoint or test the page locally over http.
+    </div>
 
     <!-- data source -->
     <div class="row card">
@@ -302,10 +306,6 @@
     <div class="row card">
       <label>Output</label>
       <div id="out" class="out"></div>
-    </div>
-
-    <div class="row card" id="httpsWarn" style="display:none;">
-      Heads up ... this page is HTTPS. Calls to http://localhost are often blocked by browsers. Prefer an HTTPS API endpoint or test the page locally over http.
     </div>
   </div>
 
