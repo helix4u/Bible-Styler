@@ -4,8 +4,9 @@ Single‑file, zero‑dependency web app to “style” Bible verses using any O
 
 - No build step, no server required
 - Works with OpenAI‑compatible providers (OpenAI, OpenRouter, Groq, Together, Fireworks, DeepInfra, Cerebras, LM Studio, Ollama, etc.)
-- Batch mode (many verses) and Single‑verse mode
+- Batch mode (many verses) and Single‑verse/chapter mode
 - Settings and persona prompts saved locally in your browser (localStorage)
+- Remembers last used mode (Batch vs. Single) and model/API settings
 
 ## Run It
 
@@ -38,9 +39,11 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 
 3. Model selection
 - Click “Fetch” to load models from your provider, or toggle “type custom” and enter any model ID manually
+- A minimal starter list is seeded on first load (now includes `gpt-4.1-mini`, `gpt-4.1-nano`)
 
 4. Style system prompt (persona)
-- Use a built‑in preset (Stoner, Zoomer, House‑ish) or write your own
+- Use a built‑in preset or write your own
+- Built‑ins include: Stoner, Zoomer, House‑ish, Plain English, Kid‑Friendly, Headline, Legal Brief, Study Note, Clinical/Scientific, Minimalist, Tweet‑Length, Bold Bard, Pirate, Noir Detective, Sports Coach, Stoic Sage, Hacker Log
 - Save/load up to 5 local persona slots
 
 5. Load Scripture JSON
@@ -49,7 +52,10 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 
 6. Run
 - Batch mode: Click “Start” to process a range of verses; download results as `.txt`
-- Single verse: Pick Book/Chapter/Verse (or type a custom line) and click “Run single verse”
+- Single panel:
+  - Single verse: Pick Book/Chapter/Verse (or type a custom line) and click “Run single verse”
+  - Chapter: Select the Book/Chapter and click “Run chapter”
+  - The original verse text shows as the textarea placeholder (not truncated)
 
 ## Data Format (Scripture JSON)
 
@@ -92,7 +98,7 @@ The app uses OpenAI‑style Chat Completions. Presets included:
 - DeepInfra: `https://api.deepinfra.com/v1/openai/chat/completions`
 - Cerebras: `https://api.cerebras.ai/v1/chat/completions`
 
-Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/tags`. If model fetching fails, you can type a model ID manually.
+Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/tags`. If model fetching fails, you can type a model ID manually. Your previously selected model is preserved if still available.
 
 ## Output Format
 
@@ -113,6 +119,7 @@ Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/t
 - API keys and settings are stored only in your browser’s `localStorage`
 - Nothing is sent anywhere except the JSON URL you fetch and the API endpoint you configure
 - “Do not commit keys.” The page reminds you of this and never writes your key to the repo
+ - Saves as you type; restores your last selections (including active tab: Batch vs Single)
 
 ## HTTPS, Localhost, and CORS
 
@@ -129,7 +136,7 @@ Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/t
 
 ## Notes
 
-- Minimal seeded models are provided on first load to make the selector usable even before fetching
+- Minimal seeded models are provided on first load to make the selector usable even before fetching (top: `gpt-4.1-mini`, then `gpt-4.1-nano`)
 - The default Scripture URL may include multiple volumes; use the filters to narrow scope
 - Mobile: UI is responsive; tabs are keyboard‑accessible (Enter/Space)
 
