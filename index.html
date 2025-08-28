@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>Bible Styler ... browser edition</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
   <style>
     :root {
       --bg: #0b0f14;
@@ -24,7 +25,14 @@
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
       --font-sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
-    html, body { background: var(--bg); color: var(--text); margin: 0; padding: 0; font-family: var(--font-sans); }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      margin: 0; padding: 0;
+      font-family: var(--font-sans);
+      -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
     body { padding: 24px; }
     h1 { margin: 0 0 12px 0; font-size: 20px; letter-spacing: 0.2px; }
     .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
@@ -33,18 +41,22 @@
     label { font-size: 12px; display: block; margin-bottom: 6px; color: var(--text-muted); }
     input, textarea, select, button { font: inherit; color: inherit; }
     input, textarea, select {
-      width: 100%; box-sizing: border-box; padding: 10px 12px;
+      width: 100%; box-sizing: border-box; padding: 12px 14px;
       border: 1px solid var(--border-strong); border-radius: 10px; background: var(--bg-input);
       color: var(--text); outline: none; transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+      font-size: 16px; line-height: 1.2;  /* avoid iOS zoom */
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
     }
     input::placeholder, textarea::placeholder { color: #6b7280; }
     input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: var(--focus); }
     textarea { min-height: 120px; resize: vertical; }
     .mono { font-family: var(--font-mono); }
     .btn {
-      padding: 10px 14px; border: 1px solid var(--accent-2); border-radius: 10px;
+      padding: 12px 16px; border: 1px solid var(--accent-2); border-radius: 10px;
       background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
       color: #001018; cursor: pointer; font-weight: 600; transition: filter 120ms ease, transform 60ms ease; user-select: none;
+      min-height: 44px; /* touch target */
+      font-size: 16px;
     }
     .btn:hover { filter: brightness(1.05); }
     .btn:active { transform: translateY(1px); }
@@ -57,15 +69,22 @@
     .out { white-space: pre-wrap; font-family: var(--font-mono); background: var(--term-bg); color: var(--term); padding: 14px; border-radius: 10px; min-height: 180px; border: 1px solid var(--border-strong); }
     .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #0b2a33; color: #7dd3fc; border: 1px solid #0a3b48; font-size: 11px; font-weight: 600; }
     .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
-    .tab { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none; background: #0b1220; }
-    .tab.active { border-color: var(--accent); box-shadow: var(--focus); }
-    @media (max-width: 880px) { body { padding: 16px; } }
+    .tab { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none; background: #0b1220; min-height: 40px; display: inline-flex; align-items: center; }
+    .tab.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35); }
+    @media (max-width: 920px) {
+      body { padding: 16px; }
+      .grid { grid-template-columns: repeat(6, 1fr); gap: 10px; }
+    }
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .btn { width: 100%; justify-content: center; }
+    }
   </style>
 </head>
 <body>
   <h1>Bible Styler ... browser edition <span class="badge">dark</span></h1>
   <div class="muted" style="margin: 6px 0 12px 0;">
-    If this helps you, consider supporting: 
+    If this helps you, consider supporting:
     <a href="https://ko-fi.com/gille" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">ko-fi.com/gille</a>
   </div>
 
@@ -74,7 +93,7 @@
     <div class="row card">
       <div class="grid">
         <div style="grid-column: span 4;">
-          <label>Vendor preset</label>
+          <label for="vendor">Vendor preset</label>
           <select id="vendor">
             <option>Custom</option>
             <option>LM Studio ... local</option>
@@ -89,45 +108,52 @@
           </select>
         </div>
         <div style="grid-column: span 5;">
-          <label>API base ... OpenAI compatible chat completions</label>
+          <label for="apiBase">API base ... OpenAI compatible chat completions</label>
           <input id="apiBase" placeholder="Example: http://127.0.0.1:1234/v1/chat/completions" spellcheck="false" autocomplete="off">
         </div>
         <div style="grid-column: span 3;">
           <label>Fetch models</label>
           <div class="inline">
             <button id="fetchModels" class="btn secondary">Fetch</button>
-            <span id="modelsStatus" class="muted"></span>
+            <span id="modelsStatus" class="muted" aria-live="polite"></span>
           </div>
         </div>
 
         <div style="grid-column: span 6;">
-          <label>API key ... stored only in this browser</label>
+          <label for="apiKey">API key ... stored only in this browser</label>
           <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off">
         </div>
+
+        <!-- model selector with mobile-safe select and an optional free-typing input -->
         <div style="grid-column: span 3;">
-          <label>Model</label>
-          <input id="model" list="modelsList" value="qwen3-4b-instruct-2507" spellcheck="false" autocomplete="off">
-          <datalist id="modelsList"></datalist>
+          <label for="modelSelect">Model</label>
+          <select id="modelSelect"></select>
+          <input id="modelText" style="display:none; margin-top:8px;" placeholder="type a model id..." spellcheck="false" autocomplete="off">
+          <div class="inline" style="margin-top:6px;">
+            <input id="customModelToggle" type="checkbox" style="width:auto;">
+            <label for="customModelToggle" style="margin:0;">type custom</label>
+          </div>
         </div>
+
         <div style="grid-column: span 3;">
-          <label>Temperature</label>
+          <label for="temperature">Temperature</label>
           <input id="temperature" type="number" step="0.1" min="0" max="2" value="0.9">
         </div>
 
         <div style="grid-column: span 3;">
-          <label>Stream tokens</label>
+          <label for="stream">Stream tokens</label>
           <select id="stream">
             <option value="true" selected>true</option>
             <option value="false">false</option>
           </select>
         </div>
         <div style="grid-column: span 9;">
-          <label>Extra headers ... JSON object ... optional</label>
+          <label for="extraHeaders">Extra headers ... JSON object ... optional</label>
           <textarea id="extraHeaders" class="mono" placeholder='{"HTTP-Referer":"https://your.site","X-Title":"Bible Styler"}'></textarea>
         </div>
 
         <div style="grid-column: span 12;">
-          <label>Style system prompt</label>
+          <label for="systemPrompt">Style system prompt</label>
           <textarea id="systemPrompt" class="mono"></textarea>
         </div>
 
@@ -135,7 +161,7 @@
         <div style="grid-column: span 12;">
           <div class="grid">
             <div style="grid-column: span 6;">
-              <label>Built-in presets</label>
+              <label for="presetSelect">Built-in presets</label>
               <div class="inline">
                 <select id="presetSelect">
                   <option value="stoner">Stoner (default)</option>
@@ -159,7 +185,7 @@
         </div>
 
         <div style="grid-column: span 12;">
-          <label>Stops ... comma separated</label>
+          <label for="stops">Stops ... comma separated</label>
           <input id="stops" value="Reference:,AI:,---">
         </div>
       </div>
@@ -170,7 +196,7 @@
     <div class="row card">
       <div class="grid">
         <div style="grid-column: span 8;">
-          <label>Scripture JSON URL</label>
+          <label for="jsonUrl">Scripture JSON URL</label>
           <input id="jsonUrl" class="mono" value="https://raw.githubusercontent.com/johngthecreator/Book_of_Mormon_Scriptures/main/standard-works.json" spellcheck="false">
         </div>
         <div style="grid-column: span 4;">
@@ -181,23 +207,23 @@
           </div>
         </div>
         <div style="grid-column: span 6;">
-          <label>Include volumes ... e.g. Old Testament,New Testament</label>
+          <label for="volumes">Include volumes ... e.g. Old Testament,New Testament</label>
           <input id="volumes" value="Old Testament,New Testament">
         </div>
         <div style="grid-column: span 6;">
-          <label>Limit to books ... optional ... e.g. Genesis,Exodus</label>
+          <label for="books">Limit to books ... optional ... e.g. Genesis,Exodus</label>
           <input id="books" placeholder="Genesis,Exodus">
         </div>
         <div style="grid-column: span 4;">
-          <label>Start index ... 0 based</label>
+          <label for="startIndex">Start index ... 0 based</label>
           <input id="startIndex" type="number" min="0" value="0">
         </div>
         <div style="grid-column: span 4;">
-          <label>End before index ... optional</label>
+          <label for="endIndex">End before index ... optional</label>
           <input id="endIndex" type="number" min="0" placeholder="">
         </div>
         <div style="grid-column: span 4;">
-          <label>Context pairs memory</label>
+          <label for="ctxPairs">Context pairs memory</label>
           <input id="ctxPairs" type="number" min="0" value="10">
         </div>
       </div>
@@ -207,8 +233,8 @@
     <!-- mode tabs -->
     <div class="row card">
       <div class="tabs">
-        <div class="tab active" data-panel="batchPanel">Batch mode</div>
-        <div class="tab" data-panel="singlePanel">Single verse</div>
+        <div class="tab active" data-panel="batchPanel" tabindex="0">Batch mode</div>
+        <div class="tab" data-panel="singlePanel" tabindex="0">Single verse</div>
       </div>
 
       <div id="batchPanel">
@@ -217,32 +243,32 @@
           <button id="stopBtn" class="btn danger" disabled>Stop</button>
           <button id="downloadBtn" class="btn secondary" disabled>Download .txt</button>
         </div>
-        <div id="status" class="muted" style="margin-top:8px;"></div>
+        <div id="status" class="muted" style="margin-top:8px;" aria-live="polite"></div>
       </div>
 
       <div id="singlePanel" style="display:none;">
         <div class="grid" style="margin-bottom: 8px;">
           <div style="grid-column: span 4;">
-            <label>Book</label>
+            <label for="bookSel">Book</label>
             <select id="bookSel"></select>
           </div>
           <div style="grid-column: span 4;">
-            <label>Chapter</label>
+            <label for="chapterSel">Chapter</label>
             <select id="chapterSel"></select>
           </div>
           <div style="grid-column: span 4;">
-            <label>Verse</label>
+            <label for="verseSel">Verse</label>
             <select id="verseSel"></select>
           </div>
           <div style="grid-column: span 12;">
-            <label>Text override ... optional</label>
+            <label for="singleText">Text override ... optional</label>
             <textarea id="singleText" class="mono" placeholder="Leave empty to use text from JSON"></textarea>
           </div>
         </div>
         <div class="inline" style="margin-bottom: 8px;">
           <button id="runSingle" class="btn ok">Run single verse</button>
         </div>
-        <div id="singleStatus" class="muted"></div>
+        <div id="singleStatus" class="muted" aria-live="polite"></div>
       </div>
     </div>
 
@@ -318,8 +344,11 @@
     const vendorEl = document.getElementById('vendor');
     const apiBaseEl = document.getElementById('apiBase');
     const apiKeyEl = document.getElementById('apiKey');
-    const modelEl = document.getElementById('model');
-    const modelsList = document.getElementById('modelsList');
+
+    const modelSelectEl = document.getElementById('modelSelect');
+    const modelTextEl = document.getElementById('modelText');
+    const customModelToggle = document.getElementById('customModelToggle');
+
     const fetchModelsBtn = document.getElementById('fetchModels');
     const modelsStatus = document.getElementById('modelsStatus');
 
@@ -365,25 +394,37 @@
     const httpsWarn = document.getElementById('httpsWarn');
     if (location.protocol === 'https:') httpsWarn.style.display = 'block';
 
-    // tabs toggle
-    tabs.forEach(t => t.onclick = () => {
-      tabs.forEach(x => x.classList.remove('active'));
-      t.classList.add('active');
-      const panel = t.dataset.panel;
-      batchPanel.style.display = panel === 'batchPanel' ? 'block' : 'none';
-      singlePanel.style.display = panel === 'singlePanel' ? 'block' : 'none';
+    // tabs toggle...use pointerup for better mobile behavior
+    tabs.forEach(t => {
+      const handler = () => {
+        tabs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        const panel = t.dataset.panel;
+        batchPanel.style.display = panel === 'batchPanel' ? 'block' : 'none';
+        singlePanel.style.display = panel === 'singlePanel' ? 'block' : 'none';
+      };
+      ['pointerup','click','keyup'].forEach(ev => t.addEventListener(ev, (e) => {
+        if (ev === 'keyup' && e.key !== 'Enter' && e.key !== ' ') return;
+        handler();
+      }, { passive: true }));
     });
 
     // ---------- persistence
-    const SETTINGS_KEY = 'bibleStylerSettings';
+    const SETTINGS_KEY = 'bibleStylerSettings.v2';
     const SLOTS_KEY = 'personaSlots.v1'; // 5 slots
+
+    function getActiveModelId() {
+      return customModelToggle.checked ? modelTextEl.value.trim() : modelSelectEl.value.trim();
+    }
 
     function saveSettings() {
       const obj = {
         vendor: vendorEl.value,
         apiBase: apiBaseEl.value,
         apiKey: apiKeyEl.value,
-        model: modelEl.value,
+        modelMode: customModelToggle.checked ? 'custom' : 'select',
+        modelSelect: modelSelectEl.value,
+        modelText: modelTextEl.value,
         temperature: temperatureEl.value,
         stream: streamEl.value,
         systemPrompt: systemPromptEl.value,
@@ -405,7 +446,6 @@
           vendorEl.value = s.vendor || 'Custom';
           apiBaseEl.value = s.apiBase || '';
           apiKeyEl.value = s.apiKey || '';
-          modelEl.value = s.model || 'qwen3-4b-instruct-2507';
           temperatureEl.value = s.temperature || '0.9';
           streamEl.value = s.stream || 'true';
           systemPromptEl.value = s.systemPrompt || PRESET_TEXTS.stoner; // default
@@ -415,6 +455,12 @@
           booksEl.value = s.books || '';
           ctxPairsEl.value = s.ctxPairs || '10';
           extraHeadersEl.value = s.extraHeaders || '';
+          // model mode
+          const mode = s.modelMode || 'select';
+          customModelToggle.checked = mode === 'custom';
+          modelTextEl.value = s.modelText || '';
+          modelSelectEl.value = s.modelSelect || '';
+          updateModelInputsVisibility();
         } else {
           systemPromptEl.value = PRESET_TEXTS.stoner; // first load default
         }
@@ -423,7 +469,18 @@
       }
     }
 
-    document.querySelectorAll('input,textarea,select').forEach(el => el.addEventListener('change', saveSettings));
+    function updateModelInputsVisibility() {
+      if (customModelToggle.checked) {
+        modelTextEl.style.display = 'block';
+        modelSelectEl.style.display = 'none';
+      } else {
+        modelTextEl.style.display = 'none';
+        modelSelectEl.style.display = 'block';
+      }
+    }
+
+    // persist most fields
+    document.querySelectorAll('input,textarea,select').forEach(el => el.addEventListener('change', saveSettings, { passive: true }));
     loadSettings();
 
     // ---------- persona slots
@@ -454,12 +511,13 @@
     let personaSlots = loadSlots();
     updateSlotUI(personaSlots);
 
-    document.getElementById('applyPreset').onclick = () => {
+    applyPresetBtn.addEventListener('pointerup', () => {
       const key = presetSelect.value;
       systemPromptEl.value = PRESET_TEXTS[key] || PRESET_TEXTS.stoner;
       saveSettings();
-    };
-    document.getElementById('saveSlot').onclick = () => {
+    });
+
+    saveSlotBtn.addEventListener('pointerup', () => {
       const idx = parseInt(slotSelect.value || '0', 10) || 0;
       const current = personaSlots[idx] || {name:'', prompt:''};
       const suggested = current.name || (systemPromptEl.value.split('\n')[0].slice(0,48));
@@ -467,15 +525,17 @@
       personaSlots[idx] = { name, prompt: systemPromptEl.value };
       saveSlots(personaSlots);
       updateSlotUI(personaSlots);
-    };
-    document.getElementById('loadSlot').onclick = () => {
+    });
+
+    loadSlotBtn.addEventListener('pointerup', () => {
       const idx = parseInt(slotSelect.value || '0', 10) || 0;
       const slot = personaSlots[idx];
       if (!slot || !slot.prompt) { alert('Empty slot.'); return; }
       systemPromptEl.value = slot.prompt;
       saveSettings();
-    };
-    document.getElementById('renameSlot').onclick = () => {
+    });
+
+    renameSlotBtn.addEventListener('pointerup', () => {
       const idx = parseInt(slotSelect.value || '0', 10) || 0;
       const slot = personaSlots[idx];
       if (!slot) return;
@@ -485,18 +545,19 @@
         saveSlots(personaSlots);
         updateSlotUI(personaSlots);
       }
-    };
-    document.getElementById('clearSlot').onclick = () => {
+    });
+
+    clearSlotBtn.addEventListener('pointerup', () => {
       const idx = parseInt(slotSelect.value || '0', 10) || 0;
       personaSlots[idx] = {name:'', prompt:''};
       saveSlots(personaSlots);
       updateSlotUI(personaSlots);
-    };
+    });
 
     // ---------- apply vendor preset
-    vendorEl.onchange = () => {
+    vendorEl.addEventListener('change', () => {
       const p = vendorPresets[vendorEl.value] || {};
-      if (p.apiBase) apiBaseEl.value = p.apiBase; else apiBaseEl.value = apiBaseEl.value;
+      if (p.apiBase) apiBaseEl.value = p.apiBase;
       if (p.extraHeaders) {
         try {
           const existing = parseJSONOrEmpty(extraHeadersEl.value);
@@ -506,11 +567,9 @@
           extraHeadersEl.value = JSON.stringify(p.extraHeaders);
         }
       }
-      // Persist immediately so a stray change handler doesn't overwrite
       saveSettings();
-      // Visual feedback
       modelsStatus.textContent = 'Preset applied';
-    };
+    }, { passive: true });
 
     // ---------- Scripture data and selectors
     let verses = [];
@@ -558,7 +617,12 @@
       const txt = verses.find(v => v.book_title === b && Number(v.chapter_number) === c && Number(v.verse_number) === Number(verseSel.value))?.scripture_text || '';
       singleTextEl.placeholder = txt ? `JSON text: ${txt.slice(0,120)}${txt.length>120?'...':''}` : 'No JSON text found';
     }
-    loadJsonBtn.onclick = async () => {
+
+    function bindMobileSelect(sel, handler) {
+      ['change','input','pointerup','click','blur'].forEach(ev => sel.addEventListener(ev, handler, { passive: true }));
+    }
+
+    document.getElementById('loadJson').addEventListener('pointerup', async () => {
       try {
         statusEl.textContent = 'Fetching JSON...';
         const data = await fetchJson(jsonUrlEl.value);
@@ -569,8 +633,9 @@
       } catch (e) {
         statusEl.textContent = `Failed to load JSON ... ${e.message}`;
       }
-    };
-    jsonFileEl.onchange = async (ev) => {
+    });
+
+    jsonFileEl.addEventListener('change', async (ev) => {
       const file = ev.target.files?.[0];
       if (!file) return;
       const text = await file.text();
@@ -583,10 +648,11 @@
       } catch (e) {
         statusEl.textContent = `Bad JSON file ... ${e.message}`;
       }
-    };
-    bookSel.onchange = populateChapters;
-    chapterSel.onchange = populateVerses;
-    verseSel.onchange = populateVerses;
+    });
+
+    bindMobileSelect(bookSel, populateChapters);
+    bindMobileSelect(chapterSel, populateVerses);
+    bindMobileSelect(verseSel, populateVerses);
 
     // ---------- chat call (SSE or JSON)
     async function chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders }) {
@@ -652,7 +718,7 @@
     function postprocessLine(result, expectedPrefix) {
       if (!result) return expectedPrefix;
       const safe = expectedPrefix.slice(1, -1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const rx = new RegExp('\\[' + safe + '\\][^\n\r]*');
+      const rx = new RegExp('\\[' + safe + '\\][^\\n\\r]*');
       const m = result.match(rx);
       let s = m ? m[0] : result;
       s = sanitizeOneLine(s);
@@ -675,10 +741,8 @@
 
       const headers = { 'Accept': 'application/json' };
       if (key) headers['Authorization'] = `Bearer ${key}`;
-      // merge extra headers if any
       try { Object.assign(headers, parseJSONOrEmpty(extraHeadersEl.value)); } catch {}
 
-      // Strip trailing /chat/completions (and variants) and slashes
       const baseRoot = apiBase
         .replace(/\/chat\/completions$/i, '')
         .replace(/\/+$/, '');
@@ -689,7 +753,6 @@
         hasV1 ? null : `${baseRoot}/v1/models`
       ].filter(Boolean);
 
-      // Special-case Ollama (non-OpenAI endpoint)
       const isOllama = /localhost:11434|127\.0\.0\.1:11434/.test(apiBase);
       if (isOllama) candidates.push(apiBase.replace(/\/v1\/chat\/completions$/,'') + '/api/tags');
 
@@ -699,7 +762,6 @@
           const r = await fetch(url, { headers });
           if (!r.ok) { lastErr = `HTTP ${r.status} at ${url}`; continue; }
           const data = await r.json();
-          // OpenAI shape: {data:[{id}]}; Fireworks: same; Some: {models:[{id|name}]}; Ollama tags: {models:[{name}]}
           if (data && Array.isArray(data.data)) {
             return data.data.map(m => m.id || m.name).filter(Boolean);
           } else if (data && Array.isArray(data.models)) {
@@ -710,26 +772,37 @@
       throw new Error(lastErr);
     }
 
-    fetchModelsBtn.onclick = async () => {
+    fetchModelsBtn.addEventListener('pointerup', async () => {
       modelsStatus.textContent = 'Loading models...';
-      modelsList.innerHTML = '';
+      modelSelectEl.innerHTML = '';
       try {
         const ids = await fetchModelsList();
+        if (!ids.length) throw new Error('no models returned');
         ids.forEach(id => {
           const opt = document.createElement('option');
           opt.value = id;
-          modelsList.appendChild(opt);
+          opt.textContent = id;
+          modelSelectEl.appendChild(opt);
         });
+        // Keep previous selection if still present
+        const prev = modelSelectEl.value;
+        if (!prev && ids.length) modelSelectEl.value = ids[0];
         modelsStatus.textContent = `Loaded ${ids.length}`;
-        if (ids.length && !modelEl.value) modelEl.value = ids[0];
+        saveSettings();
       } catch (e) {
         modelsStatus.textContent = `Failed ... ${e.message}`;
       }
-    };
+    });
+
+    // toggle custom model typing
+    customModelToggle.addEventListener('change', () => {
+      updateModelInputsVisibility();
+      saveSettings();
+    }, { passive: true });
 
     // ---------- batch run
     let abort = false;
-    startBtn.onclick = async () => {
+    startBtn.addEventListener('pointerup', async () => {
       try {
         abort = false;
         outEl.textContent = '';
@@ -761,7 +834,7 @@
         const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || '0', 10) || 0);
         const apiBase = apiBaseEl.value.trim();
         const apiKey = apiKeyEl.value.trim();
-        const model = modelEl.value.trim();
+        const model = getActiveModelId() || 'qwen3-4b-instruct-2507';
         const temperature = parseFloat(temperatureEl.value || '0.9') || 0.9;
         const stream = streamEl.value === 'true';
         const stops = stopsEl.value.split(',').map(s => s.trim()).filter(Boolean);
@@ -799,7 +872,7 @@
           const recentAssistant = history.filter(m => m.role === 'assistant').map(m => m.content);
           const recentStarts = new Set(recentAssistant.map(ln => openingNgram((ln.split(']', 1)[1] || ''))));
           const thisStart = openingNgram((line.split(']', 1)[1] || ''));
-          if (recentStarts.has(thisStart)) {
+          if (ctxPairs > 0 && recentStarts.has(thisStart)) {
             const raw3 = await chatOnce({ apiBase, model, apiKey, systemPrompt, userPrompt, temperature: Math.max(1.0, temperature), stream: false, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value) });
             const line3 = postprocessLine(raw3, expectedPrefix);
             if (bodyOk(line3, expectedPrefix)) line = line3;
@@ -810,6 +883,9 @@
 
           history.push({ role: 'user', content: `Reference: ${ref}\nText: "${normalizeAscii(text)}"` });
           history.push({ role: 'assistant', content: line });
+
+          // maintain recent context length
+          if (history.length > ctxPairs * 2) history.splice(0, history.length - ctxPairs * 2);
 
           await new Promise(r => setTimeout(r, 40));
         }
@@ -832,16 +908,17 @@
         startBtn.disabled = false;
         stopBtn.disabled = true;
       }
-    };
-    stopBtn.onclick = () => { abort = true; };
+    });
+
+    stopBtn.addEventListener('pointerup', () => { abort = true; });
 
     // ---------- single verse run
-    runSingleBtn.onclick = async () => {
+    runSingleBtn.addEventListener('pointerup', async () => {
       try {
         singleStatus.textContent = 'Running...';
         const apiBase = apiBaseEl.value.trim();
         const apiKey = apiKeyEl.value.trim();
-        const model = modelEl.value.trim();
+        const model = getActiveModelId() || 'qwen3-4b-instruct-2507';
         const temperature = parseFloat(temperatureEl.value || '0.9') || 0.9;
         const stream = streamEl.value === 'true';
         const stops = stopsEl.value.split(',').map(s => s.trim()).filter(Boolean);
@@ -876,7 +953,32 @@
       } catch (e) {
         singleStatus.textContent = `Error ... ${e.message}`;
       }
-    };
+    });
+
+    // initial UI wiring
+    function initModelSelectUI() {
+      if (!modelSelectEl.options.length) {
+        // minimal starter list so selector is usable on first load, esp. mobile
+        ['qwen3-4b-instruct-2507','gpt-4o-mini','gpt-4o','llama-3.1-8b-instruct','mistral-small-latest']
+          .forEach(id => {
+            const opt = document.createElement('option');
+            opt.value = id; opt.textContent = id;
+            modelSelectEl.appendChild(opt);
+          });
+      }
+      // restore selection if saved
+      const saved = (() => {
+        try { return (JSON.parse(localStorage.getItem(SETTINGS_KEY))||{}).modelSelect || ''; } catch { return ''; }
+      })();
+      if (saved) {
+        const found = Array.from(modelSelectEl.options).some(o => o.value === saved);
+        modelSelectEl.value = found ? saved : modelSelectEl.options[0].value;
+      }
+    }
+    initModelSelectUI();
+
+    // custom model toggle visibility correction on load
+    updateModelInputsVisibility();
   </script>
 </body>
 </html>
