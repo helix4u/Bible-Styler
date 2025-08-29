@@ -24,6 +24,17 @@
       --radius: 12px;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
       --font-sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      /* button theming defaults (dark) */
+      --btn-bg: var(--accent);
+      --btn-bg-2: var(--accent-2);
+      --btn-fg: #001018;
+      --btn-secondary-fg: var(--text);
+      --btn-danger-top: #fb7185;
+      --btn-danger-bg: var(--danger);
+      --btn-danger-fg: #1b0310;
+      --btn-ok-top: #6ee7b7;
+      --btn-ok-bg: var(--ok);
+      --btn-ok-fg: #032018;
     }
     html, body {
       background: var(--bg);
@@ -58,25 +69,27 @@
     textarea { min-height: 120px; resize: vertical; }
     .mono { font-family: var(--font-mono); }
     .btn {
-      padding: 12px 16px; border: 1px solid var(--accent-2); border-radius: 10px;
-      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
-      color: #001018; cursor: pointer; font-weight: 600; transition: filter 120ms ease, transform 60ms ease; user-select: none;
+      padding: 12px 16px; border: 1px solid var(--btn-bg-2); border-radius: 10px;
+      background: linear-gradient(180deg, var(--btn-bg) 0%, var(--btn-bg-2) 100%);
+      color: var(--btn-fg); cursor: pointer; font-weight: 600; transition: filter 120ms ease, transform 60ms ease; user-select: none;
       min-height: 44px; /* touch target */
       font-size: 16px;
     }
     .btn:hover { filter: brightness(1.05); }
     .btn:active { transform: translateY(1px); }
-    .btn.secondary { background: transparent; color: var(--text); border-color: var(--border-strong); }
-    .btn.danger { border-color: var(--danger); background: linear-gradient(180deg, #fb7185 0%, var(--danger) 100%); color: #1b0310; }
-    .btn.ok { border-color: var(--ok); background: linear-gradient(180deg, #6ee7b7 0%, var(--ok) 100%); color: #032018; }
+    .btn.secondary { background: transparent; color: var(--btn-secondary-fg); border-color: var(--border-strong); }
+    .btn.danger { border-color: var(--btn-danger-bg); background: linear-gradient(180deg, var(--btn-danger-top) 0%, var(--btn-danger-bg) 100%); color: var(--btn-danger-fg); }
+    .btn.ok { border-color: var(--btn-ok-bg); background: linear-gradient(180deg, var(--btn-ok-top) 0%, var(--btn-ok-bg) 100%); color: var(--btn-ok-fg); }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .inline { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .muted { color: var(--text-muted); font-size: 12px; }
     .out { white-space: pre-wrap; font-family: var(--font-mono); background: var(--term-bg); color: var(--term); padding: 14px; border-radius: 10px; min-height: 180px; border: 1px solid var(--border-strong); }
     .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #0b2a33; color: #7dd3fc; border: 1px solid #0a3b48; font-size: 11px; font-weight: 600; }
     .tabs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-    .tab { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none; background: #0b1220; min-height: 40px; display: inline-flex; align-items: center; }
-    .tab.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35); }
+    .tab { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none; background: var(--bg-input); min-height: 40px; display: inline-flex; align-items: center; color: var(--text); }
+    .tab.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35); background: var(--bg-elev); }
+    /* details-like toggle styling */
+    #setupSummary button.btn.secondary { min-width: 180px; }
     @media (max-width: 920px) {
       body { padding: 16px; }
       .grid { grid-template-columns: repeat(6, 1fr); gap: 10px; }
@@ -93,7 +106,7 @@
   </style>
 </head>
 <body>
-  <h1>Bible Styler ... browser edition <span class="badge">dark</span></h1>
+  <h1>Bible Styler ... browser edition <span class="badge" id="themeBadge">dark</span></h1>
   <div class="muted" style="margin: 6px 0 12px 0;">
     If this helps you, consider supporting:
     <a href="https://ko-fi.com/gille" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">ko-fi.com/gille</a>
@@ -102,8 +115,22 @@
   </div>
 
   <div class="grid">
+    <!-- Setup summary toggle -->
+    <div class="row card" id="setupSummary">
+      <div class="inline" style="justify-content: space-between; width:100%;">
+        <div class="inline">
+          <button id="setupToggle" class="btn secondary" aria-expanded="false" aria-controls="setupApiCard setupDataCard">Setup & Settings ▸</button>
+          <span class="muted">API, models, persona, data, options</span>
+        </div>
+        <div class="inline">
+          <label for="themeSelect" style="margin:0;">Theme</label>
+          <select id="themeSelect"></select>
+        </div>
+      </div>
+    </div>
+
     <!-- provider presets and api config -->
-    <div class="row card">
+    <div class="row card" id="setupApiCard" style="display:none;">
       <div class="grid">
         <div style="grid-column: span 4;">
           <label for="vendor">Vendor preset</label>
@@ -135,6 +162,11 @@
         <div style="grid-column: span 6;">
           <label for="apiKey">API key ... stored only in this browser</label>
           <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off">
+        </div>
+
+        <div style="grid-column: span 6;">
+          <label for="themeOverrides">Theme overrides (CSS vars JSON) ... optional</label>
+          <textarea id="themeOverrides" class="mono" placeholder='{"--accent":"#22d3ee","--bg":"#0b0f14"}'></textarea>
         </div>
 
         <!-- model selector with mobile-safe select and an optional free-typing input -->
@@ -224,7 +256,7 @@
     </div>
 
     <!-- data source -->
-    <div class="row card">
+    <div class="row card" id="setupDataCard" style="display:none;">
       <div class="grid">
         <div style="grid-column: span 8;">
           <label for="jsonPreset">Default sources</label>
@@ -240,6 +272,13 @@
             <button id="loadJson" class="btn secondary">Fetch</button>
             <input id="jsonFile" type="file" accept=".json">
           </div>
+        </div>
+        <div style="grid-column: span 4;">
+          <label for="autoFetchJson">Auto-fetch JSON on load</label>
+          <select id="autoFetchJson">
+            <option value="false">false</option>
+            <option value="true">true</option>
+          </select>
         </div>
         <div style="grid-column: span 6;">
           <label for="volumes">Include volumes ... e.g. Old Testament,New Testament</label>
@@ -268,11 +307,11 @@
     <!-- mode tabs -->
     <div class="row card">
       <div class="tabs">
-        <div class="tab active" data-panel="batchPanel" tabindex="0">Batch mode</div>
-        <div class="tab" data-panel="singlePanel" tabindex="0">Single verse/chapter</div>
+        <div class="tab" data-panel="batchPanel" tabindex="0">Batch mode</div>
+        <div class="tab active" data-panel="singlePanel" tabindex="0">Single verse/chapter</div>
       </div>
 
-      <div id="batchPanel">
+      <div id="batchPanel" style="display:none;">
         <div class="inline" style="margin-bottom: 8px;">
           <button id="startBtn" class="btn">Start</button>
           <button id="stopBtn" class="btn danger" disabled>Stop</button>
@@ -281,7 +320,7 @@
         <div id="status" class="muted" style="margin-top:8px;" aria-live="polite"></div>
       </div>
 
-      <div id="singlePanel" style="display:none;">
+      <div id="singlePanel" style="display:block;">
         <div class="grid" style="margin-bottom: 8px;">
           <div style="grid-column: span 4;">
             <label for="bookSel">Book</label>
@@ -392,6 +431,58 @@
 `You are rewriting each Bible verse like a concise system log. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Use bracketed tags and status-like phrasing sparingly. Make every line unique. No Repetition. No emojis. No slurs.`
     };
 
+    // ---------- themes
+    const THEMES = {
+      dark: {
+        '--bg':'#0b0f14','--bg-elev':'#0f172a','--bg-input':'#0b1220','--border':'#1e293b','--border-strong':'#334155','--text':'#e5e7eb','--text-muted':'#94a3b8','--accent':'#38bdf8','--accent-2':'#22d3ee','--danger':'#f43f5e','--ok':'#34d399','--term':'#a7f3d0','--term-bg':'#071019',
+        '--btn-bg':'#38bdf8','--btn-bg-2':'#22d3ee','--btn-fg':'#001018','--btn-secondary-fg':'#e5e7eb',
+        '--btn-danger-top':'#fb7185','--btn-danger-bg':'#f43f5e','--btn-danger-fg':'#1b0310',
+        '--btn-ok-top':'#6ee7b7','--btn-ok-bg':'#34d399','--btn-ok-fg':'#032018'
+      },
+      light: {
+        '--bg':'#f8fafc','--bg-elev':'#ffffff','--bg-input':'#f1f5f9','--border':'#e5e7eb','--border-strong':'#cbd5e1','--text':'#0f172a','--text-muted':'#475569','--accent':'#0ea5e9','--accent-2':'#22d3ee','--danger':'#dc2626','--ok':'#059669','--term':'#0f172a','--term-bg':'#e2e8f0',
+        '--btn-bg':'#0ea5e9','--btn-bg-2':'#22d3ee','--btn-fg':'#0f172a','--btn-secondary-fg':'#0f172a',
+        '--btn-danger-top':'#fca5a5','--btn-danger-bg':'#dc2626','--btn-danger-fg':'#ffffff',
+        '--btn-ok-top':'#a7f3d0','--btn-ok-bg':'#059669','--btn-ok-fg':'#ffffff'
+      },
+      cyberpunk: {
+        '--bg':'#0a0014','--bg-elev':'#130026','--bg-input':'#10001f','--border':'#2a0a3f','--border-strong':'#3f115c','--text':'#e8e6ff','--text-muted':'#bba8ff','--accent':'#ff00ff','--accent-2':'#00ffff','--danger':'#ff0077','--ok':'#00ff9c','--term':'#faff84','--term-bg':'#0a0014',
+        '--btn-bg':'#ff00ff','--btn-bg-2':'#00ffff','--btn-fg':'#0a0014','--btn-secondary-fg':'#e8e6ff',
+        '--btn-danger-top':'#ff66b2','--btn-danger-bg':'#ff0077','--btn-danger-fg':'#0a0014',
+        '--btn-ok-top':'#66ffd1','--btn-ok-bg':'#00ff9c','--btn-ok-fg':'#0a0014'
+      },
+      onyx: {
+        '--bg':'#000000','--bg-elev':'#0a0a0a','--bg-input':'#0f0f10','--border':'#1a1a1b','--border-strong':'#2a2a2b','--text':'#e6e6e6','--text-muted':'#9ca3af','--accent':'#8b5cf6','--accent-2':'#22d3ee','--danger':'#ef4444','--ok':'#10b981','--term':'#c7d2fe','--term-bg':'#060606',
+        '--btn-bg':'#8b5cf6','--btn-bg-2':'#22d3ee','--btn-fg':'#ffffff','--btn-secondary-fg':'#e6e6e6',
+        '--btn-danger-top':'#fb7185','--btn-danger-bg':'#ef4444','--btn-danger-fg':'#ffffff',
+        '--btn-ok-top':'#6ee7b7','--btn-ok-bg':'#10b981','--btn-ok-fg':'#051b12'
+      },
+      sepia: {
+        '--bg':'#f7f2e7','--bg-elev':'#fffdf7','--bg-input':'#f2eadf','--border':'#e8dcc6','--border-strong':'#d6c7ad','--text':'#2f2a24','--text-muted':'#6b5e52','--accent':'#b26b00','--accent-2':'#d97706','--danger':'#b45309','--ok':'#7c3aed','--term':'#3b2f2f','--term-bg':'#efe6d8',
+        '--btn-bg':'#b26b00','--btn-bg-2':'#d97706','--btn-fg':'#2f2a24','--btn-secondary-fg':'#2f2a24',
+        '--btn-danger-top':'#f59e0b','--btn-danger-bg':'#b45309','--btn-danger-fg':'#2f2a24',
+        '--btn-ok-top':'#c4b5fd','--btn-ok-bg':'#7c3aed','--btn-ok-fg':'#ffffff'
+      },
+      highcontrast: {
+        '--bg':'#000000','--bg-elev':'#000000','--bg-input':'#000000','--border':'#ffffff','--border-strong':'#ffffff','--text':'#ffffff','--text-muted':'#cfcfcf','--accent':'#ffff00','--accent-2':'#00ffff','--danger':'#ff0000','--ok':'#00ff00','--term':'#ffffff','--term-bg':'#000000',
+        '--btn-bg':'#ffff00','--btn-bg-2':'#00ffff','--btn-fg':'#000000','--btn-secondary-fg':'#ffffff',
+        '--btn-danger-top':'#ff7f7f','--btn-danger-bg':'#ff0000','--btn-danger-fg':'#000000',
+        '--btn-ok-top':'#a7ffa7','--btn-ok-bg':'#00ff00','--btn-ok-fg':'#000000'
+      }
+    };
+    function applyTheme(name, overrides) {
+      const root = document.documentElement;
+      const base = THEMES[name] || THEMES.dark;
+      Object.entries(base).forEach(([k,v]) => root.style.setProperty(k, v));
+      if (overrides && typeof overrides === 'object') {
+        Object.entries(overrides).forEach(([k,v]) => {
+          if (String(k).startsWith('--')) root.style.setProperty(k, v);
+        });
+      }
+      const badge = document.getElementById('themeBadge');
+      if (badge) badge.textContent = name;
+    }
+
     // ---------- vendor presets
     const vendorPresets = {
       "Custom": {},
@@ -413,6 +504,12 @@
     const vendorEl = document.getElementById('vendor');
     const apiBaseEl = document.getElementById('apiBase');
     const apiKeyEl = document.getElementById('apiKey');
+    const themeSelectEl = document.getElementById('themeSelect');
+    const themeOverridesEl = document.getElementById('themeOverrides');
+    const setupToggleBtn = document.getElementById('setupToggle');
+    const setupApiCard = document.getElementById('setupApiCard');
+    const setupDataCard = document.getElementById('setupDataCard');
+    const autoFetchJsonEl = document.getElementById('autoFetchJson');
 
     const modelSelectEl = document.getElementById('modelSelect');
     const modelTextEl = document.getElementById('modelText');
@@ -543,6 +640,7 @@
     // ---------- persistence
     const SETTINGS_KEY = 'bibleStylerSettings.v2';
     const SLOTS_KEY = 'personaSlots.v1'; // 5 slots
+    let setupOpen = false;
 
     function getActiveModelId() {
       return customModelToggle.checked ? modelTextEl.value.trim() : modelSelectEl.value.trim();
@@ -553,6 +651,9 @@
         vendor: vendorEl.value,
         apiBase: apiBaseEl.value,
         apiKey: apiKeyEl.value,
+        themeName: (themeSelectEl?.value || 'dark'),
+        themeOverrides: (themeOverridesEl?.value || ''),
+        setupOpen: !!setupOpen,
         modelMode: customModelToggle.checked ? 'custom' : 'select',
         modelSelect: modelSelectEl.value,
         modelText: modelTextEl.value,
@@ -561,12 +662,13 @@
         systemPrompt: systemPromptEl.value,
         stops: stopsEl.value,
         jsonUrl: jsonUrlEl.value,
+        autoFetchJson: (autoFetchJsonEl?.value || 'false'),
         volumes: volumesEl.value,
         books: booksEl.value,
         ctxPairs: ctxPairsEl.value,
         extraHeaders: extraHeadersEl.value,
         // persist current panel selection as part of settings
-        activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'batchPanel'
+        activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'singlePanel'
       };
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(obj));
     }
@@ -579,11 +681,20 @@
           vendorEl.value = s.vendor || 'Custom';
           apiBaseEl.value = s.apiBase || '';
           apiKeyEl.value = s.apiKey || '';
+          // theme
+          const themeName = (s.themeName || 'dark');
+          const themeOverrides = (() => { try { return JSON.parse(s.themeOverrides||''); } catch { return {}; }})();
+          initThemeUI(themeName);
+          applyTheme(themeName, themeOverrides);
+          if (themeOverridesEl) themeOverridesEl.value = s.themeOverrides || '';
+          setupOpen = !!s.setupOpen;
+          setSetupOpen(setupOpen);
           temperatureEl.value = s.temperature || '0.9';
           streamEl.value = s.stream || 'true';
           systemPromptEl.value = s.systemPrompt || PRESET_TEXTS.stoner; // default
           stopsEl.value = s.stops || 'Reference:,AI:,---';
           jsonUrlEl.value = s.jsonUrl || jsonUrlEl.value;
+          if (autoFetchJsonEl) autoFetchJsonEl.value = s.autoFetchJson || 'false';
           volumesEl.value = s.volumes || 'Old Testament,New Testament';
           booksEl.value = s.books || '';
           ctxPairsEl.value = s.ctxPairs || '3';
@@ -594,14 +705,40 @@
           modelTextEl.value = s.modelText || '';
           modelSelectEl.value = s.modelSelect || '';
           updateModelInputsVisibility();
-          // restore last active panel (batch vs single)
-          setActivePanel(s.activePanel || 'batchPanel');
+          // restore last active panel (batch vs single) — default single first
+          setActivePanel(s.activePanel || 'singlePanel');
         } else {
           systemPromptEl.value = PRESET_TEXTS.stoner; // first load default
         }
       } catch {
         systemPromptEl.value = PRESET_TEXTS.stoner;
       }
+    }
+
+    function initThemeUI(selected) {
+      if (!themeSelectEl) return;
+      const options = [
+        {v:'dark', t:'Dark'},
+        {v:'light', t:'Light'},
+        {v:'cyberpunk', t:'Cyberpunk'},
+        {v:'onyx', t:'Onyx Black'},
+        {v:'sepia', t:'Sepia'},
+        {v:'highcontrast', t:'High Contrast'}
+      ];
+      themeSelectEl.innerHTML = options.map(o => `<option value="${o.v}">${o.t}</option>`).join('');
+      themeSelectEl.value = options.some(o=>o.v===selected) ? selected : 'dark';
+    }
+
+    function setSetupOpen(open) {
+      setupOpen = !!open;
+      if (setupApiCard) setupApiCard.style.display = open ? 'block' : 'none';
+      if (setupDataCard) setupDataCard.style.display = open ? 'block' : 'none';
+      if (setupToggleBtn) {
+        setupToggleBtn.textContent = open ? 'Setup & Settings ▾' : 'Setup & Settings ▸';
+        setupToggleBtn.setAttribute('aria-expanded', String(open));
+      }
+      // Only show HTTPS warning when setup section is visible and protocol is https
+      if (httpsWarn) httpsWarn.style.display = (open && location.protocol === 'https:') ? 'block' : 'none';
     }
 
     function updateModelInputsVisibility() {
@@ -619,6 +756,21 @@
       el.addEventListener('change', saveSettings, { passive: true });
       el.addEventListener('input', saveSettings, { passive: true }); // save while typing to retain on refresh
     });
+    // Setup toggle
+    if (setupToggleBtn) {
+      setupToggleBtn.addEventListener('pointerup', () => { setSetupOpen(!setupOpen); saveSettings(); });
+    }
+    // Theme handlers
+    if (themeSelectEl) themeSelectEl.addEventListener('change', () => {
+      const overrides = (() => { try { return JSON.parse(themeOverridesEl.value||''); } catch { return {}; } })();
+      applyTheme(themeSelectEl.value, overrides);
+      saveSettings();
+    }, { passive: true });
+    if (themeOverridesEl) themeOverridesEl.addEventListener('change', () => {
+      const overrides = (() => { try { return JSON.parse(themeOverridesEl.value||''); } catch { return {}; } })();
+      applyTheme((themeSelectEl?.value||'dark'), overrides);
+      saveSettings();
+    }, { passive: true });
     loadSettings();
 
     // ---------- persona slots
@@ -825,7 +977,7 @@
       ['change','input','pointerup','click','blur'].forEach(ev => sel.addEventListener(ev, handler, { passive: true }));
     }
 
-    document.getElementById('loadJson').addEventListener('pointerup', async () => {
+    async function loadJsonFromUrl() {
       try {
         statusEl.textContent = 'Fetching JSON...';
         const data = await fetchJson(jsonUrlEl.value);
@@ -835,10 +987,14 @@
         populateSelectorsFromData(verses);
         updateVolumeBookFields(verses);
         saveSettings();
+        return true;
       } catch (e) {
         statusEl.textContent = `Failed to load JSON ... ${e.message}`;
+        return false;
       }
-    });
+    }
+
+    document.getElementById('loadJson').addEventListener('pointerup', loadJsonFromUrl);
 
     jsonFileEl.addEventListener('change', async (ev) => {
       const file = ev.target.files?.[0];
@@ -1287,6 +1443,16 @@
 
     // custom model toggle visibility correction on load
     updateModelInputsVisibility();
+
+    // Auto fetch last JSON on first load if enabled
+    (async () => {
+      try {
+        const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+        if (s && s.autoFetchJson === 'true' && (jsonUrlEl.value || '').trim()) {
+          await loadJsonFromUrl();
+        }
+      } catch {}
+    })();
   </script>
 </body>
 </html>
