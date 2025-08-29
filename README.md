@@ -35,7 +35,7 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 
 2. API base and key
 - `API base`: An OpenAI‑compatible chat completions endpoint (e.g., `https://api.openai.com/v1/chat/completions` or LM Studio/Ollama local endpoints)
-- `API key`: Your provider key (stored only in this browser)
+- `API key`: Your provider key (stored only in this browser). For local servers like LM Studio or Ollama, you can usually leave this blank.
 
 3. Model selection
 - Click “Fetch” to load models from your provider, or toggle “type custom” and enter any model ID manually
@@ -100,6 +100,39 @@ The app uses OpenAI‑style Chat Completions. Presets included:
 - Cerebras: `https://api.cerebras.ai/v1/chat/completions`
 
 Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/tags`. If model fetching fails, you can type a model ID manually. Your previously selected model is preserved if still available.
+
+### Model Compatibility (Chat Completions)
+
+- This page calls the Chat Completions API (`…/v1/chat/completions`) using `messages`.
+- Not every fetched model will work: provider lists can include embeddings, image, or “responses‑only” models. Those will fail here.
+- Choose models labeled “chat” or “instruct” (e.g., Llama‑3 Instruct, Qwen‑2.5‑Instruct, Mistral‑Instruct). If you see errors like “use the Responses API” or “unsupported endpoint,” switch to a model that supports Chat Completions.
+- Some newer models may only support a Responses API; those are not compatible with this page unless the provider also supports Chat Completions for them.
+
+## Local Inference (LM Studio)
+
+- Recommended for privacy/cost: LM Studio — https://lmstudio.ai/
+- Setup:
+  - Install LM Studio, open the Local Server, and start it (default `http://127.0.0.1:1234`).
+  - Download an “Instruct/Chat” model (e.g., Llama‑3 Instruct, Qwen‑2.5 Instruct, Mistral‑Instruct).
+  - In this app, select Vendor preset → `LM Studio`. Leave `API key` blank. Click “Fetch” or type the model ID.
+- Also works with Ollama (preset included). Pull an instruct/chat model for best results.
+
+## Get an API Key (ELI5)
+
+- What it is: A secret password that lets this page talk to an AI provider and bill usage to your account. Keep it private.
+- How to get one:
+  - Pick a provider (e.g., OpenAI, OpenRouter, Groq, Together, Fireworks).
+  - Create an account, open the provider’s “API keys” page, click “Create new key,” then copy it.
+  - Paste it into the app’s `API key` box. It’s stored only in your browser (`localStorage`).
+- Cost: Some providers have free tiers; others require a card. Local options (LM Studio, Ollama) require no key.
+- Quick links:
+  - OpenAI: https://platform.openai.com/api-keys
+  - OpenRouter: https://openrouter.ai/keys
+  - Groq: https://console.groq.com/keys
+  - Together: https://api.together.xyz/settings/api-keys
+  - Fireworks: https://app.fireworks.ai/users/account/api-keys
+ 
+Never commit or share your key. If you get 401/403 errors, recheck the key and that your account has access to the chosen model.
 
 ## Output Format
 
