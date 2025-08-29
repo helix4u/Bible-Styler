@@ -125,6 +125,7 @@ Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/t
   - Create an account, open the provider’s “API keys” page, click “Create new key,” then copy it.
   - Paste it into the app’s `API key` box. It’s stored only in your browser (`localStorage`).
 - Cost: Some providers have free tiers; others require a card. Local options (LM Studio, Ollama) require no key.
+- Some providers give daily free tokens up to a limit based on if you allow training on your data or not. 
 - Quick links:
   - OpenAI: https://platform.openai.com/api-keys
   - OpenRouter: https://openrouter.ai/keys
