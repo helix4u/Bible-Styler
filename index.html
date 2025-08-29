@@ -35,6 +35,19 @@
       --btn-ok-top: #6ee7b7;
       --btn-ok-bg: var(--ok);
       --btn-ok-fg: #032018;
+      /* compact button sizing */
+      --btn-py: 8px;
+      --btn-px: 12px;
+      --btn-font: 14px;
+      --btn-min-h: 40px;
+      --btn-radius: 8px;
+      /* neutral button palette */
+      --btn-neutral-bg: #4b5563;
+      --btn-neutral-bg-2: #374151;
+      --btn-neutral-fg: #f3f4f6;
+      --btn-neutral-border: #6b7280;
+      /* link color */
+      --link: #16a34a;
     }
     html, body {
       background: var(--bg);
@@ -69,27 +82,32 @@
     textarea { min-height: 120px; resize: vertical; }
     .mono { font-family: var(--font-mono); }
     .btn {
-      padding: 12px 16px; border: 1px solid var(--btn-bg-2); border-radius: 10px;
+      padding: var(--btn-py) var(--btn-px); border: 1px solid var(--btn-bg-2); border-radius: var(--btn-radius);
       background: linear-gradient(180deg, var(--btn-bg) 0%, var(--btn-bg-2) 100%);
       color: var(--btn-fg); cursor: pointer; font-weight: 600; transition: filter 120ms ease, transform 60ms ease; user-select: none;
-      min-height: 44px; /* touch target */
-      font-size: 16px;
+      min-height: var(--btn-min-h); /* touch target */
+      font-size: var(--btn-font);
     }
     .btn:hover { filter: brightness(1.05); }
     .btn:active { transform: translateY(1px); }
     .btn.secondary { background: transparent; color: var(--btn-secondary-fg); border-color: var(--border-strong); }
     .btn.danger { border-color: var(--btn-danger-bg); background: linear-gradient(180deg, var(--btn-danger-top) 0%, var(--btn-danger-bg) 100%); color: var(--btn-danger-fg); }
     .btn.ok { border-color: var(--btn-ok-bg); background: linear-gradient(180deg, var(--btn-ok-top) 0%, var(--btn-ok-bg) 100%); color: var(--btn-ok-fg); }
+    .btn.neutral { border-color: var(--btn-neutral-border); background: linear-gradient(180deg, var(--btn-neutral-bg) 0%, var(--btn-neutral-bg-2) 100%); color: var(--btn-neutral-fg); }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .inline { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .muted { color: var(--text-muted); font-size: 12px; }
     .out { white-space: pre-wrap; font-family: var(--font-mono); background: var(--term-bg); color: var(--term); padding: 14px; border-radius: 10px; min-height: 180px; border: 1px solid var(--border-strong); }
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #0b2a33; color: #7dd3fc; border: 1px solid #0a3b48; font-size: 11px; font-weight: 600; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--bg-input); color: var(--accent); border: 1px solid var(--accent-2); font-size: 11px; font-weight: 600; }
     .tabs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
     .tab { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none; background: var(--bg-input); min-height: 40px; display: inline-flex; align-items: center; color: var(--text); }
-    .tab.active { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35); background: var(--bg-elev); }
+    .tab.active { border-color: var(--accent); box-shadow: var(--focus); background: var(--bg-elev); }
     /* details-like toggle styling */
     #setupSummary button.btn.secondary { min-width: 180px; }
+    /* links */
+    a, a:visited { color: var(--link) !important; }
+    a { text-decoration: none; }
+    a:hover, a:focus { text-decoration: underline; }
     @media (max-width: 920px) {
       body { padding: 16px; }
       .grid { grid-template-columns: repeat(6, 1fr); gap: 10px; }
@@ -109,9 +127,9 @@
   <h1>Bible Styler ... browser edition <span class="badge" id="themeBadge">dark</span></h1>
   <div class="muted" style="margin: 6px 0 12px 0;">
     If this helps you, consider supporting:
-    <a href="https://ko-fi.com/gille" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">ko-fi.com/gille</a>
+    <a href="https://ko-fi.com/gille" target="_blank" rel="noopener">ko-fi.com/gille</a>
     &nbsp;•&nbsp;
-    <a href="https://github.com/helix4u/Bible-Styler/blob/main/README.md" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">README</a>
+    <a href="https://github.com/helix4u/Bible-Styler/blob/main/README.md" target="_blank" rel="noopener">README</a>
   </div>
 
   <div class="grid">
@@ -341,7 +359,7 @@
         </div>
         <div class="inline" style="margin-bottom: 8px;">
           <button id="runSingle" class="btn ok">Run single verse</button>
-          <button id="runChapter" class="btn">Run chapter</button>
+          <button id="runChapter" class="btn neutral">Run chapter</button>
         </div>
         <div id="singleStatus" class="muted" aria-live="polite"></div>
       </div>
@@ -352,7 +370,7 @@
       <label>Output</label>
       <div class="inline" style="margin: 8px 0;">
         <button id="copyOut" class="btn secondary">Copy output</button>
-        <button id="shareOut" class="btn">Share</button>
+        <button id="shareOut" class="btn neutral">Share</button>
         <span id="outStatus" class="muted" aria-live="polite"></span>
       </div>
       <div id="out" class="out"></div>
@@ -437,37 +455,44 @@
         '--bg':'#0b0f14','--bg-elev':'#0f172a','--bg-input':'#0b1220','--border':'#1e293b','--border-strong':'#334155','--text':'#e5e7eb','--text-muted':'#94a3b8','--accent':'#38bdf8','--accent-2':'#22d3ee','--danger':'#f43f5e','--ok':'#34d399','--term':'#a7f3d0','--term-bg':'#071019',
         '--btn-bg':'#38bdf8','--btn-bg-2':'#22d3ee','--btn-fg':'#001018','--btn-secondary-fg':'#e5e7eb',
         '--btn-danger-top':'#fb7185','--btn-danger-bg':'#f43f5e','--btn-danger-fg':'#1b0310',
-        '--btn-ok-top':'#6ee7b7','--btn-ok-bg':'#34d399','--btn-ok-fg':'#032018'
+        '--btn-ok-top':'#6ee7b7','--btn-ok-bg':'#34d399','--btn-ok-fg':'#032018',
+        '--link':'#22c55e'
       },
       light: {
         '--bg':'#f8fafc','--bg-elev':'#ffffff','--bg-input':'#f1f5f9','--border':'#e5e7eb','--border-strong':'#cbd5e1','--text':'#0f172a','--text-muted':'#475569','--accent':'#0ea5e9','--accent-2':'#22d3ee','--danger':'#dc2626','--ok':'#059669','--term':'#0f172a','--term-bg':'#e2e8f0',
         '--btn-bg':'#0ea5e9','--btn-bg-2':'#22d3ee','--btn-fg':'#0f172a','--btn-secondary-fg':'#0f172a',
         '--btn-danger-top':'#fca5a5','--btn-danger-bg':'#dc2626','--btn-danger-fg':'#ffffff',
-        '--btn-ok-top':'#a7f3d0','--btn-ok-bg':'#059669','--btn-ok-fg':'#ffffff'
+        '--btn-ok-top':'#a7f3d0','--btn-ok-bg':'#059669','--btn-ok-fg':'#ffffff',
+        '--link':'#15803d'
       },
       cyberpunk: {
-        '--bg':'#0a0014','--bg-elev':'#130026','--bg-input':'#10001f','--border':'#2a0a3f','--border-strong':'#3f115c','--text':'#e8e6ff','--text-muted':'#bba8ff','--accent':'#ff00ff','--accent-2':'#00ffff','--danger':'#ff0077','--ok':'#00ff9c','--term':'#faff84','--term-bg':'#0a0014',
-        '--btn-bg':'#ff00ff','--btn-bg-2':'#00ffff','--btn-fg':'#0a0014','--btn-secondary-fg':'#e8e6ff',
-        '--btn-danger-top':'#ff66b2','--btn-danger-bg':'#ff0077','--btn-danger-fg':'#0a0014',
-        '--btn-ok-top':'#66ffd1','--btn-ok-bg':'#00ff9c','--btn-ok-fg':'#0a0014'
+        '--bg':'#0a1420','--bg-elev':'#0f1f30','--bg-input':'#0c1a2b','--border':'#203349','--border-strong':'#2f4b63','--text':'#cde7ff','--text-muted':'#6aa0bb','--accent':'#00eaff','--accent-2':'#00b7ff','--danger':'#ff2d55','--ok':'#00ffa3','--term':'#00eaff','--term-bg':'#071321',
+        '--btn-bg':'#00eaff','--btn-bg-2':'#00b7ff','--btn-fg':'#001018','--btn-secondary-fg':'#9de9ff',
+        '--btn-danger-top':'#ff506e','--btn-danger-bg':'#ff2d55','--btn-danger-fg':'#1f0a12',
+        '--btn-ok-top':'#33ffb7','--btn-ok-bg':'#00ffa3','--btn-ok-fg':'#001a12',
+        '--link':'#00ffa3'
       },
       onyx: {
-        '--bg':'#000000','--bg-elev':'#0a0a0a','--bg-input':'#0f0f10','--border':'#1a1a1b','--border-strong':'#2a2a2b','--text':'#e6e6e6','--text-muted':'#9ca3af','--accent':'#8b5cf6','--accent-2':'#22d3ee','--danger':'#ef4444','--ok':'#10b981','--term':'#c7d2fe','--term-bg':'#060606',
-        '--btn-bg':'#8b5cf6','--btn-bg-2':'#22d3ee','--btn-fg':'#ffffff','--btn-secondary-fg':'#e6e6e6',
+        '--bg':'#000000','--bg-elev':'#0a0a0a','--bg-input':'#0f0f10','--border':'#1a1a1b','--border-strong':'#2a2a2b','--text':'#e6e6e6','--text-muted':'#9ca3af','--accent':'#9ca3af','--accent-2':'#6b7280','--danger':'#ef4444','--ok':'#10b981','--term':'#c7d2fe','--term-bg':'#060606',
+        '--btn-bg':'#22d3ee','--btn-bg-2':'#22d3ee','--btn-fg':'#ffffff','--btn-secondary-fg':'#e6e6e6',
         '--btn-danger-top':'#fb7185','--btn-danger-bg':'#ef4444','--btn-danger-fg':'#ffffff',
-        '--btn-ok-top':'#6ee7b7','--btn-ok-bg':'#10b981','--btn-ok-fg':'#051b12'
+        '--btn-ok-top':'#6ee7b7','--btn-ok-bg':'#10b981','--btn-ok-fg':'#051b12',
+        '--link':'#9ca3af',
+        '--focus':'0 0 0 3px rgba(156, 163, 175, 0.35)'
       },
       sepia: {
         '--bg':'#f7f2e7','--bg-elev':'#fffdf7','--bg-input':'#f2eadf','--border':'#e8dcc6','--border-strong':'#d6c7ad','--text':'#2f2a24','--text-muted':'#6b5e52','--accent':'#b26b00','--accent-2':'#d97706','--danger':'#b45309','--ok':'#7c3aed','--term':'#3b2f2f','--term-bg':'#efe6d8',
         '--btn-bg':'#b26b00','--btn-bg-2':'#d97706','--btn-fg':'#2f2a24','--btn-secondary-fg':'#2f2a24',
         '--btn-danger-top':'#f59e0b','--btn-danger-bg':'#b45309','--btn-danger-fg':'#2f2a24',
-        '--btn-ok-top':'#c4b5fd','--btn-ok-bg':'#7c3aed','--btn-ok-fg':'#ffffff'
+        '--btn-ok-top':'#c4b5fd','--btn-ok-bg':'#7c3aed','--btn-ok-fg':'#ffffff',
+        '--link':'#2f7d32'
       },
       highcontrast: {
         '--bg':'#000000','--bg-elev':'#000000','--bg-input':'#000000','--border':'#ffffff','--border-strong':'#ffffff','--text':'#ffffff','--text-muted':'#cfcfcf','--accent':'#ffff00','--accent-2':'#00ffff','--danger':'#ff0000','--ok':'#00ff00','--term':'#ffffff','--term-bg':'#000000',
         '--btn-bg':'#ffff00','--btn-bg-2':'#00ffff','--btn-fg':'#000000','--btn-secondary-fg':'#ffffff',
         '--btn-danger-top':'#ff7f7f','--btn-danger-bg':'#ff0000','--btn-danger-fg':'#000000',
-        '--btn-ok-top':'#a7ffa7','--btn-ok-bg':'#00ff00','--btn-ok-fg':'#000000'
+        '--btn-ok-top':'#a7ffa7','--btn-ok-bg':'#00ff00','--btn-ok-fg':'#000000',
+        '--link':'#00ff00'
       }
     };
     function applyTheme(name, overrides) {
