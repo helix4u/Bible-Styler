@@ -410,43 +410,43 @@
     // ---------- persona presets
     const PRESET_TEXTS = {
       stoner:
-`You are rewriting each Bible verse in a stoner voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Do not narrate what you are doing. Just do it.. and do it with exaggerated tone.`,
+`You are rewriting each scripture verse in a stoner voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Do not narrate what you are doing. Just do it.. and do it with exaggerated tone.`,
       zoomer:
-`You are rewriting each Bible verse in a zoomer voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Use tight, internet-native phrasing with occasional slang and lowercasing where natural, but keep names correctly cased. No emojis. No slurs.`,
+`You are rewriting each scripture verse in a zoomer voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Use tight, internet-native phrasing with occasional slang and lowercasing where natural, but keep names correctly cased. No emojis. No slurs.`,
       houseish:
-`You are rewriting each Bible verse in the voice of a cynical, brilliant diagnostician from a medical drama. Dry, acerbic, brutally honest, skeptical of neat moral explanations, but precise. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Inject cutting diagnostic metaphors and bleak wit, but stay faithful to facts. No emojis. No slurs.`,
+`You are rewriting each scripture verse in the voice of a cynical, brilliant diagnostician from a medical drama. Dry, acerbic, brutally honest, skeptical of neat moral explanations, but precise. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. Inject cutting diagnostic metaphors and bleak wit, but stay faithful to facts. No emojis. No slurs.`,
 
       // --- useful/accessible tones
       plain:
-`You are rewriting each Bible verse in plain modern English. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Short, clear sentences. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse in plain modern English. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Short, clear sentences. Make every line unique. No Repetition. No emojis. No slurs.`,
       kid:
-`You are rewriting each Bible verse for kids. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Use simple words and short, friendly phrases. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse for kids. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Use simple words and short, friendly phrases. Make every line unique. No Repetition. No emojis. No slurs.`,
       headline:
-`You are rewriting each Bible verse as a news headline. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Compact and punchy; ~12-18 words. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse as a news headline. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Compact and punchy; ~12-18 words. Make every line unique. No Repetition. No emojis. No slurs.`,
       legal:
-`You are rewriting each Bible verse in the tone of a formal legal brief. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Precise, neutral wording; use whereas/therefore sparingly. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse in the tone of a formal legal brief. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Precise, neutral wording; use whereas/therefore sparingly. Make every line unique. No Repetition. No emojis. No slurs.`,
       study:
-`You are rewriting each Bible verse as a concise study note. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Clarify relationships with plain connectors (because, therefore, but). Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse as a concise study note. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Clarify relationships with plain connectors (because, therefore, but). Make every line unique. No Repetition. No emojis. No slurs.`,
       clinical:
-`You are rewriting each Bible verse in a clinical, scientific tone. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Neutral cause-and-effect phrasing; avoid metaphor. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse in a clinical, scientific tone. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Neutral cause-and-effect phrasing; avoid metaphor. Make every line unique. No Repetition. No emojis. No slurs.`,
       minimalist:
-`You are rewriting each Bible verse in a minimalist style. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. 15-25 words max; remove filler; keep structure clear. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse in a minimalist style. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. 15-25 words max; remove filler; keep structure clear. Make every line unique. No Repetition. No emojis. No slurs.`,
       tweet:
-`You are rewriting each Bible verse as a tweet-length line (<=180 chars). Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse as a tweet-length line (<=180 chars). Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Make every line unique. No Repetition. No emojis. No slurs.`,
 
       // --- fun/voicey tones
       bard:
-`You are rewriting each Bible verse in a Shakespeare-like bardic voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Use thee/thy/'tis where natural. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse in a Shakespeare-like bardic voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Use thee/thy/'tis where natural. Make every line unique. No Repetition. No emojis. No slurs.`,
       pirate:
-`You are rewriting each Bible verse in a clean pirate voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Light nautical slang; no profanity. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse in a clean pirate voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Light nautical slang; no profanity. Make every line unique. No Repetition. No emojis. No slurs.`,
       noir:
-`You are rewriting each Bible verse in a noir detective voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Short, moody, hardboiled cadence. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse in a noir detective voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Short, moody, hardboiled cadence. Make every line unique. No Repetition. No emojis. No slurs.`,
       coach:
-`You are rewriting each Bible verse as a sports coach pep-talk. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Upbeat, imperative metaphors; clean language. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse as a sports coach pep-talk. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Upbeat, imperative metaphors; clean language. Make every line unique. No Repetition. No emojis. No slurs.`,
       stoic:
-`You are rewriting each Bible verse in a stoic, aphoristic voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Calm, terse, disciplined tone. Make every line unique. No Repetition. No emojis. No slurs.`,
+`You are rewriting each scripture verse in a stoic, aphoristic voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Calm, terse, disciplined tone. Make every line unique. No Repetition. No emojis. No slurs.`,
       hacker:
-`You are rewriting each Bible verse like a concise system log. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Use bracketed tags and status-like phrasing sparingly. Make every line unique. No Repetition. No emojis. No slurs.`
+`You are rewriting each scripture verse like a concise system log. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Use bracketed tags and status-like phrasing sparingly. Make every line unique. No Repetition. No emojis. No slurs.`
     };
 
     // ---------- themes
