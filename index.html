@@ -1290,9 +1290,29 @@
       if (styledLines.length) ctx.push('Styled passages:\n' + styledLines.join('\n'));
       if (originalLines.length) ctx.push('Original passages:\n' + originalLines.join('\n'));
       const contextBlock = ctx.join('\n\n');
-      const sys = STUDY_PRESETS[preset] || STUDY_PRESETS.qa;
+      let sys = STUDY_PRESETS[preset] || STUDY_PRESETS.qa;
+      // Detect corpus/tradition for cross-references constraint
+      function corpusHint() {
+        try {
+          // Prefer explicit verse metadata when scope is verse/chapter
+          const b = bookSel.value;
+          const sample = verses.find(v => v.book_title === b);
+          const vol = (sample?.volume_title || '').trim();
+          if (!vol) return '';
+          if (vol === 'Quran') return 'Cross-references must come only from the Quran. Cite as SurahName S:V (e.g., Al-Baqarah 2:255).';
+          if (vol === 'Bhagavad Gita') return 'Cross-references must come only from the Bhagavad Gita. Cite as Bhagavad Gita C:V (e.g., Bhagavad Gita 2:47).';
+          if (vol === 'Buddhism') return 'Cross-references must come only from the Dhammapada. Cite as Dhammapada C:V.';
+          if (vol === 'Torah' || vol === "Nevi'im" || vol === 'Ketuvim') return 'Cross-references must come only from the Tanakh (Hebrew Bible). Cite as [Book C:V].';
+          if (vol === 'Old Testament' || vol === 'New Testament') return 'Cross-references must come only from the Bible. Cite as [Book C:V].';
+          return 'Keep cross-references within the same corpus as the provided passages.';
+        } catch { return ''; }
+      }
       const ask = (preset === 'qa' ? (question?.trim() || 'Provide a helpful study answer based on the passages.') : '')
-        + (includeXrefs ? '\n\nIf relevant, include brief cross-references.' : '');
+        + (includeXrefs ? ('\n\n' + corpusHint()) : '');
+      if (includeXrefs) {
+        const hint = corpusHint();
+        if (hint) sys = sys + '\n\n' + hint;
+      }
       const user = `${contextBlock}\n\n${ask}`.trim();
       return { system: sys, user };
     }
