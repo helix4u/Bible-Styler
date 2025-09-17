@@ -87,6 +87,12 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
    - Mandukya Upanishad (12 verses) is included as a concise English rendering compiled to fit the schema from public‑domain sources; all verses are presented as a single chapter for consistency with the app’s selectors.
    - Sources: https://sacred-texts.com/hin/sbe01/index.htm and https://sacred-texts.com/hin/sbe15/index.htm (public domain)
 
+- Mahabharata (KMG Ganguli, PD):
+  - Full 18 Parvas (Books). Dataset maps Parva → Section → Paragraph for smooth navigation: `book_title = "Mahabharata — {Parva}"`, `chapter_number = Section`, `verse_number = Paragraph`.
+  - Citation style: “Mahabharata — Parva Section ¶” (e.g., Mahabharata — Adi Parva Section 1 ¶3).
+  - Build locally (see below) or load once published.
+  - Source: https://sacred-texts.com/hin/maha/index.htm (public domain KMG translation)
+
 Notes
 - Where licenses apply (e.g., Quran CC BY-SA), attribution is included here and the original license terms apply to derivative JSON.
 
@@ -200,6 +206,26 @@ Tips
 - Stream tokens: When true, uses SSE streaming; otherwise waits for full JSON response
  - Max verses/run (Single chapter): Limits how many verses are processed per click when running a chapter. Defaults to 50. If more remain, a “Next chunk” button appears to continue without overwhelming the output.
  - Read aloud (no deps): Uses the browser’s built‑in Web Speech API (Text‑to‑Speech) to read the Output or the current selection. Also available in Study Aids. Supported in most modern browsers (Chrome/Edge/Safari); disabled if unavailable.
+
+## Build Mahabharata JSON (local)
+
+Because the Mahabharata is very large, you can generate the JSON locally to test immediately:
+
+1) Download the zip
+- Get `mahatxt.zip` from: https://sacred-texts.com/hin/maha/mahatxt.zip
+- Save it into the repo folder (same folder as `index.html`).
+
+2) Run the builder (PowerShell)
+- Windows/PowerShell 7+: `pwsh -File build_mahabharata.ps1`
+- Optional args: `-ZipPath mahatxt.zip -OutPath mahabharata_kmg.json`
+
+3) Load in the app
+- In the app, click “Scripture JSON URL” → choose local file and select `mahabharata_kmg.json`.
+- Book: pick a Parva (e.g., “Mahabharata — Adi Parva”), Chapter: a Section, Verse: a Paragraph.
+
+Notes
+- The builder keeps each section’s paragraphs as “verses” so you can chunk long chapters via “Max verses/run.”
+- When we publish the JSON, a preset will appear as “Mahabharata (KMG, PD)”.
 - Stops: Comma‑separated stop strings sent as `stop` to the API
 - Context pairs memory: How many recent (user, assistant) pairs to keep to reduce repetitive openings; may retry with higher temperature if repetition detected
 - Extra headers: JSON object merged into the request headers (e.g., OpenRouter requires `HTTP-Referer` and `X-Title`)
