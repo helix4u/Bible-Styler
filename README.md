@@ -48,7 +48,7 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 
 5. Load Scripture JSON
 - Default: Bible KJV dataset (helix4u/Bible-Styler)
-- Also available in presets: Standard Works (Book of Mormon Scriptures), Bhagavad Gita sample
+- Also available in presets: Quran (English, risan/quran-json), Standard Works (Book of Mormon Scriptures), Bhagavad Gita sample
 - Paste your own JSON URL or choose a local `.json` file
 - Optionally filter by volumes/books, and set index range
 
