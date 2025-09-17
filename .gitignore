@@ -1,0 +1,9 @@
+# Ignore local tools and temporary files
+tools/
+tmp_*.json
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
