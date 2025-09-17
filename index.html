@@ -376,6 +376,8 @@
       <div class="inline" style="margin: 8px 0;">
         <button id="copyOut" class="btn secondary">Copy output</button>
         <button id="shareOut" class="btn neutral">Share</button>
+        <button id="readOut" class="btn">Read aloud</button>
+        <button id="stopTts" class="btn danger">Stop TTS</button>
         <span id="outStatus" class="muted" aria-live="polite"></span>
       </div>
       <div id="out" class="out"></div>
@@ -646,6 +648,8 @@
     const outEl = document.getElementById('out');
     const copyOutBtn = document.getElementById('copyOut');
     const shareOutBtn = document.getElementById('shareOut');
+    const readOutBtn = document.getElementById('readOut');
+    const stopTtsBtn = document.getElementById('stopTts');
     const outStatus = document.getElementById('outStatus');
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
@@ -1347,6 +1351,64 @@
       }
       const user = `${contextBlock}\n\n${ask}`.trim();
       return { system: sys, user };
+    }
+
+    // --- TTS (Web Speech API) ---
+    const hasTTS = typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+    if (!hasTTS) {
+      if (readOutBtn) { readOutBtn.disabled = true; readOutBtn.title = 'Text-to-speech not supported in this browser'; }
+      if (stopTtsBtn) { stopTtsBtn.disabled = true; }
+    }
+    let ttsActive = false;
+    function splitIntoChunks(text, maxLen) {
+      const out = [];
+      const sents = text.split(/(?<=[\.\!\?])\s+/);
+      let buf = '';
+      for (const s of sents) {
+        if ((buf + ' ' + s).trim().length > maxLen) { if (buf) out.push(buf.trim()); buf = s; }
+        else { buf = (buf ? (buf + ' ' + s) : s); }
+      }
+      if (buf.trim()) out.push(buf.trim());
+      return out;
+    }
+    function ttsStop() {
+      if (!hasTTS) return;
+      window.speechSynthesis.cancel();
+      ttsActive = false;
+      setOutStatus('TTS stopped');
+    }
+    async function ttsSpeak(text) {
+      if (!hasTTS) return;
+      if (!text) { setOutStatus('Nothing to read'); return; }
+      // Avoid overlapping reads
+      ttsStop();
+      // Some engines have per-utterance limits; be conservative
+      const chunks = splitIntoChunks(text, 1500);
+      ttsActive = true;
+      for (const chunk of chunks) {
+        if (!ttsActive) break;
+        const utt = new SpeechSynthesisUtterance(chunk);
+        utt.rate = 1.0; // sane defaults
+        utt.pitch = 1.0;
+        await new Promise((resolve) => {
+          utt.onend = resolve; utt.onerror = resolve;
+          window.speechSynthesis.speak(utt);
+        });
+      }
+      ttsActive = false;
+      setOutStatus('TTS done');
+    }
+    if (readOutBtn) {
+      readOutBtn.addEventListener('pointerup', async () => {
+        try {
+          const sel = (window.getSelection && (window.getSelection().toString().trim())) || '';
+          const text = sel || (outEl.textContent || '').trim();
+          await ttsSpeak(text);
+        } catch (e) { setOutStatus('TTS error'); }
+      });
+    }
+    if (stopTtsBtn) {
+      stopTtsBtn.addEventListener('pointerup', ttsStop);
     }
 
     function makeUserPrompt(book, chapter, verse, text) {

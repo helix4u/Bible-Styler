@@ -176,7 +176,8 @@ Never commit or share your key. If you get 401/403 errors, recheck the key and t
 
 - Temperature: Creativity vs. determinism (0–2)
 - Stream tokens: When true, uses SSE streaming; otherwise waits for full JSON response
-- Max verses/run (Single chapter): Limits how many verses are processed per click when running a chapter. Defaults to 50. If more remain, a “Next chunk” button appears to continue without overwhelming the output.
+ - Max verses/run (Single chapter): Limits how many verses are processed per click when running a chapter. Defaults to 50. If more remain, a “Next chunk” button appears to continue without overwhelming the output.
+ - Read aloud (no deps): Uses the browser’s built‑in Web Speech API (Text‑to‑Speech) to read the Output or the current selection. Supported in most modern browsers (Chrome/Edge/Safari); disabled if unavailable.
 - Stops: Comma‑separated stop strings sent as `stop` to the API
 - Context pairs memory: How many recent (user, assistant) pairs to keep to reduce repetitive openings; may retry with higher temperature if repetition detected
 - Extra headers: JSON object merged into the request headers (e.g., OpenRouter requires `HTTP-Referer` and `X-Title`)
