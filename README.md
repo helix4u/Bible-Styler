@@ -185,3 +185,27 @@ Never commit or share your key. If you get 401/403 errors, recheck the key and t
  - Output panel includes Copy and Share for quick mobile workflows
 
 Enjoy! If this helps you, consider supporting: https://ko-fi.com/gille
+
+## Study Aids (New)
+
+Use the Study Aids panel to analyze or prep lessons from the currently selected passages. It reuses your existing API base/model/settings and returns a study result separate from the styled output.
+
+- Presets:
+  - Q&A (answer a question about the passage[s])
+  - Sermon prep (big idea, points, applications, illustrations, questions)
+  - Exegetical (verse-by-verse observations + structure)
+  - Youth version (simple summary, questions, applications)
+  - Academic commentary (concise, text-grounded notes)
+  - Concise outline (title, outline bullets, short summary)
+  - Cross-references digest (list with 1-line rationale)
+- Scope: Current verse, Current chapter, or All styled output
+- Context source: Styled + original, Styled only, or Original only
+- Question box: Optional prompt for Q&A mode or to guide other presets
+- Cross-references: Toggle to request brief related passages when relevant
+- Actions: Run study, Copy study, Share (uses Web Share API; falls back to copy)
+
+Tips
+- Load Scripture JSON and optionally generate styled lines first; “All styled output” uses whatever is in the Output panel.
+- For “Current verse/chapter,” the tool builds context from loaded JSON (original) and, if available, the Output panel (styled).
+- Prompts are neutral and cross-cultural; they avoid tradition-specific claims and cite verses like `[Book C:V]`.
+- Uses the same temperature/stream settings; adjust as needed for your provider.
