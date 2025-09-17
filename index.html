@@ -375,6 +375,59 @@
       </div>
       <div id="out" class="out"></div>
     </div>
+
+    <!-- study aids -->
+    <div class="row card" id="studyCard">
+      <label>Study Aids</label>
+      <div class="grid" style="margin-bottom:8px;">
+        <div style="grid-column: span 4;">
+          <label for="studyPreset">Preset</label>
+          <select id="studyPreset">
+            <option value="qa">Q&A (answer a question)</option>
+            <option value="sermon">Sermon prep</option>
+            <option value="exegetical">Exegetical (verse-by-verse)</option>
+            <option value="youth">Youth version</option>
+            <option value="academic">Academic commentary</option>
+            <option value="outline">Concise outline</option>
+            <option value="crossrefs">Cross-references digest</option>
+          </select>
+        </div>
+        <div style="grid-column: span 8;">
+          <label for="studyQuestion">Question (optional)</label>
+          <input id="studyQuestion" placeholder="Ask about these passages (e.g., themes, context, application)" autocomplete="off">
+        </div>
+        <div style="grid-column: span 4;">
+          <label for="studyScope">Scope</label>
+          <select id="studyScope">
+            <option value="verse">Current verse</option>
+            <option value="chapter">Current chapter</option>
+            <option value="out">All styled output</option>
+          </select>
+        </div>
+        <div style="grid-column: span 4;">
+          <label for="studyContext">Context source</label>
+          <select id="studyContext">
+            <option value="both">Styled + original</option>
+            <option value="styled">Styled only</option>
+            <option value="original">Original only</option>
+          </select>
+        </div>
+        <div style="grid-column: span 4;">
+          <label for="studyCrossrefs">Include cross-references</label>
+          <div class="inline">
+            <input id="studyCrossrefs" type="checkbox" style="width:auto;" checked>
+            <span class="muted">Suggest related passages when relevant</span>
+          </div>
+        </div>
+      </div>
+      <div class="inline" style="margin-bottom:8px;">
+        <button id="runStudy" class="btn ok">Run study</button>
+        <button id="copyStudy" class="btn secondary">Copy study</button>
+        <button id="shareStudy" class="btn neutral">Share</button>
+        <span id="studyStatus" class="muted" aria-live="polite"></span>
+      </div>
+      <div id="studyOut" class="out"></div>
+    </div>
   </div>
 
   <script>
@@ -447,6 +500,24 @@
 `You are rewriting each scripture verse in a stoic, aphoristic voice. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Calm, terse, disciplined tone. Make every line unique. No Repetition. No emojis. No slurs.`,
       hacker:
 `You are rewriting each scripture verse like a concise system log. Keep all proper nouns unchanged. One output line per verse. No extra commentary. Keep info density similar to the source. Do not add or remove facts. Use bracketed tags and status-like phrasing sparingly. Make every line unique. No Repetition. No emojis. No slurs.`
+    };
+
+    // ---------- study presets (cross-cultural, neutral)
+    const STUDY_PRESETS = {
+      qa:
+`You are a neutral, cross-cultural scripture study aide. Answer the user's question using only the provided passages and plainly inferred themes. Be respectful and inclusive. Avoid speculative doctrine; do not assert tradition-specific claims as facts. Cite verse references inline like [Book C:V] when supporting points. Keep answers clear and practical. If information is insufficient, say so briefly.`,
+      sermon:
+`You are preparing a cross-culturally respectful teaching outline based on the provided passages. Return: 1) Big idea (one line), 2) 3–5 teaching points with brief, practical applications, 3) illustration ideas (universal, non-denominational), 4) reflection questions, 5) related cross-references where clearly relevant. Keep language accessible and concise; cite references like [Book C:V]. Avoid doctrinal assertions not grounded in the text.`,
+      exegetical:
+`Provide a verse-by-verse exegetical walkthrough for the provided passages. For each verse: note key terms, literary or rhetorical features, immediate context, and concise observations grounded in the text. After the walkthrough, give: structure outline, key themes, and related cross-references (when clearly supported by the text). Use neutral, cross-cultural language; avoid tradition-specific claims. Cite like [Book C:V].`,
+      youth:
+`Rewrite a simple, age-appropriate summary of the provided passages, then give 3–5 discussion questions and 2–3 practical, everyday applications. Keep it respectful, kind, and inclusive; avoid slang that might not travel across cultures. Keep facts aligned with the text; cite references like [Book C:V] sparingly in parentheses.`,
+      academic:
+`Offer a concise academic-style commentary of the provided passages: genre and structure, notable literary devices, intertextual echoes (if apparent from the text), key terms and semantic contrasts, and thematic synthesis. Keep claims grounded in the provided text; avoid unverified historical claims. Include brief, text-grounded cross-references if clearly relevant. Cite like [Book C:V].`,
+      outline:
+`Produce a concise outline of the provided passages: title, 3–7 hierarchical bullet points (no more than two levels), and a short summary paragraph. Add 2–4 related cross-references if clearly relevant. Keep language neutral and broadly applicable. Use [Book C:V] to cite.`,
+      crossrefs:
+`List 5–10 related cross-references that are likely relevant to the provided passages, explaining each link in one short sentence. Prefer references within the same corpus; if uncertain, focus on nearby passages that share key terms or themes. Keep language neutral and avoid tradition-specific assertions. Cite like [Book C:V].`
     };
 
     // ---------- themes
@@ -586,6 +657,18 @@
     const runSingleBtn = document.getElementById('runSingle');
     const runChapterBtn = document.getElementById('runChapter');
     const singleStatus = document.getElementById('singleStatus');
+
+    // Study UI refs
+    const studyPresetEl = document.getElementById('studyPreset');
+    const studyQuestionEl = document.getElementById('studyQuestion');
+    const studyScopeEl = document.getElementById('studyScope');
+    const studyContextEl = document.getElementById('studyContext');
+    const studyCrossrefsEl = document.getElementById('studyCrossrefs');
+    const runStudyBtn = document.getElementById('runStudy');
+    const copyStudyBtn = document.getElementById('copyStudy');
+    const shareStudyBtn = document.getElementById('shareStudy');
+    const studyOutEl = document.getElementById('studyOut');
+    const studyStatusEl = document.getElementById('studyStatus');
 
     const httpsWarn = document.getElementById('httpsWarn');
     if (location.protocol === 'https:') httpsWarn.style.display = 'block';
@@ -1100,6 +1183,104 @@
       return out.trim();
     }
 
+    function setStudyStatus(msg) {
+      if (!studyStatusEl) return;
+      studyStatusEl.textContent = msg;
+      if (!msg) return;
+      setTimeout(() => { if (studyStatusEl.textContent === msg) studyStatusEl.textContent = ''; }, 2000);
+    }
+    async function shareStudy() {
+      try {
+        const txt = (studyOutEl.textContent || '').trim();
+        if (!txt) { setStudyStatus('Nothing to share'); return; }
+        if (navigator.share) {
+          const snippet = txt.length > 100000 ? txt.slice(0, 100000) : txt;
+          try {
+            await navigator.share({ title: 'Study Aids', text: snippet });
+            setStudyStatus('Shared');
+            return;
+          } catch (err) {
+            if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) { setStudyStatus(''); return; }
+          }
+        }
+        const ok = await copyToClipboard(txt);
+        setStudyStatus(ok ? 'Copied (share unavailable)' : 'Share/copy failed');
+      } catch (e) {
+        setStudyStatus('Share failed');
+      }
+    }
+
+    function parseOutAsMap() {
+      const map = new Map();
+      const lines = (outEl.textContent || '').split('\n').map(s => s.trim()).filter(Boolean);
+      for (const ln of lines) {
+        const m = ln.match(/^\[([^\]]+)\]\s*(.*)$/);
+        if (m) map.set(m[1], m[2]);
+      }
+      return map;
+    }
+
+    function buildOriginalLines(scope) {
+      const book = bookSel.value;
+      const chapter = Number(chapterSel.value);
+      const verseNo = Number(verseSel.value);
+      if (!verses.length) return [];
+      if (scope === 'verse') {
+        const it = verses.find(v => v.book_title === book && Number(v.chapter_number) === chapter && Number(v.verse_number) === verseNo);
+        if (!it) return [];
+        const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, verseNo);
+        return [`[${ref}] ${String(it.scripture_text || '')}`];
+      }
+      if (scope === 'chapter') {
+        return verses
+          .filter(v => v.book_title === book && Number(v.chapter_number) === chapter)
+          .sort((a,b)=>Number(a.verse_number)-Number(b.verse_number))
+          .map(it => {
+            const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, Number(it.verse_number));
+            return `[${ref}] ${String(it.scripture_text || '')}`;
+          });
+      }
+      return [];
+    }
+
+    function buildStyledLines(scope) {
+      const map = parseOutAsMap();
+      if (!map.size) return [];
+      if (scope === 'out') {
+        return Array.from(map.entries()).map(([ref, body]) => `[${ref}] ${body}`);
+      }
+      const book = bookSel.value;
+      const chapter = Number(chapterSel.value);
+      const verseNo = Number(verseSel.value);
+      const want = new Set();
+      if (scope === 'verse') want.add(refString(book, chapter, verseNo));
+      if (scope === 'chapter') {
+        const vs = verses
+          .filter(v => v.book_title === book && Number(v.chapter_number) === chapter)
+          .map(v => refString(book, chapter, Number(v.verse_number)));
+        vs.forEach(r => want.add(r));
+      }
+      const out = [];
+      for (const r of want) {
+        if (map.has(r)) out.push(`[${r}] ${map.get(r)}`);
+      }
+      return out;
+    }
+
+    function makeStudyMessages({ preset, question, scope, contextMode, includeXrefs }) {
+      const originalLines = (contextMode === 'original' || contextMode === 'both') ? buildOriginalLines(scope) : [];
+      const styledLines = (contextMode === 'styled' || contextMode === 'both') ? buildStyledLines(scope) : [];
+      const ctx = [];
+      if (styledLines.length) ctx.push('Styled passages:\n' + styledLines.join('\n'));
+      if (originalLines.length) ctx.push('Original passages:\n' + originalLines.join('\n'));
+      const contextBlock = ctx.join('\n\n');
+      const sys = STUDY_PRESETS[preset] || STUDY_PRESETS.qa;
+      const ask = (preset === 'qa' ? (question?.trim() || 'Provide a helpful study answer based on the passages.') : '')
+        + (includeXrefs ? '\n\nIf relevant, include brief cross-references.' : '');
+      const user = `${contextBlock}\n\n${ask}`.trim();
+      return { system: sys, user };
+    }
+
     function makeUserPrompt(book, chapter, verse, text) {
       return `Reference: ${book} ${chapter}:${verse}\nText: "${normalizeAscii(text)}"`;
     }
@@ -1322,6 +1503,62 @@
         shareOutBtn.title = 'Web Share API (text) not supported';
       }
       shareOutBtn.addEventListener('pointerup', shareOutput);
+    }
+
+    // ---------- study run
+    if (runStudyBtn) {
+      runStudyBtn.addEventListener('pointerup', async () => {
+        try {
+          studyStatusEl.textContent = 'Generating...';
+          studyOutEl.textContent = '';
+          const apiBase = apiBaseEl.value.trim();
+          const apiKey = apiKeyEl.value.trim();
+          const model = getActiveModelId() || 'qwen3-4b-instruct-2507';
+          const temperature = parseFloat(temperatureEl.value || '0.7') || 0.7;
+          const stream = streamEl.value === 'true';
+          const stops = stopsEl.value.split(',').map(s => s.trim()).filter(Boolean);
+          if (!apiBase) throw new Error('API base required');
+          if (!model) throw new Error('Model required');
+
+          const preset = studyPresetEl.value;
+          const question = studyQuestionEl.value;
+          const scope = studyScopeEl.value;
+          const contextMode = studyContextEl.value;
+          const includeXrefs = !!studyCrossrefsEl.checked;
+          const msgs = makeStudyMessages({ preset, question, scope, contextMode, includeXrefs });
+
+          const result = await chatOnce({
+            apiBase,
+            model,
+            apiKey,
+            systemPrompt: msgs.system,
+            userPrompt: msgs.user,
+            temperature,
+            stream,
+            stops,
+            extraHeaders: parseJSONOrEmpty(extraHeadersEl.value)
+          });
+          studyOutEl.textContent = result || '(no result)';
+          studyStatusEl.textContent = 'Done.';
+        } catch (e) {
+          studyStatusEl.textContent = `Error ... ${e.message}`;
+        }
+      });
+    }
+    if (copyStudyBtn) {
+      copyStudyBtn.addEventListener('pointerup', async () => {
+        const txt = (studyOutEl.textContent || '').trim();
+        if (!txt) { studyStatusEl.textContent = 'Nothing to copy'; return; }
+        const ok = await copyToClipboard(txt);
+        studyStatusEl.textContent = ok ? 'Copied to clipboard' : 'Copy failed';
+      });
+    }
+    if (shareStudyBtn) {
+      if (!('share' in navigator)) {
+        shareStudyBtn.disabled = true;
+        shareStudyBtn.title = 'Web Share API (text) not supported';
+      }
+      shareStudyBtn.addEventListener('pointerup', shareStudy);
     }
 
     // ---------- single verse run
