@@ -8,6 +8,21 @@ Single‑file, zero‑dependency web app to “style” scripture verses using a
 - Settings and persona prompts saved locally in your browser (localStorage)
 - Remembers last used mode (Batch vs. Single) and model/API settings
 
+## API Keys (New Users)
+
+Most hosted AI providers require an API key. If you’re new to AI APIs, grab a key from one of these pages and paste it into the app’s “API key” field (it’s stored only in your browser):
+
+- OpenAI: https://platform.openai.com/api-keys
+- OpenRouter: https://openrouter.ai/keys
+- Groq: https://console.groq.com/keys
+- Together: https://api.together.xyz/settings/api-keys
+- Fireworks: https://app.fireworks.ai/users/account/api-keys
+
+Notes
+- For local servers like LM Studio or Ollama, you usually don’t need a key. Just point “API base” at your local URL.
+- This app uses OpenAI‑compatible Chat Completions APIs.
+- Never commit or share your key.
+
 ## Run It
 
 Three easy options:
@@ -148,21 +163,28 @@ Model list fetch is robust: it tries `/models`, `/v1/models`, and Ollama `/api/t
 
 ## Get an API Key (ELI5)
 
-- What it is: A secret password that lets this page talk to an AI provider and bill usage to your account. Keep it private.
-- How to get one:
-  - Pick a provider (e.g., OpenAI, OpenRouter, Groq, Together, Fireworks).
-  - Create an account, open the provider’s “API keys” page, click “Create new key,” then copy it.
-  - Paste it into the app’s `API key` box. It’s stored only in your browser (`localStorage`).
-- Cost: Some providers have free tiers; others require a card. Local options (LM Studio, Ollama) require no key.
-- Some providers give daily free tokens up to a limit based on if you allow training on your data or not. 
-- Quick links:
-  - OpenAI: https://platform.openai.com/api-keys
-  - OpenRouter: https://openrouter.ai/keys
-  - Groq: https://console.groq.com/keys
-  - Together: https://api.together.xyz/settings/api-keys
-  - Fireworks: https://app.fireworks.ai/users/account/api-keys
- 
-Never commit or share your key. If you get 401/403 errors, recheck the key and that your account has access to the chosen model.
+What it is
+- A secret token that lets this page talk to an AI provider and bill usage to your account. Keep it private.
+
+How to get one
+- Pick a provider (e.g., OpenAI, OpenRouter, Groq, Together, Fireworks).
+- Create an account, open the provider’s “API keys” page, click “Create new key,” then copy it.
+- Paste it into the app’s “API key” box. It’s stored only in your browser (localStorage).
+
+Cost and free tiers
+- Some providers have free tiers or credits; others require a card. Local options (LM Studio, Ollama) require no key.
+- Some providers give daily free tokens with conditions (e.g., allowing training on your data). Read their terms.
+
+Quick links
+- OpenAI: https://platform.openai.com/api-keys
+- OpenRouter: https://openrouter.ai/keys
+- Groq: https://console.groq.com/keys
+- Together: https://api.together.xyz/settings/api-keys
+- Fireworks: https://app.fireworks.ai/users/account/api-keys
+
+Tips
+- Never commit or share your key.
+- If you get 401/403 errors, recheck the key, model permissions, and endpoint.
 
 ## Output Format
 
@@ -177,7 +199,7 @@ Never commit or share your key. If you get 401/403 errors, recheck the key and t
 - Temperature: Creativity vs. determinism (0–2)
 - Stream tokens: When true, uses SSE streaming; otherwise waits for full JSON response
  - Max verses/run (Single chapter): Limits how many verses are processed per click when running a chapter. Defaults to 50. If more remain, a “Next chunk” button appears to continue without overwhelming the output.
- - Read aloud (no deps): Uses the browser’s built‑in Web Speech API (Text‑to‑Speech) to read the Output or the current selection. Supported in most modern browsers (Chrome/Edge/Safari); disabled if unavailable.
+ - Read aloud (no deps): Uses the browser’s built‑in Web Speech API (Text‑to‑Speech) to read the Output or the current selection. Also available in Study Aids. Supported in most modern browsers (Chrome/Edge/Safari); disabled if unavailable.
 - Stops: Comma‑separated stop strings sent as `stop` to the API
 - Context pairs memory: How many recent (user, assistant) pairs to keep to reduce repetitive openings; may retry with higher temperature if repetition detected
 - Extra headers: JSON object merged into the request headers (e.g., OpenRouter requires `HTTP-Referer` and `X-Title`)
