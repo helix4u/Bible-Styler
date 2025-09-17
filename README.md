@@ -1,6 +1,6 @@
-# Bible Styler — Browser Edition (index.html)
+# Scripture Styler — Browser Edition (index.html)
 
-Single‑file, zero‑dependency web app to “style” Bible verses using any OpenAI‑compatible Chat Completions API. This README covers only the `index.html` app.
+Single‑file, zero‑dependency web app to “style” scripture verses using any OpenAI‑compatible Chat Completions API. This README covers only the `index.html` app.
 
 - No build step, no server required
 - Works with OpenAI‑compatible providers (OpenAI, OpenRouter, Groq, Together, Fireworks, DeepInfra, Cerebras, LM Studio, Ollama, etc.)
@@ -48,7 +48,7 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 
 5. Load Scripture JSON
 - Default: Bible KJV dataset (helix4u/Bible-Styler)
-- Also available in presets: Tanakh (JPS 1917), Quran (English), LDS Standard Works, Bhagavad Gita sample
+- Also available in presets: Tanakh (JPS 1917), Quran (English), LDS Standard Works, Bhagavad Gita sample, Dhammapada (English)
 - Paste your own JSON URL or choose a local `.json` file
 - Optionally filter by volumes/books, and set index range
 
@@ -60,6 +60,8 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
   - Source: https://github.com/Sefaria/Sefaria-Export (JPS 1917)
 - Quran (English): Based on risan/quran-json (CC BY-SA 4.0). Reformatted into our schema as `quran_en.json`.
   - Source: https://github.com/risan/quran-json (see LICENSE.txt)
+- Dhammapada (English, F. Max Müller, PD): Reformatted from iacchus/dhammapada.json into our schema as `dhammapada_en.json`.
+  - Source: https://github.com/iacchus/dhammapada.json
 - LDS Standard Works: Mirrored from johngthecreator/Book_of_Mormon_Scriptures `standard-works.json` as `lds_standard_works.json`.
   - Source: https://github.com/johngthecreator/Book_of_Mormon_Scriptures
 
@@ -68,7 +70,7 @@ Notes
 
 ## Terminology
 
-- “Standard Works” is a term specific to the Latter-day Saint (LDS) tradition. In this app, it is used only for the LDS collection (Bible, Book of Mormon, Doctrine and Covenants, Pearl of Great Price). Other datasets are labeled by their own traditions: Bible (KJV), Tanakh (JPS 1917), Quran (English), Bhagavad Gita.
+- “Standard Works” is a term specific to the Latter‑day Saint (LDS) tradition. In this app, it is used only for the LDS collection (Bible, Book of Mormon, Doctrine and Covenants, Pearl of Great Price). Other datasets are labeled by their own traditions: Bible (KJV), Tanakh (JPS 1917), Quran (English), Bhagavad Gita, Dhammapada.
 
 6. Run
 - Batch mode: Click “Start” to process a range of verses; download results as `.txt`

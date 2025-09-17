@@ -1,4 +1,4 @@
-# AGENTS: Bible Styler (Browser Edition)
+# AGENTS: Scripture Styler (Browser Edition)
 
 Authoritative guidance for agents working in this repository. The scope of this file is the entire repo.
 
@@ -64,4 +64,3 @@ Authoritative guidance for agents working in this repository. The scope of this 
 
 ---
 If a change seems to require new tooling or multi-file structure, pause and request explicit approval before proceeding.
-

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Bible Styler ... browser edition</title>
+  <title>Scripture Styler ... browser edition</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="format-detection" content="telephone=no">
   <style>
@@ -124,7 +124,7 @@
   </style>
 </head>
 <body>
-  <h1>Bible Styler ... browser edition <span class="badge" id="themeBadge">dark</span></h1>
+  <h1>Scripture Styler ... browser edition <span class="badge" id="themeBadge">dark</span></h1>
   <div class="muted" style="margin: 6px 0 12px 0;">
     If this helps you, consider supporting:
     <a href="https://ko-fi.com/gille" target="_blank" rel="noopener">ko-fi.com/gille</a>
@@ -212,7 +212,7 @@
         </div>
         <div style="grid-column: span 9;">
           <label for="extraHeaders">Extra headers ... JSON object ... optional</label>
-          <textarea id="extraHeaders" class="mono" placeholder='{"HTTP-Referer":"https://your.site","X-Title":"Bible Styler"}'></textarea>
+          <textarea id="extraHeaders" class="mono" placeholder='{"HTTP-Referer":"https://your.site","X-Title":"Scripture Styler"}'></textarea>
         </div>
 
         <div style="grid-column: span 12;">
@@ -587,7 +587,7 @@
       "OpenAI": { apiBase: "https://api.openai.com/v1/chat/completions" },
       "OpenRouter": {
         apiBase: "https://openrouter.ai/api/v1/chat/completions",
-        extraHeaders: { "HTTP-Referer": location.origin || "https://example.com", "X-Title": "Bible Styler" }
+        extraHeaders: { "HTTP-Referer": location.origin || "https://example.com", "X-Title": "Scripture Styler" }
       },
       "Together": { apiBase: "https://api.together.xyz/v1/chat/completions" },
       "Groq": { apiBase: "https://api.groq.com/openai/v1/chat/completions" },
@@ -703,7 +703,7 @@
         if (navigator.share) {
           const snippet = txt.length > 100000 ? txt.slice(0, 100000) : txt;
           try {
-            await navigator.share({ title: 'Styled Bible', text: snippet });
+            await navigator.share({ title: 'Scripture Styler', text: snippet });
             setOutStatus('Shared');
             return;
           } catch (err) {
@@ -1032,6 +1032,10 @@
       {
         label: 'Quran (English, helix4u/Bible-Styler)',
         url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/quran_en.json'
+      },
+      {
+        label: 'Dhammapada (English, helix4u/Bible-Styler)',
+        url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/dhammapada_en.json'
       },
       { label: 'Custom URL...', url: '' }
     ];
