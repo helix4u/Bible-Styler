@@ -5,7 +5,7 @@ Authoritative guidance for agents working in this repository. The scope of this 
 ## Repo Overview
 - Single-file web app: `index.html` contains HTML, CSS, and JS.
 - No build step, bundler, or server by default.
-- Data example: `gita_standard_works.json` (used as an example Scripture JSON source).
+- Data example: `bhagavad_gita.json` (used as an example Scripture JSON source).
 
 ## Core Principles
 - Keep it single-file. Do not split JS/CSS into separate files unless explicitly requested.
@@ -57,6 +57,22 @@ Authoritative guidance for agents working in this repository. The scope of this 
 - Small, atomic commits/patches; descriptive messages.
 - Do not introduce unrelated refactors.
 - Do not add linters/formatters or CI without explicit request.
+- Do NOT push to `main` without an explicit user request. Prepare changes locally and await approval before pushing.
+
+## Cross-References Policy (Study Aids)
+- Cross-references must remain within the same corpus/tradition as the active dataset. The UI injects constraints, but when adding new sources ensure mappings are covered:
+  - Quran — only Quran. Cite as SurahName S:V (e.g., Al-Baqarah 2:255).
+  - Bhagavad Gita — only Bhagavad Gita. Cite as Bhagavad Gita C:V.
+  - Dhammapada — only Dhammapada. Cite as Dhammapada C:V.
+  - Tao Te Ching — only Tao Te Ching. Cite as Tao Te Ching C:V.
+  - Tanakh (Torah/Nevi'im/Ketuvim) — only Tanakh. Cite as [Book C:V].
+  - Bible (Old/New Testament) — only Bible. Cite as [Book C:V].
+  - LDS volumes (Book of Mormon, Doctrine and Covenants, Pearl of Great Price) — only LDS Standard Works. Cite as [Book C:V].
+- When adding a new dataset, extend the corpus detection and citation hint in index.html (function corpusHint()).## Adding New Datasets
+- Prefer public domain or permissive sources (Project Gutenberg, Wikisource, Sefaria PD exports).
+- Map into standard schema: `volume_title`, `book_title`, `chapter_number`, `verse_number`, `scripture_text`, `verse_title`.
+- Keep chapter/verse semantics natural for the tradition (e.g., Surah/Ayah for Quran, Book/Saying for Analects, Chapter/Line for Tao Te Ching).
+- Add a preset entry with a stable raw URL inside this repo; update README “Data Sources” with attribution and license.
 
 ## Nice-to-Have (when requested)
 - Inline comments in `index.html` for non-obvious logic.
@@ -64,3 +80,7 @@ Authoritative guidance for agents working in this repository. The scope of this 
 
 ---
 If a change seems to require new tooling or multi-file structure, pause and request explicit approval before proceeding.
+
+
+
+
