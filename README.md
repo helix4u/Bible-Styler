@@ -52,8 +52,9 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 - Paste your own JSON URL or choose a local `.json` file
 - Optionally filter by volumes/books, and set index range
 
-## Data Sources
 
+- Analects (James Legge, PD): Parsed from Project Gutenberg into nalects_legge.json (20 books; numbered sayings).
+  - Source: https://www.gutenberg.org/ebooks/3330 (Legge translation)
 - Bible (KJV): Assembled from aruljohn/Bible-kjv (public domain KJV). Mirrored as `bible_kjv.json`.
   - Source: https://github.com/aruljohn/Bible-kjv
 - Tanakh (JPS 1917 English): From Sefaria Export (public domain edition). Mirrored as `tanakh_jps1917.json`.
@@ -233,6 +234,7 @@ Tips
 - For “Current verse/chapter,” the tool builds context from loaded JSON (original) and, if available, the Output panel (styled).
 - Prompts are neutral and cross-cultural; they avoid tradition-specific claims and cite verses like `[Book C:V]`.
 - Uses the same temperature/stream settings; adjust as needed for your provider.
+
 
 
 
