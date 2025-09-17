@@ -54,17 +54,21 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 
 ## Data Sources
 
-- Bible (KJV): Assembled from aruljohn/Bible-kjv (public domain KJV). Mirrored as `kjv_standard_works.json`.
+- Bible (KJV): Assembled from aruljohn/Bible-kjv (public domain KJV). Mirrored as `bible_kjv.json`.
   - Source: https://github.com/aruljohn/Bible-kjv
-- Tanakh (JPS 1917 English): From Sefaria Export (public domain edition). Mirrored as `tanakh_standard_works.json`.
+- Tanakh (JPS 1917 English): From Sefaria Export (public domain edition). Mirrored as `tanakh_jps1917.json`.
   - Source: https://github.com/Sefaria/Sefaria-Export (JPS 1917)
-- Quran (English): Based on risan/quran-json (CC BY-SA 4.0). Reformatted into our schema as `quran_standard_works.json`.
+- Quran (English): Based on risan/quran-json (CC BY-SA 4.0). Reformatted into our schema as `quran_en.json`.
   - Source: https://github.com/risan/quran-json (see LICENSE.txt)
 - LDS Standard Works: Mirrored from johngthecreator/Book_of_Mormon_Scriptures `standard-works.json` as `lds_standard_works.json`.
   - Source: https://github.com/johngthecreator/Book_of_Mormon_Scriptures
 
 Notes
 - Where licenses apply (e.g., Quran CC BY-SA), attribution is included here and the original license terms apply to derivative JSON.
+
+## Terminology
+
+- “Standard Works” is a term specific to the Latter-day Saint (LDS) tradition. In this app, it is used only for the LDS collection (Bible, Book of Mormon, Doctrine and Covenants, Pearl of Great Price). Other datasets are labeled by their own traditions: Bible (KJV), Tanakh (JPS 1917), Quran (English), Bhagavad Gita.
 
 6. Run
 - Batch mode: Click “Start” to process a range of verses; download results as `.txt`
