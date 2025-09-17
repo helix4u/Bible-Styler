@@ -48,9 +48,23 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 
 5. Load Scripture JSON
 - Default: Bible KJV dataset (helix4u/Bible-Styler)
-- Also available in presets: Quran (English, risan/quran-json), Standard Works (Book of Mormon Scriptures), Bhagavad Gita sample
+- Also available in presets: Tanakh (JPS 1917), Quran (English), LDS Standard Works, Bhagavad Gita sample
 - Paste your own JSON URL or choose a local `.json` file
 - Optionally filter by volumes/books, and set index range
+
+## Data Sources
+
+- Bible (KJV): Assembled from aruljohn/Bible-kjv (public domain KJV). Mirrored as `kjv_standard_works.json`.
+  - Source: https://github.com/aruljohn/Bible-kjv
+- Tanakh (JPS 1917 English): From Sefaria Export (public domain edition). Mirrored as `tanakh_standard_works.json`.
+  - Source: https://github.com/Sefaria/Sefaria-Export (JPS 1917)
+- Quran (English): Based on risan/quran-json (CC BY-SA 4.0). Reformatted into our schema as `quran_standard_works.json`.
+  - Source: https://github.com/risan/quran-json (see LICENSE.txt)
+- LDS Standard Works: Mirrored from johngthecreator/Book_of_Mormon_Scriptures `standard-works.json` as `lds_standard_works.json`.
+  - Source: https://github.com/johngthecreator/Book_of_Mormon_Scriptures
+
+Notes
+- Where licenses apply (e.g., Quran CC BY-SA), attribution is included here and the original license terms apply to derivative JSON.
 
 6. Run
 - Batch mode: Click “Start” to process a range of verses; download results as `.txt`
