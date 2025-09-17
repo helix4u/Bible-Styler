@@ -48,7 +48,7 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 
 5. Load Scripture JSON
 - Default: Bible KJV dataset (helix4u/Bible-Styler)
-- Also available in presets: Tanakh (JPS 1917), Quran (English), LDS Standard Works, Bhagavad Gita sample, Dhammapada (English), Tao Te Ching (Legge)
+- Also available in presets: Tanakh (JPS 1917), Quran (English), LDS Standard Works, Bhagavad Gita, Dhammapada (English), Tao Te Ching (Legge)
 - Paste your own JSON URL or choose a local `.json` file
 - Optionally filter by volumes/books, and set index range
 
@@ -233,3 +233,7 @@ Tips
 - For “Current verse/chapter,” the tool builds context from loaded JSON (original) and, if available, the Output panel (styled).
 - Prompts are neutral and cross-cultural; they avoid tradition-specific claims and cite verses like `[Book C:V]`.
 - Uses the same temperature/stream settings; adjust as needed for your provider.
+
+
+
+
