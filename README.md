@@ -47,7 +47,9 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
 - Save/load up to 5 local persona slots
 
 5. Load Scripture JSON
-- Use the default URL (Book of Mormon + Bible dataset) or paste your own JSON URL, or choose a local `.json` file
+- Default: Bible KJV dataset (helix4u/Bible-Styler)
+- Also available in presets: Standard Works (Book of Mormon Scriptures), Bhagavad Gita sample
+- Paste your own JSON URL or choose a local `.json` file
 - Optionally filter by volumes/books, and set index range
 
 6. Run

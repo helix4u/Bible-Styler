@@ -282,7 +282,7 @@
         </div>
         <div style="grid-column: span 8;">
           <label for="jsonUrl">Scripture JSON URL</label>
-          <input id="jsonUrl" class="mono" value="https://raw.githubusercontent.com/johngthecreator/Book_of_Mormon_Scriptures/main/standard-works.json" spellcheck="false">
+          <input id="jsonUrl" class="mono" value="https://raw.githubusercontent.com/helix4u/Bible-Styler/refs/heads/main/kjv_standard_works.json" spellcheck="false">
         </div>
         <div style="grid-column: span 4;">
           <label>Load JSON</label>
@@ -1013,6 +1013,10 @@
     }
     // Default JSON sources list
     const DEFAULT_JSON_SOURCES = [
+      {
+        label: 'Bible KJV (helix4u/Bible-Styler)',
+        url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/refs/heads/main/kjv_standard_works.json'
+      },
       {
         label: 'Standard Works (Book_of_Mormon_Scriptures)',
         url: 'https://raw.githubusercontent.com/johngthecreator/Book_of_Mormon_Scriptures/main/standard-works.json'
