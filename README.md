@@ -86,6 +86,11 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
    - 12 Upanishads are derived from F. Max Müller’s public‑domain translations in Sacred Books of the East Part 1 (1879) and Part 2 (1884), via sacred-texts.com, reformatted into our schema as `upanishads_principal.json`.
    - Mandukya Upanishad (12 verses) is included as a concise English rendering compiled to fit the schema from public‑domain sources; all verses are presented as a single chapter for consistency with the app’s selectors.
    - Sources: https://sacred-texts.com/hin/sbe01/index.htm and https://sacred-texts.com/hin/sbe15/index.htm (public domain)
+ - Mahabharata (KMG Ganguli, PD):
+   - Full 18 Parvas. Dataset maps Parva → Section → Paragraph for smooth navigation: `book_title = "Mahabharata — {Parva}"`, `chapter_number = Section`, `verse_number = Paragraph`.
+   - Citation style: “Mahabharata — Parva Section ¶” (e.g., Mahabharata — Adi Parva Section 1 ¶3).
+   - Preset: “Mahabharata (KMG, PD, helix4u/Bible-Styler)” — https://raw.githubusercontent.com/helix4u/Bible-Styler/main/mahabharata_kmg.json
+   - Source: https://sacred-texts.com/hin/maha/index.htm (public domain KMG translation)
 
 Notes
 - Where licenses apply (e.g., Quran CC BY-SA), attribution is included here and the original license terms apply to derivative JSON.
