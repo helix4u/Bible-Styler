@@ -58,6 +58,7 @@ Authoritative guidance for agents working in this repository. The scope of this 
 - Do not introduce unrelated refactors.
 - Do not add linters/formatters or CI without explicit request.
 - Do NOT push to `main` without an explicit user request. Prepare changes locally and await approval before pushing.
+- Approval-first workflow is mandatory: never perform network-affecting actions (pushes, releases, tags, external calls that change remote state) without the user explicitly asking for them in this session. Always summarize intended actions and wait for confirmation.
 
 ## Cross-References Policy (Study Aids)
 - Cross-references must remain within the same corpus/tradition as the active dataset. The UI injects constraints, but when adding new sources ensure mappings are covered:

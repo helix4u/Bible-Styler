@@ -431,6 +431,8 @@
         <button id="runStudy" class="btn ok">Run study</button>
         <button id="copyStudy" class="btn secondary">Copy study</button>
         <button id="shareStudy" class="btn neutral">Share</button>
+        <button id="readStudy" class="btn">Read aloud</button>
+        <button id="stopStudyTts" class="btn danger">Stop TTS</button>
         <span id="studyStatus" class="muted" aria-live="polite"></span>
       </div>
       <div id="studyOut" class="out"></div>
@@ -678,6 +680,8 @@
     const runStudyBtn = document.getElementById('runStudy');
     const copyStudyBtn = document.getElementById('copyStudy');
     const shareStudyBtn = document.getElementById('shareStudy');
+    const readStudyBtn = document.getElementById('readStudy');
+    const stopStudyTtsBtn = document.getElementById('stopStudyTts');
     const studyOutEl = document.getElementById('studyOut');
     const studyStatusEl = document.getElementById('studyStatus');
 
@@ -1689,6 +1693,24 @@
         shareStudyBtn.title = 'Web Share API (text) not supported';
       }
       shareStudyBtn.addEventListener('pointerup', shareStudy);
+    }
+
+    // Study TTS wiring
+    if (!hasTTS) {
+      if (readStudyBtn) { readStudyBtn.disabled = true; readStudyBtn.title = 'Text-to-speech not supported in this browser'; }
+      if (stopStudyTtsBtn) { stopStudyTtsBtn.disabled = true; }
+    }
+    if (readStudyBtn) {
+      readStudyBtn.addEventListener('pointerup', async () => {
+        try {
+          const sel = (window.getSelection && (window.getSelection().toString().trim())) || '';
+          const text = sel || (studyOutEl.textContent || '').trim();
+          await ttsSpeak(text);
+        } catch (e) { studyStatusEl.textContent = 'TTS error'; }
+      });
+    }
+    if (stopStudyTtsBtn) {
+      stopStudyTtsBtn.addEventListener('pointerup', ttsStop);
     }
 
     // ---------- single verse run
