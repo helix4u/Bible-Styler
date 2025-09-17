@@ -1047,6 +1047,10 @@
         url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/bhagavad_gita.json'
       },
       {
+        label: 'Mahabharata (KMG, PD, helix4u/Bible-Styler)',
+        url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/mahabharata_kmg.json'
+      },
+      {
         label: 'Quran (English, helix4u/Bible-Styler)',
         url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/quran_en.json'
       },
@@ -1337,7 +1341,6 @@
           if (vol === 'Bhagavad Gita') return 'Cross-references must come only from the Bhagavad Gita. Cite as Bhagavad Gita C:V (e.g., Bhagavad Gita 2:47).';
           if (vol === 'Buddhism') return 'Cross-references must come only from the Dhammapada. Cite as Dhammapada C:V.';
           if (vol === 'Hinduism' && book && book.indexOf('Upanishad') >= 0) return 'Cross-references must come only from the Upanishads. Cite as Upanishads – Name C:V.';
-          if (vol === 'Hinduism' && book && book.indexOf('Mahabharata —') === 0) return 'Cross-references must come only from the Mahabharata. Cite as Mahabharata — Parva Section ¶.';
           if (vol === 'Hinduism' && book && book.indexOf('Ramayana') >= 0) return 'Cross-references must come only from the Ramayana. Cite as Ramayana – Book C:V.';
           if (vol === 'Confucianism' || book === 'Analects') return 'Cross-references must come only from the Analects. Cite as Analects B:S (Book:Saying).';
           if (vol === 'Torah' || vol === "Nevi'im" || vol === 'Ketuvim') return 'Cross-references must come only from the Tanakh (Hebrew Bible). Cite as [Book C:V].';
