@@ -1302,12 +1302,17 @@
           const b = bookSel.value;
           const sample = verses.find(v => v.book_title === b);
           const vol = (sample?.volume_title || '').trim();
+          const book = (sample?.book_title || '').trim();
           if (!vol) return '';
           if (vol === 'Quran') return 'Cross-references must come only from the Quran. Cite as SurahName S:V (e.g., Al-Baqarah 2:255).';
           if (vol === 'Bhagavad Gita') return 'Cross-references must come only from the Bhagavad Gita. Cite as Bhagavad Gita C:V (e.g., Bhagavad Gita 2:47).';
           if (vol === 'Buddhism') return 'Cross-references must come only from the Dhammapada. Cite as Dhammapada C:V.';
+          if (vol === 'Taoism' || book === 'Tao Te Ching') return 'Cross-references must come only from the Tao Te Ching. Cite as Tao Te Ching C:V.';
           if (vol === 'Torah' || vol === "Nevi'im" || vol === 'Ketuvim') return 'Cross-references must come only from the Tanakh (Hebrew Bible). Cite as [Book C:V].';
           if (vol === 'Old Testament' || vol === 'New Testament') return 'Cross-references must come only from the Bible. Cite as [Book C:V].';
+          if (vol === 'Book of Mormon' || vol === 'Doctrine and Covenants' || vol === 'Pearl of Great Price') {
+            return 'Cross-references must come only from the LDS Standard Works (Bible, Book of Mormon, Doctrine and Covenants, Pearl of Great Price). Cite as [Book C:V].';
+          }
           return 'Keep cross-references within the same corpus as the provided passages.';
         } catch { return ''; }
       }
