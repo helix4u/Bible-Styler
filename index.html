@@ -360,6 +360,11 @@
         <div class="inline" style="margin-bottom: 8px;">
           <button id="runSingle" class="btn ok">Run single verse</button>
           <button id="runChapter" class="btn neutral">Run chapter</button>
+          <div class="inline" style="gap:8px; align-items:center;">
+            <label for="maxPerRun" style="margin:0;" class="muted">Max verses/run</label>
+            <input id="maxPerRun" type="number" min="1" value="50" style="width:96px;">
+          </div>
+          <button id="nextChunk" class="btn secondary" style="display:none;">Next chunk</button>
         </div>
         <div id="singleStatus" class="muted" aria-live="polite"></div>
       </div>
@@ -656,6 +661,8 @@
     const singleTextEl = document.getElementById('singleText');
     const runSingleBtn = document.getElementById('runSingle');
     const runChapterBtn = document.getElementById('runChapter');
+    const maxPerRunEl = document.getElementById('maxPerRun');
+    const nextChunkBtn = document.getElementById('nextChunk');
     const singleStatus = document.getElementById('singleStatus');
 
     // Study UI refs
@@ -775,6 +782,7 @@
         books: booksEl.value,
         ctxPairs: ctxPairsEl.value,
         extraHeaders: extraHeadersEl.value,
+        maxPerRun: (maxPerRunEl?.value || '50'),
         // persist current panel selection as part of settings
         activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'singlePanel'
       };
@@ -807,6 +815,7 @@
           booksEl.value = s.books || '';
           ctxPairsEl.value = s.ctxPairs || '3';
           extraHeadersEl.value = s.extraHeaders || '';
+          if (maxPerRunEl) maxPerRunEl.value = s.maxPerRun || '50';
           // model mode
           const mode = s.modelMode || 'select';
           customModelToggle.checked = mode === 'custom';
@@ -1012,7 +1021,7 @@
       } catch {}
     }
     // Default JSON sources list
-    const DEFAULT_JSON_SOURCES = [
+  const DEFAULT_JSON_SOURCES = [
       {
         label: 'Bible KJV (helix4u/Bible-Styler)',
         url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/bible_kjv.json'
@@ -1046,12 +1055,8 @@
         url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/analects_legge.json'
       },
       {
-        label: 'Upanishads (Full, helix4u/Bible-Styler)',
-        url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/upanishads_full.json'
-      },
-      {
-        label: 'Upanishads (PD, helix4u/Bible-Styler)',
-        url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/upanishads_pd.json'
+        label: 'Upanishads (Principal 13, helix4u/Bible-Styler)',
+        url: 'https://raw.githubusercontent.com/helix4u/Bible-Styler/main/upanishads_principal.json'
       },
       {
         label: 'Ramayana (Griffith, helix4u/Bible-Styler)',
@@ -1670,11 +1675,23 @@
       }
     });
 
-    // ---------- single chapter run
-    runChapterBtn.addEventListener('pointerup', async () => {
+    // ---------- single chapter run (chunked)
+    let chunkState = { book: '', chapter: 0, nextIndex: 0, total: 0 };
+    function resetChunkUI() {
+      chunkState = { book: '', chapter: 0, nextIndex: 0, total: 0 };
+      if (nextChunkBtn) {
+        nextChunkBtn.style.display = 'none';
+        nextChunkBtn.disabled = true;
+        nextChunkBtn.textContent = 'Next chunk';
+      }
+    }
+    if (bookSel) bookSel.addEventListener('change', () => { resetChunkUI(); });
+    if (chapterSel) chapterSel.addEventListener('change', () => { resetChunkUI(); });
+
+    async function runChapterChunk(startIndex, append) {
       try {
         singleStatus.textContent = 'Running chapter...';
-        outEl.textContent = '';
+        if (!append) outEl.textContent = '';
 
         const apiBase = apiBaseEl.value.trim();
         const apiKey = apiKeyEl.value.trim();
@@ -1696,10 +1713,14 @@
           .sort((a,b) => Number(a.verse_number) - Number(b.verse_number));
         if (!rows.length) throw new Error('No verses for this chapter');
 
+        const maxPer = Math.max(1, parseInt(maxPerRunEl?.value || '50', 10) || 50);
+        const begin = Math.max(0, Math.min(startIndex || 0, rows.length));
+        const end = Math.min(rows.length, begin + maxPer);
+
         const ctxPairs = Math.max(0, parseInt(ctxPairsEl.value || '0', 10) || 0);
         let history = [];
 
-        for (let i = 0; i < rows.length; i++) {
+        for (let i = begin; i < end; i++) {
           const it = rows[i];
           const verseNo = Number(it.verse_number);
           const text = String(it.scripture_text || '');
@@ -1719,7 +1740,6 @@
             if (bodyOk(line2, expectedPrefix)) line = line2;
           }
 
-          // repetition guard using recent assistant n-grams
           const recentAssistant = history.filter(m => m.role === 'assistant').map(m => m.content);
           const recentStarts = new Set(recentAssistant.map(ln => openingNgram((ln.split(']', 1)[1] || ''))));
           const thisStart = openingNgram((line.split(']', 1)[1] || ''));
@@ -1734,15 +1754,42 @@
           history.push({ role: 'user', content: `Reference: ${ref}\nText: "${normalizeAscii(text)}"` });
           history.push({ role: 'assistant', content: line });
           if (history.length > ctxPairs * 2) history.splice(0, history.length - ctxPairs * 2);
-
           await new Promise(r => setTimeout(r, 40));
         }
 
-        singleStatus.textContent = 'Done.';
+        chunkState = { book, chapter, nextIndex: end, total: rows.length };
+        if (nextChunkBtn) {
+          if (end < rows.length) {
+            nextChunkBtn.style.display = 'inline-block';
+            nextChunkBtn.disabled = false;
+            nextChunkBtn.textContent = `Next chunk (${end + 1}–${Math.min(rows.length, end + maxPer)})`;
+            singleStatus.textContent = `Chunk ${begin + 1}–${end} done. ${rows.length - end} remaining.`;
+          } else {
+            nextChunkBtn.style.display = 'none';
+            nextChunkBtn.disabled = true;
+            nextChunkBtn.textContent = 'Next chunk';
+            singleStatus.textContent = 'Done.';
+          }
+        }
       } catch (e) {
         singleStatus.textContent = `Error ... ${e.message}`;
       }
+    }
+
+    runChapterBtn.addEventListener('pointerup', async () => {
+      resetChunkUI();
+      await runChapterChunk(0, /*append*/false);
     });
+
+    if (nextChunkBtn) {
+      nextChunkBtn.addEventListener('pointerup', async () => {
+        if (!chunkState.book || chunkState.book !== bookSel.value || Number(chapterSel.value) !== chunkState.chapter) {
+          await runChapterChunk(0, /*append*/false);
+        } else {
+          await runChapterChunk(chunkState.nextIndex || 0, /*append*/true);
+        }
+      });
+    }
 
     // initial UI wiring
     function initModelSelectUI() {

@@ -67,6 +67,10 @@ Tip: You can also host it on your own GitHub Pages; in your repo go to Settings 
   - Source: https://www.gutenberg.org/ebooks/216 (James Legge translation)
 - LDS Standard Works: Mirrored from johngthecreator/Book_of_Mormon_Scriptures `standard-works.json` as `lds_standard_works.json`.
   - Source: https://github.com/johngthecreator/Book_of_Mormon_Scriptures
+ - Upanishads (Principal 13):
+   - 12 Upanishads are derived from F. Max Müller’s public‑domain translations in Sacred Books of the East Part 1 (1879) and Part 2 (1884), via sacred-texts.com, reformatted into our schema as `upanishads_principal.json`.
+   - Mandukya Upanishad (12 verses) is included as a concise English rendering compiled to fit the schema from public‑domain sources; all verses are presented as a single chapter for consistency with the app’s selectors.
+   - Sources: https://sacred-texts.com/hin/sbe01/index.htm and https://sacred-texts.com/hin/sbe15/index.htm (public domain)
 
 Notes
 - Where licenses apply (e.g., Quran CC BY-SA), attribution is included here and the original license terms apply to derivative JSON.
@@ -172,6 +176,7 @@ Never commit or share your key. If you get 401/403 errors, recheck the key and t
 
 - Temperature: Creativity vs. determinism (0–2)
 - Stream tokens: When true, uses SSE streaming; otherwise waits for full JSON response
+- Max verses/run (Single chapter): Limits how many verses are processed per click when running a chapter. Defaults to 50. If more remain, a “Next chunk” button appears to continue without overwhelming the output.
 - Stops: Comma‑separated stop strings sent as `stop` to the API
 - Context pairs memory: How many recent (user, assistant) pairs to keep to reduce repetitive openings; may retry with higher temperature if repetition detected
 - Extra headers: JSON object merged into the request headers (e.g., OpenRouter requires `HTTP-Referer` and `X-Title`)
