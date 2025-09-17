@@ -1311,8 +1311,7 @@
           if (vol === 'Quran') return 'Cross-references must come only from the Quran. Cite as SurahName S:V (e.g., Al-Baqarah 2:255).';
           if (vol === 'Bhagavad Gita') return 'Cross-references must come only from the Bhagavad Gita. Cite as Bhagavad Gita C:V (e.g., Bhagavad Gita 2:47).';
           if (vol === 'Buddhism') return 'Cross-references must come only from the Dhammapada. Cite as Dhammapada C:V.';
-          if (vol === 'Taoism' || book === 'Tao Te Ching') return 'Cross-references must come only from the Tao Te Ching. Cite as Tao Te Ching C:V.';
-          if (vol === 'Confucianism' || book === 'Analects') return 'Cross-references must come only from the Analects. Cite as Analects B:S (Book:Saying).';
+           if (vol === 'Hinduism' && book && book.indexOf('Upanishad') >= 0) return 'Cross-references must come only from the Upanishads. Cite as Upanishads – Name C:V.'; if (vol === 'Hinduism' && book && book.indexOf('Ramayana') >= 0) return 'Cross-references must come only from the Ramayana. Cite as Ramayana – Kanda C:V.';if (vol === 'Confucianism' || book === 'Analects') return 'Cross-references must come only from the Analects. Cite as Analects B:S (Book:Saying).';
           if (vol === 'Torah' || vol === "Nevi'im" || vol === 'Ketuvim') return 'Cross-references must come only from the Tanakh (Hebrew Bible). Cite as [Book C:V].';
           if (vol === 'Old Testament' || vol === 'New Testament') return 'Cross-references must come only from the Bible. Cite as [Book C:V].';
           if (vol === 'Book of Mormon' || vol === 'Doctrine and Covenants' || vol === 'Pearl of Great Price') {
@@ -1768,3 +1767,5 @@
   </script>
 </body>
 </html>
+
+
