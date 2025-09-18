@@ -364,6 +364,10 @@
             <label for="maxPerRun" style="margin:0;" class="muted">Max verses/run</label>
             <input id="maxPerRun" type="number" min="1" value="50" style="width:96px;">
           </div>
+          <div class="inline" style="gap:8px; align-items:center;">
+            <input id="clearBeforeNext" type="checkbox">
+            <label for="clearBeforeNext" style="margin:0;" class="muted">Clear before next chunk</label>
+          </div>
           <button id="nextChunk" class="btn secondary" style="display:none;">Next chunk</button>
         </div>
         <div id="singleStatus" class="muted" aria-live="polite"></div>
@@ -668,6 +672,7 @@
     const runSingleBtn = document.getElementById('runSingle');
     const runChapterBtn = document.getElementById('runChapter');
     const maxPerRunEl = document.getElementById('maxPerRun');
+    const clearBeforeNextEl = document.getElementById('clearBeforeNext');
     const nextChunkBtn = document.getElementById('nextChunk');
     const singleStatus = document.getElementById('singleStatus');
 
@@ -791,6 +796,7 @@
         ctxPairs: ctxPairsEl.value,
         extraHeaders: extraHeadersEl.value,
         maxPerRun: (maxPerRunEl?.value || '50'),
+        clearBeforeNext: (clearBeforeNextEl?.checked ? 'true' : 'false'),
         // persist current panel selection as part of settings
         activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'singlePanel'
       };
@@ -824,6 +830,7 @@
           ctxPairsEl.value = s.ctxPairs || '3';
           extraHeadersEl.value = s.extraHeaders || '';
           if (maxPerRunEl) maxPerRunEl.value = s.maxPerRun || '50';
+          if (clearBeforeNextEl) clearBeforeNextEl.checked = (s.clearBeforeNext === 'true');
           // model mode
           const mode = s.modelMode || 'select';
           customModelToggle.checked = mode === 'custom';
@@ -1339,7 +1346,10 @@
           if (!vol) return '';
           if (vol === 'Quran') return 'Cross-references must come only from the Quran. Cite as SurahName S:V (e.g., Al-Baqarah 2:255).';
           if (vol === 'Bhagavad Gita') return 'Cross-references must come only from the Bhagavad Gita. Cite as Bhagavad Gita C:V (e.g., Bhagavad Gita 2:47).';
-          if (vol === 'Buddhism') return 'Cross-references must come only from the Dhammapada. Cite as Dhammapada C:V.';
+          if (vol === 'Buddhism') {
+            if (book && book.indexOf('Dhammapada') >= 0) return 'Cross-references must come only from the Dhammapada. Cite as Dhammapada C:V.';
+            return 'Keep cross-references within the same Buddhist text. Cite as [Book C:V].';
+          }
           if (vol === 'Hinduism' && book && book.indexOf('Upanishad') >= 0) return 'Cross-references must come only from the Upanishads. Cite as Upanishads – Name C:V.';
           if (vol === 'Hinduism' && book && book.indexOf('Ramayana') >= 0) return 'Cross-references must come only from the Ramayana. Cite as Ramayana – Book C:V.';
           if (vol === 'Confucianism' || book === 'Analects') return 'Cross-references must come only from the Analects. Cite as Analects B:S (Book:Saying).';
@@ -1874,7 +1884,8 @@
         if (!chunkState.book || chunkState.book !== bookSel.value || Number(chapterSel.value) !== chunkState.chapter) {
           await runChapterChunk(0, /*append*/false);
         } else {
-          await runChapterChunk(chunkState.nextIndex || 0, /*append*/true);
+          const shouldClear = !!(clearBeforeNextEl && clearBeforeNextEl.checked);
+          await runChapterChunk(chunkState.nextIndex || 0, /*append*/!shouldClear);
         }
       });
     }
