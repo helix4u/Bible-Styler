@@ -420,9 +420,9 @@
         <div style="grid-column: span 4;">
           <label for="studyScope">Scope</label>
           <select id="studyScope">
-            <option value="verse">Current verse</option>
-            <option value="chapter">Current chapter</option>
             <option value="out">All styled output</option>
+            <option value="chapter">Current chapter</option>
+            <option value="verse">Current verse</option>
           </select>
         </div>
         <div style="grid-column: span 4;">
@@ -1021,6 +1021,7 @@
         studyCrossrefs: (studyCrossrefsEl?.checked ? 'true' : 'false'),
         studyCrossrefLimit: (studyCrossrefLimitEl?.value || '4'),
         studyCitationStyle: (studyCitationStyleEl?.value || 'auto'),
+        studyScope: (studyScopeEl?.value || 'out'),
         presetKey: activePresetKey || 'custom',
         // persist current panel selection as part of settings
         activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'singlePanel'
@@ -1060,6 +1061,7 @@
           extraHeadersEl.value = s.extraHeaders || '';
           if (maxPerRunEl) maxPerRunEl.value = s.maxPerRun || '50';
           if (clearBeforeNextEl) clearBeforeNextEl.checked = (s.clearBeforeNext === 'true');
+          if (studyScopeEl) studyScopeEl.value = s.studyScope || 'out';
           if (studyCrossrefsEl) studyCrossrefsEl.checked = (s.studyCrossrefs !== 'false');
           if (studyCrossrefLimitEl) studyCrossrefLimitEl.value = s.studyCrossrefLimit || '4';
           if (studyCitationStyleEl) studyCitationStyleEl.value = s.studyCitationStyle || 'auto';
