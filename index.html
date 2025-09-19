@@ -487,6 +487,15 @@
       return s.trim();
     }
     function refString(book, chapter, verse) { return `${book} ${chapter}:${verse}`; }
+    function verseRef(row) {
+      if (!row) return '';
+      const titled = String(row.verse_title || '').trim();
+      if (titled) return titled;
+      const book = String(row.book_title || '').trim() || 'Unknown';
+      const chapter = Number(row.chapter_number || 0) || 0;
+      const verse = Number(row.verse_number || 0) || 0;
+      return refString(book, chapter, verse);
+    }
     function openingNgram(s, n = 4) {
       const toks = s.trim().split(/\s+/).filter(Boolean);
       return toks.slice(0, n).join(" ").toLowerCase();
@@ -1538,17 +1547,14 @@
       if (scope === 'verse') {
         const it = verses.find(v => v.book_title === book && Number(v.chapter_number) === chapter && Number(v.verse_number) === verseNo);
         if (!it) return [];
-        const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, verseNo);
+        const ref = verseRef(it);
         return [`[${ref}] ${String(it.scripture_text || '')}`];
       }
       if (scope === 'chapter') {
         return verses
           .filter(v => v.book_title === book && Number(v.chapter_number) === chapter)
           .sort((a,b)=>Number(a.verse_number)-Number(b.verse_number))
-          .map(it => {
-            const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, Number(it.verse_number));
-            return `[${ref}] ${String(it.scripture_text || '')}`;
-          });
+          .map(it => `[${verseRef(it)}] ${String(it.scripture_text || '')}`);
       }
       return [];
     }
@@ -1563,12 +1569,17 @@
       const chapter = Number(chapterSel.value);
       const verseNo = Number(verseSel.value);
       const want = new Set();
-      if (scope === 'verse') want.add(refString(book, chapter, verseNo));
+      if (scope === 'verse') {
+        const row = verses.find(v => v.book_title === book && Number(v.chapter_number) === chapter && Number(v.verse_number) === verseNo);
+        if (row) want.add(verseRef(row));
+      }
       if (scope === 'chapter') {
-        const vs = verses
+        verses
           .filter(v => v.book_title === book && Number(v.chapter_number) === chapter)
-          .map(v => refString(book, chapter, Number(v.verse_number)));
-        vs.forEach(r => want.add(r));
+          .forEach(row => {
+            const ref = verseRef(row);
+            if (ref) want.add(ref);
+          });
       }
       const out = [];
       for (const r of want) {
@@ -1602,6 +1613,8 @@
           }
           if (vol === 'Hinduism' && book && book.indexOf('Upanishad') >= 0) return 'Cross-references must come only from the Upanishads. Cite as Upanishads – Name C:V.';
           if (vol === 'Hinduism' && book && book.indexOf('Ramayana') >= 0) return 'Cross-references must come only from the Ramayana. Cite as Ramayana – Book C:V.';
+          if (vol === 'Hinduism' && book && book.indexOf('Mahabharata') >= 0) return 'Cross-references must come only from the Mahabharata. Cite as Mahabharata – Book Section ¶V.';
+          if (vol === 'Taoism' || book.indexOf('Tao Te Ching') >= 0) return 'Cross-references must come only from the Tao Te Ching. Cite as Tao Te Ching C:V.';
           if (vol === 'Confucianism' || book === 'Analects') return 'Cross-references must come only from the Analects. Cite as Analects B:S (Book:Saying).';
           if (vol === 'Torah' || vol === "Nevi'im" || vol === 'Ketuvim') return 'Cross-references must come only from the Tanakh (Hebrew Bible). Cite as [Book C:V].';
           if (vol === 'Old Testament' || vol === 'New Testament') return 'Cross-references must come only from the Bible. Cite as [Book C:V].';
@@ -1852,7 +1865,7 @@
           const chapter = Number(it.chapter_number);
           const verse = Number(it.verse_number);
           const text = String(it.scripture_text);
-          const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, verse);
+          const ref = verseRef(it);
 
           const expectedPrefix = `[${ref}]`;
           const userPrompt = makeUserPrompt(book, chapter, verse, text);
@@ -2025,11 +2038,13 @@
         const book = bookSel.value;
         const chapter = Number(chapterSel.value);
         const verseNo = Number(verseSel.value);
-        const fallback = verses.find(v => v.book_title === book && Number(v.chapter_number) === chapter && Number(v.verse_number) === verseNo)?.scripture_text || '';
+        const row = verses.find(v => v.book_title === book && Number(v.chapter_number) === chapter && Number(v.verse_number) === verseNo);
+        const fallback = row?.scripture_text || '';
         const srcText = singleTextEl.value.trim() || fallback;
 
         const userPrompt = makeUserPrompt(book, chapter, verseNo, srcText);
-        const expectedPrefix = `[${refString(book, chapter, verseNo)}]`;
+        const refObj = row || { book_title: book, chapter_number: chapter, verse_number: verseNo };
+        const expectedPrefix = `[${verseRef(refObj)}]`;
 
         const raw = await chatOnce({
           apiBase, model, apiKey, systemPrompt, userPrompt, temperature, stream, stops, extraHeaders: parseJSONOrEmpty(extraHeadersEl.value)
@@ -2099,7 +2114,7 @@
           const it = rows[i];
           const verseNo = Number(it.verse_number);
           const text = String(it.scripture_text || '');
-          const ref = it.verse_title ? String(it.verse_title).trim() : refString(book, chapter, verseNo);
+          const ref = verseRef(it);
 
           singleStatus.textContent = `Processing ${i + 1} / ${rows.length} ... ${ref}`;
 
