@@ -221,13 +221,6 @@
           <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off">
         </div>
 
-        <div style="grid-column: span 6;">
-          <div class="inline" style="justify-content: space-between; width:100%; align-items:center;">
-            <label for="themeOverrides" style="margin:0;">Theme overrides (CSS vars JSON) ... optional</label>
-            <button type="button" id="themeOverridesToggle" class="btn secondary" aria-expanded="false" aria-controls="themeOverrides">Show overrides ▸</button>
-          </div>
-          <textarea id="themeOverrides" class="mono" placeholder='{"--accent":"#22d3ee","--bg":"#0b0f14"}' style="display:none;"></textarea>
-        </div>
 
         <!-- model selector with mobile-safe select and an optional free-typing input -->
         <div style="grid-column: span 3;">
@@ -252,13 +245,6 @@
             <option value="false">false</option>
           </select>
         </div>
-        <div style="grid-column: span 9;">
-          <div class="inline" style="justify-content: space-between; width:100%; align-items:center;">
-            <label for="extraHeaders" style="margin:0;">Extra headers ... JSON object ... optional</label>
-            <button type="button" id="extraHeadersToggle" class="btn secondary" aria-expanded="false" aria-controls="extraHeaders">Show headers ▸</button>
-          </div>
-          <textarea id="extraHeaders" class="mono" placeholder='{"HTTP-Referer":"https://your.site","X-Title":"Scripture Styler"}' style="display:none;"></textarea>
-        </div>
 
         <div style="grid-column: span 12;">
           <label for="systemPrompt">Style system prompt</label>
@@ -280,6 +266,26 @@
         <div style="grid-column: span 12;">
           <label for="stops">Stops ... comma separated</label>
           <input id="stops" value="Reference:,AI:,---">
+        </div>
+
+        <!-- Optional Settings Section -->
+        <div style="grid-column: span 12;">
+          <div class="inline" style="justify-content: space-between; width:100%; align-items:center; margin-bottom: 8px;">
+            <span style="font-size: 14px; font-weight: 600; color: var(--text-muted);">Optional Settings</span>
+            <button type="button" id="optionalSettingsToggle" class="btn secondary" aria-expanded="false" aria-controls="optionalSettingsContent">Show optional ▸</button>
+          </div>
+          <div id="optionalSettingsContent" style="display:none;">
+            <div class="grid" style="gap: 12px; margin-top: 8px;">
+              <div style="grid-column: span 6;">
+                <label for="themeOverrides">Theme overrides (CSS vars JSON)</label>
+                <textarea id="themeOverrides" class="mono" placeholder='{"--accent":"#22d3ee","--bg":"#0b0f14"}'></textarea>
+              </div>
+              <div style="grid-column: span 6;">
+                <label for="extraHeaders">Extra headers (JSON object)</label>
+                <textarea id="extraHeaders" class="mono" placeholder='{"HTTP-Referer":"https://your.site","X-Title":"Scripture Styler"}'></textarea>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="muted">Do not commit keys. This page saves to localStorage on this device only.</div>
@@ -837,7 +843,7 @@
     const themeSelectEl = document.getElementById('themeSelect');
     const fontSelectEl = document.getElementById('fontSelect');
     const themeOverridesEl = document.getElementById('themeOverrides');
-    const themeOverridesToggle = document.getElementById('themeOverridesToggle');
+    const optionalSettingsToggle = document.getElementById('optionalSettingsToggle');
     const setupToggleBtn = document.getElementById('setupToggle');
     const setupApiCard = document.getElementById('setupApiCard');
     const setupDataCard = document.getElementById('setupDataCard');
@@ -855,7 +861,6 @@
     const systemPromptEl = document.getElementById('systemPrompt');
     const stopsEl = document.getElementById('stops');
     const extraHeadersEl = document.getElementById('extraHeaders');
-    const extraHeadersToggle = document.getElementById('extraHeadersToggle');
 
     const presetQuickSelect = document.getElementById('presetQuick');
     const openPresetSettingsBtn = document.getElementById('openPresetSettings');
@@ -995,8 +1000,7 @@
     const SETTINGS_KEY = 'bibleStylerSettings.v2';
     const SLOTS_KEY = 'personaSlots.v1'; // 5 slots
     let setupOpen = false;
-    let themeOverridesOpen = false;
-    let extraHeadersOpen = false;
+    let optionalSettingsOpen = false;
     let activePresetKey = 'custom';
     let personaSlots = [];
     let lastSelectedModel = '';
@@ -1033,8 +1037,7 @@
         studyCrossrefLimit: (studyCrossrefLimitEl?.value || '4'),
         studyCitationStyle: (studyCitationStyleEl?.value || 'auto'),
         studyScope: (studyScopeEl?.value || 'out'),
-        themeOverridesOpen: themeOverridesOpen ? 'true' : 'false',
-        extraHeadersOpen: extraHeadersOpen ? 'true' : 'false',
+        optionalSettingsOpen: optionalSettingsOpen ? 'true' : 'false',
         presetKey: activePresetKey || 'custom',
         // persist current panel selection as part of settings
         activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'singlePanel'
@@ -1078,10 +1081,8 @@
           if (studyCrossrefsEl) studyCrossrefsEl.checked = (s.studyCrossrefs !== 'false');
           if (studyCrossrefLimitEl) studyCrossrefLimitEl.value = s.studyCrossrefLimit || '4';
           if (studyCitationStyleEl) studyCitationStyleEl.value = s.studyCitationStyle || 'auto';
-          themeOverridesOpen = (s.themeOverridesOpen === 'true');
-          extraHeadersOpen = (s.extraHeadersOpen === 'true');
-          setThemeOverridesOpen(themeOverridesOpen);
-          setExtraHeadersOpen(extraHeadersOpen);
+          optionalSettingsOpen = (s.optionalSettingsOpen === 'true');
+          setOptionalSettingsOpen(optionalSettingsOpen);
           // model mode
           const mode = s.modelMode || 'select';
           customModelToggle.checked = mode === 'custom';
@@ -1094,14 +1095,12 @@
         } else {
           systemPromptEl.value = PRESET_TEXTS.stoner; // first load default
           lastSelectedModel = modelSelectEl.value || '';
-          setThemeOverridesOpen(false);
-          setExtraHeadersOpen(false);
+          setOptionalSettingsOpen(false);
         }
       } catch {
         systemPromptEl.value = PRESET_TEXTS.stoner;
         lastSelectedModel = modelSelectEl.value || '';
-        setThemeOverridesOpen(false);
-        setExtraHeadersOpen(false);
+        setOptionalSettingsOpen(false);
       }
     }
 
@@ -1137,32 +1136,20 @@
       if (httpsWarn) httpsWarn.style.display = (open && location.protocol === 'https:') ? 'block' : 'none';
     }
 
-    function setThemeOverridesOpen(open) {
-      themeOverridesOpen = !!open;
-      if (themeOverridesToggle) {
-        themeOverridesToggle.textContent = open ? 'Hide overrides ▾' : 'Show overrides ▸';
-        themeOverridesToggle.setAttribute('aria-expanded', String(open));
+    function setOptionalSettingsOpen(open) {
+      optionalSettingsOpen = !!open;
+      const optionalContent = document.getElementById('optionalSettingsContent');
+      if (optionalSettingsToggle) {
+        optionalSettingsToggle.textContent = open ? 'Hide optional ▾' : 'Show optional ▸';
+        optionalSettingsToggle.setAttribute('aria-expanded', String(open));
       }
-      if (themeOverridesEl) {
-        themeOverridesEl.style.display = open ? 'block' : 'none';
-        themeOverridesEl.setAttribute('aria-hidden', String(!open));
-      }
-    }
-
-    function setExtraHeadersOpen(open) {
-      extraHeadersOpen = !!open;
-      if (extraHeadersToggle) {
-        extraHeadersToggle.textContent = open ? 'Hide headers ▾' : 'Show headers ▸';
-        extraHeadersToggle.setAttribute('aria-expanded', String(open));
-      }
-      if (extraHeadersEl) {
-        extraHeadersEl.style.display = open ? 'block' : 'none';
-        extraHeadersEl.setAttribute('aria-hidden', String(!open));
+      if (optionalContent) {
+        optionalContent.style.display = open ? 'block' : 'none';
+        optionalContent.setAttribute('aria-hidden', String(!open));
       }
     }
 
-    setThemeOverridesOpen(false);
-    setExtraHeadersOpen(false);
+    setOptionalSettingsOpen(false);
 
     function updateModelInputsVisibility() {
       if (customModelToggle.checked) {
@@ -1227,12 +1214,8 @@
       }
       saveSettings();
     });
-    if (themeOverridesToggle) themeOverridesToggle.addEventListener('pointerup', () => {
-      setThemeOverridesOpen(!themeOverridesOpen);
-      saveSettings();
-    });
-    if (extraHeadersToggle) extraHeadersToggle.addEventListener('pointerup', () => {
-      setExtraHeadersOpen(!extraHeadersOpen);
+    if (optionalSettingsToggle) optionalSettingsToggle.addEventListener('pointerup', () => {
+      setOptionalSettingsOpen(!optionalSettingsOpen);
       saveSettings();
     });
     if (systemPromptEl) systemPromptEl.addEventListener('input', () => {
