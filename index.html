@@ -1151,9 +1151,12 @@
       applyPresetByKey(presetQuickSelect.value);
     }, { passive: true });
     if (openPresetSettingsBtn) openPresetSettingsBtn.addEventListener('pointerup', () => {
-      setSetupOpen(true);
+      const targetState = !setupOpen;
+      setSetupOpen(targetState);
+      if (targetState) {
+        setupToggleBtn?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
       saveSettings();
-      setupToggleBtn?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     if (systemPromptEl) systemPromptEl.addEventListener('input', () => {
       activePresetKey = guessPresetKeyFromPrompt(systemPromptEl.value);
