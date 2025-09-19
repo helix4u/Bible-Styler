@@ -457,6 +457,20 @@
             <span class="muted">Suggest related passages when relevant</span>
           </div>
         </div>
+        <div style="grid-column: span 4;">
+          <label for="studyCrossrefLimit">Cross-reference limit</label>
+          <input id="studyCrossrefLimit" type="number" min="0" max="12" value="4" aria-describedby="studyCrossrefLimitHint">
+          <div id="studyCrossrefLimitHint" class="muted">0 keeps them optional; otherwise cap suggestions.</div>
+        </div>
+        <div style="grid-column: span 4;">
+          <label for="studyCitationStyle">Citation style</label>
+          <select id="studyCitationStyle">
+            <option value="auto">Auto (match tradition)</option>
+            <option value="brackets">Bracketed [Book C:V]</option>
+            <option value="colon">Book C:V</option>
+            <option value="narrative">Book Chapter Verse (words)</option>
+          </select>
+        </div>
       </div>
       <div class="inline" style="margin-bottom:8px;">
         <button id="runStudy" class="btn ok">Run study</button>
@@ -761,6 +775,8 @@
     const studyScopeEl = document.getElementById('studyScope');
     const studyContextEl = document.getElementById('studyContext');
     const studyCrossrefsEl = document.getElementById('studyCrossrefs');
+    const studyCrossrefLimitEl = document.getElementById('studyCrossrefLimit');
+    const studyCitationStyleEl = document.getElementById('studyCitationStyle');
     const runStudyBtn = document.getElementById('runStudy');
     const copyStudyBtn = document.getElementById('copyStudy');
     const shareStudyBtn = document.getElementById('shareStudy');
@@ -877,6 +893,9 @@
         extraHeaders: extraHeadersEl.value,
         maxPerRun: (maxPerRunEl?.value || '50'),
         clearBeforeNext: (clearBeforeNextEl?.checked ? 'true' : 'false'),
+        studyCrossrefs: (studyCrossrefsEl?.checked ? 'true' : 'false'),
+        studyCrossrefLimit: (studyCrossrefLimitEl?.value || '4'),
+        studyCitationStyle: (studyCitationStyleEl?.value || 'auto'),
         // persist current panel selection as part of settings
         activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'singlePanel'
       };
@@ -914,6 +933,9 @@
           extraHeadersEl.value = s.extraHeaders || '';
           if (maxPerRunEl) maxPerRunEl.value = s.maxPerRun || '50';
           if (clearBeforeNextEl) clearBeforeNextEl.checked = (s.clearBeforeNext === 'true');
+          if (studyCrossrefsEl) studyCrossrefsEl.checked = (s.studyCrossrefs !== 'false');
+          if (studyCrossrefLimitEl) studyCrossrefLimitEl.value = s.studyCrossrefLimit || '4';
+          if (studyCitationStyleEl) studyCitationStyleEl.value = s.studyCitationStyle || 'auto';
           // model mode
           const mode = s.modelMode || 'select';
           customModelToggle.checked = mode === 'custom';
@@ -1420,7 +1442,7 @@
       return out;
     }
 
-    function makeStudyMessages({ preset, question, scope, contextMode, includeXrefs }) {
+    function makeStudyMessages({ preset, question, scope, contextMode, includeXrefs, xrefLimit, citationStyle }) {
       const originalLines = (contextMode === 'original' || contextMode === 'both') ? buildOriginalLines(scope) : [];
       const styledLines = (contextMode === 'styled' || contextMode === 'both') ? buildStyledLines(scope) : [];
       const ctx = [];
@@ -1454,13 +1476,38 @@
           return 'Keep cross-references within the same corpus as the provided passages.';
         } catch { return ''; }
       }
-      const ask = (preset === 'qa' ? (question?.trim() || 'Provide a helpful study answer based on the passages.') : '')
-        + (includeXrefs ? ('\n\n' + corpusHint()) : '');
+      const safeLimit = Number.isFinite(xrefLimit) ? Math.max(0, Math.min(12, xrefLimit)) : 0;
+      const style = citationStyle || 'auto';
+      const corpusGuidance = includeXrefs ? corpusHint() : '';
+      const limitGuidance = includeXrefs
+        ? (safeLimit > 0
+          ? `Provide at most ${safeLimit} cross-reference${safeLimit === 1 ? '' : 's'} total.`
+          : 'Only include a cross-reference when it adds clear, necessary insight.')
+        : '';
+      let styleGuidance = '';
       if (includeXrefs) {
-        const hint = corpusHint();
-        if (hint) sys = sys + '\n\n' + hint;
+        if (style === 'brackets') styleGuidance = 'Format cross-references like [Book C:V].';
+        else if (style === 'colon') styleGuidance = 'Format cross-references like Book C:V (no brackets).';
+        else if (style === 'narrative') styleGuidance = 'Write cross-references in words, e.g., "Book Chapter Verse".';
       }
-      const user = `${contextBlock}\n\n${ask}`.trim();
+      const xrefInstructions = [corpusGuidance, limitGuidance, styleGuidance].filter(Boolean).join('\n');
+      if (includeXrefs && xrefInstructions) {
+        sys = sys + '\n\n' + xrefInstructions;
+      } else if (!includeXrefs) {
+        sys = sys + '\n\nDo not invent cross-references unless explicitly requested.';
+      }
+
+      const promptParts = [];
+      if (preset === 'qa') {
+        const q = (question?.trim() || 'Provide a helpful study answer based on the passages.');
+        promptParts.push(q);
+        if (includeXrefs) {
+          const qaNotes = [limitGuidance, styleGuidance].filter(Boolean);
+          if (qaNotes.length) promptParts.push('Cross-reference preferences:\n' + qaNotes.join('\n'));
+        }
+      }
+      const ask = promptParts.join('\n\n');
+      const user = ask ? `${contextBlock}\n\n${ask}`.trim() : contextBlock.trim();
       return { system: sys, user };
     }
 
@@ -1766,7 +1813,9 @@
           const scope = studyScopeEl.value;
           const contextMode = studyContextEl.value;
           const includeXrefs = !!studyCrossrefsEl.checked;
-          const msgs = makeStudyMessages({ preset, question, scope, contextMode, includeXrefs });
+          const xrefLimit = Math.max(0, Math.min(12, parseInt(studyCrossrefLimitEl?.value || '4', 10) || 0));
+          const citationStyle = (studyCitationStyleEl?.value || 'auto');
+          const msgs = makeStudyMessages({ preset, question, scope, contextMode, includeXrefs, xrefLimit, citationStyle });
 
           const result = await chatOnce({
             apiBase,
