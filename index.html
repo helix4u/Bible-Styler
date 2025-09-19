@@ -222,8 +222,11 @@
         </div>
 
         <div style="grid-column: span 6;">
-          <label for="themeOverrides">Theme overrides (CSS vars JSON) ... optional</label>
-          <textarea id="themeOverrides" class="mono" placeholder='{"--accent":"#22d3ee","--bg":"#0b0f14"}'></textarea>
+          <div class="inline" style="justify-content: space-between; width:100%; align-items:center;">
+            <label for="themeOverrides" style="margin:0;">Theme overrides (CSS vars JSON) ... optional</label>
+            <button type="button" id="themeOverridesToggle" class="btn secondary" aria-expanded="false" aria-controls="themeOverrides">Show overrides ▸</button>
+          </div>
+          <textarea id="themeOverrides" class="mono" placeholder='{"--accent":"#22d3ee","--bg":"#0b0f14"}' style="display:none;"></textarea>
         </div>
 
         <!-- model selector with mobile-safe select and an optional free-typing input -->
@@ -250,8 +253,11 @@
           </select>
         </div>
         <div style="grid-column: span 9;">
-          <label for="extraHeaders">Extra headers ... JSON object ... optional</label>
-          <textarea id="extraHeaders" class="mono" placeholder='{"HTTP-Referer":"https://your.site","X-Title":"Scripture Styler"}'></textarea>
+          <div class="inline" style="justify-content: space-between; width:100%; align-items:center;">
+            <label for="extraHeaders" style="margin:0;">Extra headers ... JSON object ... optional</label>
+            <button type="button" id="extraHeadersToggle" class="btn secondary" aria-expanded="false" aria-controls="extraHeaders">Show headers ▸</button>
+          </div>
+          <textarea id="extraHeaders" class="mono" placeholder='{"HTTP-Referer":"https://your.site","X-Title":"Scripture Styler"}' style="display:none;"></textarea>
         </div>
 
         <div style="grid-column: span 12;">
@@ -831,6 +837,7 @@
     const themeSelectEl = document.getElementById('themeSelect');
     const fontSelectEl = document.getElementById('fontSelect');
     const themeOverridesEl = document.getElementById('themeOverrides');
+    const themeOverridesToggle = document.getElementById('themeOverridesToggle');
     const setupToggleBtn = document.getElementById('setupToggle');
     const setupApiCard = document.getElementById('setupApiCard');
     const setupDataCard = document.getElementById('setupDataCard');
@@ -848,6 +855,7 @@
     const systemPromptEl = document.getElementById('systemPrompt');
     const stopsEl = document.getElementById('stops');
     const extraHeadersEl = document.getElementById('extraHeaders');
+    const extraHeadersToggle = document.getElementById('extraHeadersToggle');
 
     const presetQuickSelect = document.getElementById('presetQuick');
     const openPresetSettingsBtn = document.getElementById('openPresetSettings');
@@ -987,8 +995,11 @@
     const SETTINGS_KEY = 'bibleStylerSettings.v2';
     const SLOTS_KEY = 'personaSlots.v1'; // 5 slots
     let setupOpen = false;
+    let themeOverridesOpen = false;
+    let extraHeadersOpen = false;
     let activePresetKey = 'custom';
     let personaSlots = [];
+    let lastSelectedModel = '';
 
     function getActiveModelId() {
       return customModelToggle.checked ? modelTextEl.value.trim() : modelSelectEl.value.trim();
@@ -1022,6 +1033,8 @@
         studyCrossrefLimit: (studyCrossrefLimitEl?.value || '4'),
         studyCitationStyle: (studyCitationStyleEl?.value || 'auto'),
         studyScope: (studyScopeEl?.value || 'out'),
+        themeOverridesOpen: themeOverridesOpen ? 'true' : 'false',
+        extraHeadersOpen: extraHeadersOpen ? 'true' : 'false',
         presetKey: activePresetKey || 'custom',
         // persist current panel selection as part of settings
         activePanel: (document.querySelector('.tab.active')?.dataset.panel) || 'singlePanel'
@@ -1065,19 +1078,30 @@
           if (studyCrossrefsEl) studyCrossrefsEl.checked = (s.studyCrossrefs !== 'false');
           if (studyCrossrefLimitEl) studyCrossrefLimitEl.value = s.studyCrossrefLimit || '4';
           if (studyCitationStyleEl) studyCitationStyleEl.value = s.studyCitationStyle || 'auto';
+          themeOverridesOpen = (s.themeOverridesOpen === 'true');
+          extraHeadersOpen = (s.extraHeadersOpen === 'true');
+          setThemeOverridesOpen(themeOverridesOpen);
+          setExtraHeadersOpen(extraHeadersOpen);
           // model mode
           const mode = s.modelMode || 'select';
           customModelToggle.checked = mode === 'custom';
           modelTextEl.value = s.modelText || '';
           modelSelectEl.value = s.modelSelect || '';
+          lastSelectedModel = modelSelectEl.value || '';
           updateModelInputsVisibility();
           // restore last active panel (batch vs single) — default single first
           setActivePanel(s.activePanel || 'singlePanel');
         } else {
           systemPromptEl.value = PRESET_TEXTS.stoner; // first load default
+          lastSelectedModel = modelSelectEl.value || '';
+          setThemeOverridesOpen(false);
+          setExtraHeadersOpen(false);
         }
       } catch {
         systemPromptEl.value = PRESET_TEXTS.stoner;
+        lastSelectedModel = modelSelectEl.value || '';
+        setThemeOverridesOpen(false);
+        setExtraHeadersOpen(false);
       }
     }
 
@@ -1113,8 +1137,45 @@
       if (httpsWarn) httpsWarn.style.display = (open && location.protocol === 'https:') ? 'block' : 'none';
     }
 
+    function setThemeOverridesOpen(open) {
+      themeOverridesOpen = !!open;
+      if (themeOverridesToggle) {
+        themeOverridesToggle.textContent = open ? 'Hide overrides ▾' : 'Show overrides ▸';
+        themeOverridesToggle.setAttribute('aria-expanded', String(open));
+      }
+      if (themeOverridesEl) {
+        themeOverridesEl.style.display = open ? 'block' : 'none';
+        themeOverridesEl.setAttribute('aria-hidden', String(!open));
+      }
+    }
+
+    function setExtraHeadersOpen(open) {
+      extraHeadersOpen = !!open;
+      if (extraHeadersToggle) {
+        extraHeadersToggle.textContent = open ? 'Hide headers ▾' : 'Show headers ▸';
+        extraHeadersToggle.setAttribute('aria-expanded', String(open));
+      }
+      if (extraHeadersEl) {
+        extraHeadersEl.style.display = open ? 'block' : 'none';
+        extraHeadersEl.setAttribute('aria-hidden', String(!open));
+      }
+    }
+
+    setThemeOverridesOpen(false);
+    setExtraHeadersOpen(false);
+
     function updateModelInputsVisibility() {
       if (customModelToggle.checked) {
+        if (modelTextEl && modelSelectEl) {
+          const current = (modelTextEl.value || '').trim();
+          const candidate = modelSelectEl.value || lastSelectedModel || '';
+          if (!current && candidate) {
+            modelTextEl.value = candidate;
+          }
+          if (modelTextEl.value) {
+            lastSelectedModel = modelTextEl.value;
+          }
+        }
         modelTextEl.style.display = 'block';
         modelSelectEl.style.display = 'none';
       } else {
@@ -1128,6 +1189,14 @@
       el.addEventListener('change', saveSettings, { passive: true });
       el.addEventListener('input', saveSettings, { passive: true }); // save while typing to retain on refresh
     });
+    if (modelSelectEl) modelSelectEl.addEventListener('change', () => {
+      lastSelectedModel = modelSelectEl.value;
+    }, { passive: true });
+    if (modelTextEl) modelTextEl.addEventListener('change', () => {
+      if (customModelToggle.checked) {
+        lastSelectedModel = modelTextEl.value;
+      }
+    }, { passive: true });
     // Setup toggle
     if (setupToggleBtn) {
       setupToggleBtn.addEventListener('pointerup', () => { setSetupOpen(!setupOpen); saveSettings(); });
@@ -1156,6 +1225,14 @@
       if (targetState) {
         setupToggleBtn?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+      saveSettings();
+    });
+    if (themeOverridesToggle) themeOverridesToggle.addEventListener('pointerup', () => {
+      setThemeOverridesOpen(!themeOverridesOpen);
+      saveSettings();
+    });
+    if (extraHeadersToggle) extraHeadersToggle.addEventListener('pointerup', () => {
+      setExtraHeadersOpen(!extraHeadersOpen);
       saveSettings();
     });
     if (systemPromptEl) systemPromptEl.addEventListener('input', () => {
@@ -1803,6 +1880,8 @@
         else if (prevSelect && ids.includes(prevSelect)) chosen = prevSelect;
         else if (ids.length) chosen = ids[0];
         if (chosen) modelSelectEl.value = chosen;
+        lastSelectedModel = modelSelectEl.value || lastSelectedModel;
+        if (customModelToggle.checked) updateModelInputsVisibility();
         modelsStatus.textContent = `Loaded ${ids.length}`;
         saveSettings();
       } catch (e) {
