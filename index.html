@@ -23,7 +23,18 @@
       --focus: 0 0 0 3px rgba(56, 189, 248, 0.35);
       --radius: 12px;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-      --font-sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --font-serif: "Times New Roman", Times, Georgia, "Palatino Linotype", serif;
+      --font-display: "Impact", "Franklin Gothic Bold", "Trebuchet MS", sans-serif;
+      --font-script: "Brush Script MT", "Lucida Handwriting", cursive;
+      --font-elegant: "Garamond", "Minion Pro", "Book Antiqua", serif;
+      --font-modern: "Helvetica Neue", "Inter", "SF Pro Display", sans-serif;
+      --font-tech: "Courier New", "Source Code Pro", "JetBrains Mono", monospace;
+      --font-rounded: "Nunito", "Quicksand", "Trebuchet MS", sans-serif;
+      --font-condensed: "Roboto Condensed", "Helvetica Neue", "Arial Narrow", sans-serif;
+      --font-readable: Verdana, Geneva, Tahoma, sans-serif;
+      --font-slab: "Rockwell", "Roboto Slab", "Clarendon", serif;
+      --font-humanist: "Gill Sans", "Segoe UI", Calibri, sans-serif;
       /* button theming defaults (dark) */
       --btn-bg: var(--accent);
       --btn-bg-2: var(--accent-2);
@@ -143,6 +154,22 @@
         <div class="inline">
           <label for="themeSelect" style="margin:0;">Theme</label>
           <select id="themeSelect"></select>
+          <label for="fontSelect" style="margin:0 0 0 12px;">UI font</label>
+          <select id="fontSelect">
+            <option value="sans">Sans</option>
+            <option value="serif">Serif</option>
+            <option value="readable">Readable</option>
+            <option value="humanist">Humanist</option>
+            <option value="rounded">Rounded</option>
+            <option value="condensed">Condensed</option>
+            <option value="modern">Modern</option>
+            <option value="slab">Slab</option>
+            <option value="elegant">Elegant</option>
+            <option value="display">Display</option>
+            <option value="script">Script</option>
+            <option value="mono">Mono</option>
+            <option value="tech">Tech Mono</option>
+          </select>
         </div>
       </div>
     </div>
@@ -577,6 +604,48 @@
         '--btn-danger-top':'#ff7f7f','--btn-danger-bg':'#ff0000','--btn-danger-fg':'#000000',
         '--btn-ok-top':'#a7ffa7','--btn-ok-bg':'#00ff00','--btn-ok-fg':'#000000',
         '--link':'#00ff00'
+      },
+      neon: {
+        '--bg':'#0a0a0a','--bg-elev':'#111111','--bg-input':'#1a1a1a','--border':'#ff00ff','--border-strong':'#00ffff','--text':'#ffffff','--text-muted':'#cccccc','--accent':'#ff0080','--accent-2':'#8000ff','--danger':'#ff1744','--ok':'#00ff41','--term':'#00ff00','--term-bg':'#000000',
+        '--btn-bg':'#ff0080','--btn-bg-2':'#8000ff','--btn-fg':'#ffffff','--btn-secondary-fg':'#ffffff',
+        '--btn-danger-top':'#ff4081','--btn-danger-bg':'#ff1744','--btn-danger-fg':'#ffffff',
+        '--btn-ok-top':'#69f0ae','--btn-ok-bg':'#00ff41','--btn-ok-fg':'#000000',
+        '--link':'#00ffff'
+      },
+      forest: {
+        '--bg':'#1a2e1a','--bg-elev':'#2d4a2d','--bg-input':'#1f3d1f','--border':'#4a6741','--border-strong':'#6b8e5a','--text':'#e8f5e8','--text-muted':'#a8c49a','--accent':'#7cb342','--accent-2':'#8bc34a','--danger':'#d32f2f','--ok':'#388e3c','--term':'#c8e6c9','--term-bg':'#1b5e20',
+        '--btn-bg':'#7cb342','--btn-bg-2':'#8bc34a','--btn-fg':'#ffffff','--btn-secondary-fg':'#e8f5e8',
+        '--btn-danger-top':'#ef5350','--btn-danger-bg':'#d32f2f','--btn-danger-fg':'#ffffff',
+        '--btn-ok-top':'#66bb6a','--btn-ok-bg':'#388e3c','--btn-ok-fg':'#ffffff',
+        '--link':'#81c784'
+      },
+      ocean: {
+        '--bg':'#0d1b2a','--bg-elev':'#1b263b','--bg-input':'#0f1419','--border':'#2d5aa0','--border-strong':'#4f81bd','--text':'#e0f2f1','--text-muted':'#90caf9','--accent':'#00acc1','--accent-2':'#26c6da','--danger':'#e53935','--ok':'#00897b','--term':'#b2dfdb','--term-bg':'#004d40',
+        '--btn-bg':'#00acc1','--btn-bg-2':'#26c6da','--btn-fg':'#ffffff','--btn-secondary-fg':'#e0f2f1',
+        '--btn-danger-top':'#ef5350','--btn-danger-bg':'#e53935','--btn-danger-fg':'#ffffff',
+        '--btn-ok-top':'#4db6ac','--btn-ok-bg':'#00897b','--btn-ok-fg':'#ffffff',
+        '--link':'#4fc3f7'
+      },
+      sunset: {
+        '--bg':'#2d1b69','--bg-elev':'#512da8','--bg-input':'#3f1a5b','--border':'#ff6f00','--border-strong':'#ff8f00','--text':'#fff3e0','--text-muted':'#ffcc02','--accent':'#ff5722','--accent-2':'#ff9800','--danger':'#d32f2f','--ok':'#689f38','--term':'#ffe0b2','--term-bg':'#bf360c',
+        '--btn-bg':'#ff5722','--btn-bg-2':'#ff9800','--btn-fg':'#ffffff','--btn-secondary-fg':'#fff3e0',
+        '--btn-danger-top':'#ef5350','--btn-danger-bg':'#d32f2f','--btn-danger-fg':'#ffffff',
+        '--btn-ok-top':'#9ccc65','--btn-ok-bg':'#689f38','--btn-ok-fg':'#ffffff',
+        '--link':'#ffab40'
+      },
+      vintage: {
+        '--bg':'#3e2723','--bg-elev':'#5d4037','--bg-input':'#4e342e','--border':'#8d6e63','--border-strong':'#a1887f','--text':'#efebe9','--text-muted':'#bcaaa4','--accent':'#d4af37','--accent-2':'#ffd700','--danger':'#c62828','--ok':'#558b2f','--term':'#d7ccc8','--term-bg':'#3e2723',
+        '--btn-bg':'#d4af37','--btn-bg-2':'#ffd700','--btn-fg':'#3e2723','--btn-secondary-fg':'#efebe9',
+        '--btn-danger-top':'#ef5350','--btn-danger-bg':'#c62828','--btn-danger-fg':'#ffffff',
+        '--btn-ok-top':'#9ccc65','--btn-ok-bg':'#558b2f','--btn-ok-fg':'#ffffff',
+        '--link':'#ffb74d'
+      },
+      pastel: {
+        '--bg':'#faf5ff','--bg-elev':'#f3e8ff','--bg-input':'#ede9fe','--border':'#d8b4fe','--border-strong':'#c084fc','--text':'#581c87','--text-muted':'#7c3aed','--accent':'#a855f7','--accent-2':'#c084fc','--danger':'#dc2626','--ok':'#059669','--term':'#581c87','--term-bg':'#f3e8ff',
+        '--btn-bg':'#a855f7','--btn-bg-2':'#c084fc','--btn-fg':'#ffffff','--btn-secondary-fg':'#581c87',
+        '--btn-danger-top':'#fca5a5','--btn-danger-bg':'#dc2626','--btn-danger-fg':'#ffffff',
+        '--btn-ok-top':'#a7f3d0','--btn-ok-bg':'#059669','--btn-ok-fg':'#ffffff',
+        '--link':'#7c3aed'
       }
     };
     function applyTheme(name, overrides) {
@@ -590,6 +659,15 @@
       }
       const badge = document.getElementById('themeBadge');
       if (badge) badge.textContent = name;
+    }
+    
+    function applyFont(fontFamily) {
+      const root = document.documentElement;
+      const fontVar = `--font-${fontFamily}`;
+      const fontValue = getComputedStyle(root).getPropertyValue(fontVar).trim();
+      if (fontValue) {
+        root.style.setProperty('--font-sans', fontValue);
+      }
     }
 
     // ---------- vendor presets
@@ -614,6 +692,7 @@
     const apiBaseEl = document.getElementById('apiBase');
     const apiKeyEl = document.getElementById('apiKey');
     const themeSelectEl = document.getElementById('themeSelect');
+    const fontSelectEl = document.getElementById('fontSelect');
     const themeOverridesEl = document.getElementById('themeOverrides');
     const setupToggleBtn = document.getElementById('setupToggle');
     const setupApiCard = document.getElementById('setupApiCard');
@@ -780,6 +859,7 @@
         apiBase: apiBaseEl.value,
         apiKey: apiKeyEl.value,
         themeName: (themeSelectEl?.value || 'dark'),
+        fontFamily: (fontSelectEl?.value || 'sans'),
         themeOverrides: (themeOverridesEl?.value || ''),
         setupOpen: !!setupOpen,
         modelMode: customModelToggle.checked ? 'custom' : 'select',
@@ -811,11 +891,14 @@
           vendorEl.value = s.vendor || 'Custom';
           apiBaseEl.value = s.apiBase || '';
           apiKeyEl.value = s.apiKey || '';
-          // theme
+          // theme and font
           const themeName = (s.themeName || 'dark');
+          const fontFamily = (s.fontFamily || 'sans');
           const themeOverrides = (() => { try { return JSON.parse(s.themeOverrides||''); } catch { return {}; }})();
           initThemeUI(themeName);
           applyTheme(themeName, themeOverrides);
+          applyFont(fontFamily);
+          if (fontSelectEl) fontSelectEl.value = fontFamily;
           if (themeOverridesEl) themeOverridesEl.value = s.themeOverrides || '';
           setupOpen = !!s.setupOpen;
           setSetupOpen(setupOpen);
@@ -855,7 +938,13 @@
         {v:'cyberpunk', t:'Cyberpunk'},
         {v:'onyx', t:'Onyx Black'},
         {v:'sepia', t:'Sepia'},
-        {v:'highcontrast', t:'High Contrast'}
+        {v:'highcontrast', t:'High Contrast'},
+        {v:'neon', t:'Neon Nights'},
+        {v:'forest', t:'Forest Grove'},
+        {v:'ocean', t:'Deep Ocean'},
+        {v:'sunset', t:'Purple Sunset'},
+        {v:'vintage', t:'Vintage Gold'},
+        {v:'pastel', t:'Pastel Dreams'}
       ];
       themeSelectEl.innerHTML = options.map(o => `<option value="${o.v}">${o.t}</option>`).join('');
       themeSelectEl.value = options.some(o=>o.v===selected) ? selected : 'dark';
@@ -902,6 +991,10 @@
       const overrides = (() => { try { return JSON.parse(themeOverridesEl.value||''); } catch { return {}; } })();
       applyTheme((themeSelectEl?.value||'dark'), overrides);
       saveSettings();
+    }, { passive: true });
+    // Font selector handler
+    if (fontSelectEl) fontSelectEl.addEventListener('change', () => {
+      applyFont(fontSelectEl.value);
     }, { passive: true });
     loadSettings();
 
